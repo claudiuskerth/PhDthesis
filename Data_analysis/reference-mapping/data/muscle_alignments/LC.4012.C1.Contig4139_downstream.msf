@@ -1,0 +1,17 @@
+PileUp
+
+  MSF: 110  Type: N  Check: 0000  --
+
+ Name: contig1|size107|read10|cov4.49  Len: 110  Check:  6913  Weight: 0.5
+ Name: contig2|size52|read2|cov1.96    Len: 110  Check:  7707  Weight: 0.5
+
+//
+
+contig1|size107|read10|cov4.49    TG---CAGGA CGAGCCGCTG TCGCACAGCT TCCCGGCATG CACCACGGGC
+contig2|size52|read2|cov1.96      TGGTCCAGCA C---CTAGCG TAACACAGCA C----ACACA TGTTACATGC
+
+contig1|size107|read10|cov4.49    CGGCGGGAGC GCGACTTCCG GCAGTACGCC ACGGAACAGC TGCGCTCCGG
+contig2|size52|read2|cov1.96      CGGTG----- ---------- -------GCC A--------- ----------
+
+contig1|size107|read10|cov4.49    GCTCTCCGTG
+contig2|size52|read2|cov1.96      ----------

@@ -33,7 +33,6 @@
 *.ind*
 *.ist
 *.ist*
-*.jpg
 *.latexmkrc*
 *.lof
 *.lof*
@@ -53,8 +52,6 @@
 *.nls*
 *.out
 *.out*
-*.pdf
-*.png
 *.snm
 *.swp*
 *.synctex.gz
@@ -74,3 +71,10 @@ thesis.bcf*
 thesis.run.xml*
 thesis.txt*
 *.ps
+#*.pdf
+#*.png
+#*.jpg
+*cache*
+thesis.pdf
+Chapter*/Figs/Knitr
+*.tiff

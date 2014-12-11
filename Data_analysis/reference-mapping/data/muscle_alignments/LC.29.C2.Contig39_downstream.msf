@@ -1,0 +1,35 @@
+PileUp
+
+  MSF: 168  Type: N  Check: 0000  --
+
+ Name: contig5|size84|read9|cov5.46     Len: 168  Check:  5862  Weight: 0.12554
+ Name: contig4|size78|read12|cov7.85    Len: 168  Check:  5219  Weight: 0.12554
+ Name: contig3|size63|read11|cov8.90    Len: 168  Check:  1600  Weight: 0.22502
+ Name: contig1|size59|read27|cov23.34   Len: 168  Check:  6153  Weight: 0.255641
+ Name: contig2|size124|read35|cov14.40  Len: 168  Check:  8464  Weight: 0.268259
+
+//
+
+contig5|size84|read9|cov5.46       GATGAGCTCC AGGATGCCAT CATTCATTTC CTTCA----- ----------
+contig4|size78|read12|cov7.85      ---------- ---------- ----CAC--- ---------- ----------
+contig3|size63|read11|cov8.90      ---------- ---------- -ATACACCAC CCTCAGCCT- ----------
+contig1|size59|read27|cov23.34     ---------- ---------- ---------- ---------- ----------
+contig2|size124|read35|cov14.40    ---------- -TAAATTTTC CAGCAACTTC CTCCAGCTTT GCCCTGTCAG
+
+contig5|size84|read9|cov5.46       ---------- ---------- ---------- -----CAGCT TGGTACTCTG
+contig4|size78|read12|cov7.85      ---------- ---------- ---------- -----CAATG TG--------
+contig3|size63|read11|cov8.90      ---------- ---------- ---------- -----CTGTG TGTTCACCTC
+contig1|size59|read27|cov23.34     ---------- ---------- ---------- -----CTGAG CG--------
+contig2|size124|read35|cov14.40    CTGCAAGTTT TGGCAGCTTT ATGTGGACAG AGGCACGGAG CG--------
+
+contig5|size84|read9|cov5.46       TTAGCCCCAT GCGCCTCTTG TTAGAAATAT CATA------ ----------
+contig4|size78|read12|cov7.85      GTAGTCTAGG GCTGGTTGAG ATAAACAGGC TAGAATACCA GTATAACACT
+contig3|size63|read11|cov8.90      TTGTTCCACG GACCTGGAGG T--TAAATTT TC-------- ----------
+contig1|size59|read27|cov23.34     TTGTTCCCAG GTTGGTGGGG C--AGAATGT GAGGAAACCA AGACGGTCAT
+contig2|size124|read35|cov14.40    TTGTTCCCAG GTTGGTGGGG C--AGAATGT GAGGAAACCA AGACG-----
+
+contig5|size84|read9|cov5.46       ---------- --------
+contig4|size78|read12|cov7.85      CTTTAATGCC ACTAGGTA
+contig3|size63|read11|cov8.90      ---------- --------
+contig1|size59|read27|cov23.34     CATG------ --------
+contig2|size124|read35|cov14.40    ---------- --------

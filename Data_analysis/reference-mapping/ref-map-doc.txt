@@ -1,0 +1,802 @@
+% Remember to save this document with a .Rnw file ending,
+% before you use the engine Knitr to compile it.
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{url}
+%% With this package you can create hyperlinks in you document (eg. from ToC to the actual section) and to internet site. The hyperref command has to be the LAST command of the preamble.
+\usepackage[unicode=true,
+pdfusetitle,
+bookmarks=true,
+bookmarksnumbered=true,
+bookmarksopen=true,
+bookmarksopenlevel=2, 
+breaklinks=false,
+pdfborder={0 0 1},
+backref=false,
+colorlinks=true,
+citecolor=Green,% 
+filecolor=black,% 
+linkcolor=CornflowerBlue,% 
+urlcolor=Periwinkle,%
+]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+\usepackage{breakurl}
+
+%%%%%% -- PACKAGES WHICH ARE NOT IN THE TEMPLATE -- %%%%%%%%%%%%%%%%
+\usepackage{comment}
+\usepackage{fancyvrb}% Verbatim is a more flexible verbatim environment from the package 'fancyvrb'
+\fvset{fontsize=\small, fontfamily=courier}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{tabulary}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[format=hang, font=small, labelfont=md]{caption} % package can be used to format captions of all floats in the same way. It overrides any hangcaption/normalcaption commands though.
+\graphicspath{/Users/Claudius/Documents/PhD/THESIS/data_analysis/reference-mapping/figure}
+\usepackage{float}
+\floatstyle{ruled}
+\newfloat{command}{htp}{cmd}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\begin{document}
+
+
+%%%%%% -- KNITR SETUP -- %%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Read mapping of RAD sequences against a reference}
+
+\author{Claudius Kerth}
+
+\maketitle
+
+\abstract{Here I document different read mappings against several reference sequences.}
+
+\section{\textit{Locusta/Schistocerca} transcriptome reference}
+
+\subsection{\textit{Locusta}}
+I created a new folder on \texttt{huluvu}: \texttt{/data/claudius/Read\_mapping}.
+I downloaded the non-redundant EST's of the \texttt{Locusta migratoria} \href{http://locustdb.genomics.org.cn/jsp/download.jsp}{transcriptome} as a fasta file. This file contains all 45,474 high-quality EST's.
+
+\textbf{How have those \emph{non-redundant EST's} been created?}\\
+\citealt{Kang2004} is not very explicit about this. What is said is, that non-normalized cDNA libraries were created from several organs and the whole body. I assume that 3 prime ends of mRNA's were reverse transcribed. They were then cloned and Sanger sequenced. 45,474 high-quality EST's were then clustered into \textbf{12,161} so-called "unigenes" by a single-linkage clustering method \cite{Burke1999}. 
+\begin{quote}
+Two ESTs with >90\% identity over >100-bp length were grouped into the same cluster.
+\end{quote}
+Consensus sequences from these clusters were build with \textsc{Phrap}.
+
+\textbf{Have the EST cluster consensus sequences ("unigenes") been screened for repetitive, vector and mitochondrial sequences?}\\
+Partly. \citep{Ma2006} describe that \textsc{cross\_match} was used to remove vector sequences and poly-A tails. They also say that "mitochondrial RNAs, rRNAs, and E. coli contaminations were eliminated from the final assemblies." A screen for anonymous repetitive sequences was not performed.
+
+I downloaded the file \texttt{Locust.Unigene.zip} from the LocustaDB, which contains the contigs (syn. unigenes) from the authors \texttt{Phrap} assembly of EST's \citep{Ma2006, Kang2004}. This fasta file splits the sequences every 60 nt by a return character.
+Stuart told me that this kind of format cannot be used by samtools. So I removed the return characters in the sequences with the following Perl command line:
+
+%Verbatim is a more flexible verbatim environment from the package 'fancyvrb'
+\begin{Verbatim}
+$ zcat Locust.Unigene.zip | \
+perl -e '$_ = <>; print; while(<>){
+while(!/^>/){chomp; $seq .= $_; exit unless $_ = <>;} 
+print "$seq\n"; print; $seq = "";}' 
+| gzip > Locust.Unigene.one_line_fa.zip
+\end{Verbatim}
+
+However, it turns out that at least the recent version of \texttt{samtools} is capable of reading fasta sequences broken over several lines.
+
+\subsection{Mapping of MiSeq data against the \textit{Locusta} transcriptome}
+
+I am using the MiSeq data, which only contains single end reads, since the paired-end read sequencing failed. I am using the same sequence files as used for the third run of \texttt{stacks} (see section 34. in sRAD\_Analysis.pdf). Those reads have been filtered for adapter sequences with my custom script \texttt{remove\_adapter\_reads.pl} and split by barcode with my custom script \texttt{split\_by\_barcode.pl}, but not screened with \texttt{process\_radtags}. So reads without the correct remainder of the restriction site (i. e. non-RAD tags) as well low quality reads including reads with uncalled bases are still in those input files. I created symbolic links to those files.
+
+I am using \texttt{stampy} but without \texttt{bwa} as pre-mapper, since I am trying to map divergent \textit{Chorthippus} reads to a \textit{Locusta} transcriptome. The MiSeq sequences come with Sanger quality scores, Phred+33 (see sRAD\_Analysis.pdf, fig. 17). I checked this with command \ref{qual_format}:
+\begin{command}
+\captionsetup{type=command} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
+\begin{Verbatim}
+$ gawk '(NR%4)==0' AgeI_ery_30-12.fq | \
+head -n 10000 | \
+perl -ne 'chomp; $c = $_ =~ tr[!-I][!-I]; print $. unless $c==length($_);'
+\end{Verbatim}
+\caption{This checks whether quality scores are in Phred+33 ASCI format}
+\label{qual_format}
+\end{command}
+\\
+\ldots which produced no output. Important information about the usage of stampy are in in its README file ( \texttt{/usr/local/lib/stampy-1.0.17/README.txt} ). \texttt{stampy} can take fasta files with sequences broken over several lines as input. 
+
+The whole assembled (unigene) \textbf{transcriptome is 7,291,007 base pairs long}:
+\begin{Verbatim}
+$ grep -v "^>" Locust.Unigene.seq | \
+perl -ne 'chomp; $c += length($_); END{ print $c, "\n";}'
+\end{Verbatim}
+\ldots so it's a small reference compared to a whole human genome.
+\texttt{stampy} allows mapping of divergent reads. The stampy Readme file says:
+\begin{quote}
+for divergent references (3\% or more) BWA cannot map
+the majority of reads, and hybrid mapping is switched off
+automatically.
+\end{quote}
+\ldots so I am going to run \texttt{stampy} without \texttt{bwa} as pre-mapper.
+It would be good to get an a priori estimate of the average divergence between \textit{Locusta} and \textit{Chorthippus}. This is also required for correct mapping quality scores:
+\begin{quote}
+To calculate correct mapping qualities, Stampy needs to know the
+expected divergence from the reference.
+\end{quote}
+\ldots from section 6 in the stampy Readme file. So it would be good to get an estimate of the expected divergence among expressed sequences between the two species. 
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{A divergence estimate for \textit{Chorthippus} towards the transcriptome of \textit{Locusta}}
+%%%%%%%%%%%%%%%%%%%%%
+
+I found \cite{Liu2008a}. This paper takes 12S and 16S ribosomal DNA sequences (both mitochondrial) to infer a phylogenetic tree for the family \textit{Acrididae}. Mitochondrial DNA has a higher substitution rate than nuclear (especially coding) DNA. They state that the average sequence divergence between two species in their tree was 11.3\%. Their representative species of the genus \textit{Chorthippus} is \textit{C. albonemus}, which in their phylogenetic trees seems to be very distantly related to \textit{Locusta migratoria}. So this study cannot give me a good indication of the nuclear and coding sequence divergence between the two species. Instead I downloaded 114 of Jamie's \textit{Chorthippus} cDNA sequences from genbank with the search term\\
+\verb!"Chorthippus"[Organism]! \\
+I am trying to search for homologous \textit{Locusta} sequences with \texttt{tblastx}. A manual on how to run command-line \texttt{ncbi-blast+} can be found at: \url{http://www.ncbi.nlm.nih.gov/books/NBK1762}. I created a masked blast database from the \textit{Locusta} unigene sequences using \texttt{windowmasker} for over-represented sequences and \texttt{dustmasker} for low-complexity sequences. 
+\texttt{dustmasker} masks 188,078 bases in the Locust.Unigene database, \texttt{windowmasker} masks 775,789 bases. I used the following command line to count masked bases in the database sequences:
+\begin{Verbatim}
+$ blastdbcmd -db Windowmasked_Unigene_Locusta -entry all \
+-outfmt %s -mask_sequence_with 30 | \
+perl -lne'$c += $_ =~ tr[gatcn][gatcn]; END{print $c;}'
+\end{Verbatim}
+\texttt{dustmasker} has the algorithm number 11. Unfortunately, when running blast on the database containing masking info from two different programmes, only one type of masking info can be called. \texttt{Windowmasker}, however, also contains the dust algorithm to maks low-complexity sequences, which can be called with a switch. So I created a database with such masking info coming only from the programme \texttt{windowmasker}. Note, that \texttt{blastdbcmd -db \ldots -info} does not indicate that dustmasking was also applied. When I, however, count the number of masked bases (lowercase) in that database, it's 856,375. This is higher than with just windowmasking for over-represented sequences but less than the sum of bases masked by both dust- and windowmasker together. This is probably due to the fact that over-represented sequences overlap with low-complexity sequences.
+
+When creating the database I first got hundreds of times the following error message:
+\texttt{Error: (803.7) Bad char in VisibleString: 9}. This seems to be caused by tab characters in the headers of the fasta formatted unigene input file \texttt{Locust.Unigene.seq}. After removing these tabs, the error messages disappear.
+
+
+\href{http://www.ncbi.nlm.nih.gov/BLAST/tutorial/Altschul-1.html}{The Statistics of Sequence Similarity Scores}
+
+I want to find homologous \texttt{Locusta} Unigenes for Jamie's \texttt{Chorthippus} cDNA sequences. So I should exclude cDNA sequences from further analysis which get  HSP's with more than one unigene.
+
+I did a \texttt{tblastx} search of Jamie's cDNA sequences against the \texttt{Locusta} unigene database with database softmasking (window- and dustmasker), i. e. the masking takes effect only during the search for initial matches, not during the extension phase. The query sequences (i. e. Jamie's cDNA sequences) have been \texttt{seg}-filtered by default on the fly by \texttt{tblastx} and this masking was hard by default. Only ungapped searches are supported by \texttt{tblastx}. I used an e-value threshold of 0.001 for the blast output. The choice of this cutoff is arbitrary, since I cannot fully interpret the \href{http://www.ncbi.nlm.nih.gov/BLAST/tutorial/Altschul-1.html#head2}{e-values}, that \texttt{blast} produces. The \texttt{tblastx} run took a minute or so. I see a lot of matching stop codons in the alignments of the \texttt{tblastx} output, which indicates that the two species have fairly conserved untranslated cDNA sequences. From the output of blast I extracted all accession numbers of \textit{Chorthippus} cDNA sequences which hit only one \textit{Locusta} unigene (see \texttt{blast.sh}). This was designed to remove paralogous matches. Since the unigenes are generally much longer than the \textit{Chorthippus} cDNA sequences, I allowed more than one \textit{Chorthippus} cDNA to match the one unigene. For instance, the \textit{Locusta} unigenes LMC\_003941 and LMC\_000081 get blast hit twice each by different \textit{Chorthippus} cDNA's\footnote{blast these pairs of Chorthippus cDNA sequences against each other. Maybe they are very similar sequences}. There are 23 such single hit query subject pairs. 
+
+
+I then created a blast database from Jamie's cDNA sequences and extracted those single hit cDNA sequences from this database in fasta format. I did the same for the matching Locusta unigene sequences. With those sequences I tried to make pairwise global alignments in order to count mismatches and gaps in those alignments, which I would take as an estimate of divergence between the \textit{Locusta} and the \textit{Chorthippus} expressed sequences. 
+
+Since these sequences should contain open reading frames, I thought a \emph{translated alignment} could be better at placing gaps. In \texttt{MEGA} I can translate DNA sequences, then do a \texttt{ClustalW} alignment on them and switch back to the aligned DNA sequence. I noticed, however, that \texttt{MEGA} doesn't search for the longest ORF. It just translates in the first reading frame of each sequence. The consequence are translations in the wrong reading frame, which can be seen in the many stop codons that occur in the translated sequences. So I wrote a Perl script, \texttt{translation.pl}, which can take a multi-fasta file and reports the reading frame with the longest uninterrupted protein coding sequence along with the length of the ORF and its protein sequence.  I tried \texttt{MEGA} as well \href{http://www.biomedcentral.com/1471-2105/6/156/}{\texttt{transAlign}}, but had to realise that doing translated alignments is only sensible when the non-coding part of each sequence is very small. That is because a translated alignment will only insert gaps between codons, which back-translate to three gaps on the DNA level. I could not find any programme that can do \emph{partly} translated alignments of cDNA's containing a coding part as well as UTR sequences, although the authors of \href{http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0022594}{MACSE} claim to work on that.
+
+So I returned to DNA alignments. Remembering that blast also outputs \emph{\% Identity}, I used \texttt{blastn} in \texttt{blast2seq} mode in order to get \emph{local} alignments. I wrote a Perl script, \texttt{blast2seq.pl}, which takes a series of fasta files each containing two sequences and executes a \texttt{blastn} search of the second sequence against the first in each file. I ran \texttt{blastn} with "-task blastn" and an e-value threshold of 0.001. I did not change other default parameters, i. e. match score 2, mismatch score -3, gap penalties: Existence: 5, Extension: 2.
+
+Only 19 of the 23 \textit{Chorthippus} cDNA's with single \texttt{tblastx} hits against the \textit{Locusta} unigene sequences get a \texttt{blastn} hit with an e-value below the threshold. One of the 4 cDNA sequences which didn't get a \texttt{blastn} hit has \texttt{gi|375150686} and got a single \texttt{tblastx} HSP with an e-value of 3e-34. This shows the higher sensitivity of \texttt{tblastx} and means that divergence estimates from \texttt{blastn} hits will be more downwardly biased. I obviously have to balance reasonable confidence in the homology of sequence pairs that I am using to estimate divergence (which selects for more similar sequences) with the aim of getting an estimate that is reasonably close to the actual divergence of the two species. If the two species are already very divergent, the estimate will be heavily biased towards too low values. On the other hand, the \textit{Chorthippus} cDNA's are taken from male testes, which could express many genes under strong sexual selection and, hence, be more divergent then the rest of the transcriptome. This could reduce the bias of the divergence estimate.
+
+%<<
+
+
+
+% latex table generated in R 3.0.1 by xtable 1.7-1 package
+% Mon Oct 21 14:53:22 2013
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllrrrr}
+  \hline
+ & Chorthippus\_ID & Locusta\_ID & evalue & perc\_ident & aln\_len & nu\_gaps \\ 
+  \hline
+1 & gi$|$283548988$|$gb$|$FM957016.1$|$FM957016 & lcl$|$LMS\_004533 & 3.00e-13 & 71.43 & 112 &   0 \\ 
+  2 & gi$|$283548993$|$gb$|$FM957021.1$|$FM957021 & lcl$|$LMC\_004005 & 3.00e-37 & 76.22 & 185 &   2 \\ 
+  3 & gi$|$283549006$|$gb$|$FM957034.1$|$FM957034 & lcl$|$LMC\_003935 & 5.00e-96 & 91.49 & 235 &   0 \\ 
+  4 & gi$|$283549022$|$gb$|$FM957050.1$|$FM957050 & lcl$|$LMS\_007562 & 2.00e-31 & 87.37 &  95 &   0 \\ 
+  5 & gi$|$283549037$|$gb$|$FM957055.1$|$FM957055 & lcl$|$LMS\_002733 & 2.00e-75 & 99.33 & 150 &   0 \\ 
+  6 & gi$|$283549039$|$gb$|$FM957058.1$|$FM957058 & lcl$|$LMS\_005117 & 8.00e-27 & 75.76 & 165 &   5 \\ 
+  7 & gi$|$283549050$|$gb$|$FM957078.1$|$FM957078 & lcl$|$LMC\_004506 & 2.00e-43 & 84.56 & 149 &   3 \\ 
+  8 & gi$|$375150676$|$gb$|$JK743821.1$|$JK743821 & lcl$|$LMC\_003174 & 2.00e-111 & 88.37 & 301 &   1 \\ 
+  9 & gi$|$375150681$|$gb$|$JK743826.1$|$JK743826 & lcl$|$LMS\_005414 & 1.00e-165 & 92.67 & 382 &   0 \\ 
+  10 & gi$|$375150683$|$gb$|$JK743828.1$|$JK743828 & lcl$|$LMC\_001052 & 2.00e-144 & 90.30 & 361 &   1 \\ 
+  11 & gi$|$375150684$|$gb$|$JK743829.1$|$JK743829 & lcl$|$LMS\_003042 & 1.00e-67 & 87.03 & 185 &   0 \\ 
+  12 & gi$|$375150685$|$gb$|$JK743830.1$|$JK743830 & lcl$|$LMC\_003941 & 4.00e-164 & 92.61 & 379 &   0 \\ 
+  13 & gi$|$375150700$|$gb$|$JK743845.1$|$JK743845 & lcl$|$LMC\_002078 & 1.00e-80 & 93.12 & 189 &   0 \\ 
+  14 & gi$|$375150704$|$gb$|$JK743849.1$|$JK743849 & lcl$|$LMC\_004329 & 1.00e-52 & 90.98 & 133 &   0 \\ 
+  15 & gi$|$375150706$|$gb$|$JK743851.1$|$JK743851 & lcl$|$LMC\_001990 & 2.00e-138 & 88.41 & 371 &   0 \\ 
+  16 & gi$|$375150712$|$gb$|$JK743857.1$|$JK743857 & lcl$|$LMC\_001825 & 5.00e-98 & 94.62 & 223 &   3 \\ 
+  17 & gi$|$375150714$|$gb$|$JK743859.1$|$JK743859 & lcl$|$LMC\_003941 & 4.00e-151 & 86.84 & 433 &   3 \\ 
+  18 & gi$|$375150718$|$gb$|$JK743863.1$|$JK743863 & lcl$|$LMC\_000081 & 1.00e-111 & 91.88 & 271 &   1 \\ 
+  19 & gi$|$375150718$|$gb$|$JK743863.1$|$JK743863 & lcl$|$LMC\_000081 & 2.00e-96 & 86.16 & 289 &   2 \\ 
+  21 & gi$|$375150721$|$gb$|$JK743866.1$|$JK743866 & lcl$|$LMC\_000081 & 6.00e-24 & 86.67 &  75 &   0 \\ 
+   \hline
+\end{tabular}
+\caption{Tabular output from the 20 non-redundant pairwise \texttt{blastn} HSP's using the query-subject pairs of the 23 successful \texttt{tblastx} hits.} 
+\label{pident}
+\end{table}
+
+
+
+\begin{figure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=.4\linewidth]{figure/pident_fig1} 
+\includegraphics[width=.4\linewidth]{figure/pident_fig2} 
+
+}
+
+
+
+\end{knitrout}
+
+\caption{The distribution of percent identity in the alignments of the 20 non-redundant HSP's from a default \texttt{blastn} run on the 23 query-subject pairs which resulted from the \texttt{tblastx} run (see text above).}
+\end{figure}
+%>>
+
+In the folder \texttt{blast2seq\_out} I created a table called \texttt{pident.table} (see tab. \ref{pident}), which contains info about the 21 HSP's from the 23 pairwise \texttt{blastn} runs that got e-values below 0.001. Taking the average of the percent identity column of this table returns 88, meaning \textbf{my estimate of the divergence between \textit{Chorthippus} and \textit{Locusta} should be 13\%}. This divergence estimate only refers to nucleotide mismatches, not indels. Within the almost 5,000 base pairs of pairwise blast alignments, there are 23 gaps. So, there should be at least one indel (of rather small size) about every 200 bp.
+
+The mean percent identity is 88, with a 95\% CI of (75, 101), see table \ref{blastn:comp}. The scoring scheme of the \texttt{blastn} run I did with default parameters was 2 for a match and -3 for a mismatch. Using a perl script from the Blast book \citep{Korf2003}, \texttt{example4-1.pl}, I get a target percent identity of 88.7 for this. Table \ref{blastn:comp} compares the parameters and results of two more \texttt{blastn} runs I did on the 23 \texttt{tblastx} pairs. A scoring scheme of 1, -3 looks for short alignments with almost identical sequences. The scoring scheme of 1, -1 looks for more distant matches and requires slightly longer alignments. The first (default) and the third scoring scheme do not get significant hits for the same query-subject pairs, the second scoring scheme (1, -3) misses one more pair in addition to the same pairs missed by the other \texttt{blastn} runs. Despite their very different \textsf{target \% identities}, the three \texttt{blastn} runs result in fairly similar estimates of \% identity. The second scoring scheme seems to be too stringent, so the estimate of $\sim$12--13\% divergence between the \textit{Locusta} and \textit{Chorthippus} transcriptomes seems to be robust to the match-mismatch scoring scheme used in the \texttt{blastn} runs.
+
+There are more sophisticated methods for finding orthologous sequences from different species, which I didn't explore here. This Biostar forum thread gives a lot of information of what can be done: \url{http://www.biostars.org/p/7568/}.
+
+%<<
+
+
+
+\begin{figure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=.49\linewidth]{figure/pident_2_fig1} 
+\includegraphics[width=.49\linewidth]{figure/pident_2_fig2} 
+
+}
+
+
+
+\end{knitrout}
+
+\caption{Distribution of \% identity from \texttt{blastn} HSP's using a match: 1, mismatch: -3 scoring scheme.}
+\end{figure}
+%>>
+
+%<<
+
+
+
+\begin{figure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=.49\linewidth]{figure/pident_3_fig1} 
+\includegraphics[width=.49\linewidth]{figure/pident_3_fig2} 
+
+}
+
+
+
+\end{knitrout}
+
+\caption{Distribution of \% identity from \texttt{blastn} HSP's using a match: 1, mismatch: -1 scoring scheme.}
+\end{figure}
+%>>
+
+%>> Table to compare blastn runs
+\begin{table}
+\caption{Comparing \texttt{blastn} runs. The \textsf{target \% identity} for each scoring scheme was determined with the \texttt{example4-1.pl} Perl script of the Blast book \citep{Korf2003}.}
+\centering
+%\scriptsize
+%\makebox[\textwidth][c]{ % with the makebox command one can center table or figure environments on the textwidth
+\begin{tabulary}{\textwidth}{ccccc} % the tabulary package with its environment tries to determine the optimal spacing of columns, which can be convenient
+\toprule
+\multirow{2}{*}{\textbf{match score}} & \multirow{2}{*}{\textbf{mismatch score}} & \multirow{2}{*}{\textbf{target \% identity}} & \multirow{2}{*}{\textbf{mean observed}} & \multirow{2}{*}{\textbf{95\% CI}} \\[7pt]
+&&& \textbf{\% identity} & \textbf{of \% identity} \\[5pt]
+\midrule
+2 & -3 & 88.7 & 88 & 75, 101 \\[5pt]
+1 & -3 & 98.8 & 91 & 83, 99 \\[5pt]
+1 & -1 & 75 & 87 & 73, 102 \\
+\bottomrule
+\end{tabulary}
+%}
+\label{blastn:comp}
+\end{table}
+%>>
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mapping of MiSeq data against \textit{Locusta} transcriptome \ldots continued}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+The mapping of the "AgeI\_ery\_30-12" MiSeq reads against the Locusta unigene sequences toke 50 mins. Of the 1,226,498 AgeI\_ery\_30-12 reads 34,927 mapped with a flag of 0 (successful mapping on forward strand) and 34,911 mapped with flag 16 (successful mapping as reverse complement). \texttt{stampy} outputs those read sequences with flag 16 as reverse complement. Only about 5\% of input reads map successfully. The \texttt{stampy} mapping log file also contains the number of nucleotides that got mapped successfully, $(34,927 + 34,911) \times 96$, and the number and proportion of them that differ from the reference. \textbf{21\% of mapped nucleotides differ from the reference!}. This is a very high divergence. The posterior mapping quality scores (in the 5th column of the sam file) are relatively low, maximum of 14. Maybe that is because the actual divergence is much higher than the divergence of 0.13 that I gave \texttt{stampy} with the "--substitutionrate" switch.
+
+The "UQ" in the \texttt{stampy} sam output file reports the read likelihood, which is the sum of phred base call qualities on mismatching sites. Note that the CIGAR string in the 6th column is not reporting matches or mismatches. \texttt{stampy} also outputs an \href{http://samtools.sourceforge.net/SAMv1.pdf}{NM} tag which gives the number of mismatches of the read to the reference. The number of mismatches are generally high, mostly between 15 and 40.
+
+With a mapping quality score greater than 0, there are 520 \textit{Locusta} unigenes which get reads mapped to by AgeI\_ery\_30-12 and 370 unigenes with reads mapped from AgeI\_par\_34-20. 
+
+\begin{Verbatim}
+$ samtools view -F 4 AgeI_ery_30-12_sorted.bam | awk '$5>0' | cut -f3 | sort | uniq | wc -l
+\end{Verbatim}
+
+259 unigenes get reads mapped from both individuals:
+
+\begin{Verbatim}
+$ grep -cf unigenes_with_hits_from_AgeI_par_34-20 unigenes_with_hits_from_AgeI_ery_30-12
+\end{Verbatim}
+
+There are 631 Locusta unigenes which get hit by either of the two individuals.
+\begin{Verbatim}
+$ cat unigenes_with_hits_from_AgeI_ery_30-12 unigenes_with_hits_from_AgeI_par_34-20 \
+| sort | uniq > unigenes_hit_by_either_AgeI_ind
+\end{Verbatim}
+
+Using \texttt{samtools faidx} to create an index file for the fasta file containing all Locusta unigenes (i. e. the complete reference), I can use the same samtools command to extract individual fasta sequences from the reference file by sequence name (ID). In order to extract all Locusta unigene sequences which got hits (with mapping score > 0) by either of the two individuals, I ran the following command:
+\begin{Verbatim}
+$ perl -ne'system("samtools faidx Locust.Unigene_short_head.fa $_") == 0 or die $!' \
+unigenes_hit_by_either_AgeI_ind \
+>> unigenes_hit_by_either_AgeI_ind.fa
+\end{Verbatim}
+
+I have tried to browse the alignments with \texttt{samtools tview} and \texttt{tablet}. Both without success. I think this is either a bug in both programmes or the programmes are not designed to browse alignments on hundreds of reference contigs. Other people have reported the same problem on the samtools mailing list and on seqanswers, but did not get helpful answers. Fortunately, \href{http://www.broadinstitute.org/software/igv/home}{IGV} does work without any problem with my .bam files.
+
+I want to get .bam files for each individual which
+\begin{itemize}
+\item only contain mapped reads 
+\item with a mapping quality above 0
+\item sorted by the unigene they hit
+\item sorted by mapping location 
+\item then by read sequence
+\end{itemize}
+
+\begin{Verbatim}
+$ samtools view -F4 AgeI_ery_30-12_sorted.bam | awk '$5>0' | \
+sort -k3,3 -k4,4n -k10,10 > test/AgeI_ery_30-12.test.sam
+\end{Verbatim}
+This skips all unmapped reads and reads with a mapping quality of 0, then sorts by unigene name, then by mapping position, then by read sequence. The resulting .sam file has no header.
+
+\begin{Verbatim}
+$ cat -S *sam | cut -f3 | uniq | tr '\n' '|' | sed 's/|$//' > pattern
+\end{Verbatim}
+With this command I am taking the unigene names that got hits by AgeI\_ery\_30-12 and create a regular expression pattern out of them.
+
+\begin{Verbatim}
+$ perl -ne'BEGIN{$p=`cat pattern`; chomp $p;} if(/^\@SQ/){print if /$p/o;}else{print}' header \
+> header_reduced
+\end{Verbatim}
+With this command I am first reading in the pattern. Then I am going over each line in the header file taken from the original .bam containing all 12,641 unigene names in the header. Lines starting with "@SQ" contain the unigene names (usually chromosome or contig names). They are only printed out if they contain a unigene name that got hit by AgeI\_ery\_30-12. I also have to sort the unigene names in the header, which I do with the following command:
+\begin{Verbatim}
+$ tr ':' '\t' < header_reduced_without_HD_PG_CO \
+| sort -k 3,3 | sed 's/N\t/N:/g' \
+> header_reduced_without_HD_PG_CO_sorted
+\end{Verbatim}
+This takes the new header file which only contains names of unigene which got hit and I also removed the first three lines, which contain additional info. The transliterate command turns a colon into a tab character, so that unigene names are in their own column (this is probably not necessary, but better be safe). I then sort the file by the unigene names and revert it back into the old format. Putting it all back together again:
+\begin{Verbatim}
+$ cat HD_PG_CO header_reduced_without_HD_PG_CO_sorted AgeI_ery_30-12.test.sam \
+> AgeI_ery_30-12_sorted.sam
+$ samtools view -bS AgeI_ery_30-12_sorted.sam > AgeI_ery_30-12_sorted.bam
+$ samtools index AgeI_ery_30-12_sorted.bam
+\end{Verbatim}
+
+6.9\% of all EagI\_ery\_30-12 and 7\% of all EagI\_par\_34-20 reads map to the Locusta transcriptome. With a mapping quality of above 0, there are 352 Locusta unigenes that get hit by EagI\_par\_34-20  and 462 that get hit by EagI\_ery\_30-12 reads. There are 212 Locusta unigenes that get hit by both EagI individuals with a mapping quality of above 0.
+\begin{Verbatim}
+$ cat unigenes_hit_by_EagI_ery_30-12 unigenes_hit_by_EagI_par_34-20 | sort | uniq | wc -l
+\end{Verbatim}
+There are 602 unigenes that got hit by either EagI individual. I order to produce a reduced reference sequence, which only contains unigene sequences which got hit by either EagI individual, I used the \texttt{samtools faidx} command.
+\begin{command}
+\captionsetup{type=command}
+\begin{Verbatim}
+$ perl -ne'system("samtools faidx Locust.Unigene_short_head.fa $_") == 0 or die $!' \
+unigenes_hit_by_either_EagI_ind \
+>> unigenes_hit_by_either_EagI_ind.fa
+\end{Verbatim}
+\caption{Example of a command line that extracts fasta sequences from an indexed multi-fasta file using a file listing fasta headers.}
+\label{reduced_reference}
+\end{command}
+I then load this reduced reference sequence into IGV together with the sorted and indexed .bam file of each individual.
+
+The first thing that is conspicuous is how rarely mapped reads from both sides of the SbfI restriction site can be found. However, with a double-digest library this is expected! In fact, in order to get reads from both sides of the restriction site, there would need to be an AgeI (or EagI, depending on the library) restriction site within a few hundred base pairs on either side of the SbfI restriction site. There are, however, several cases where reads map to both sides of an SbfI restriction site (tab. \ref{both_sides_tab} and fig. \ref{both_sides_fig}). PCR primers could be designed for them in order to test complete digestion with SbfI via qPCR. The PCR products would only be around 180bp long. The first RAD library I sequenced was a standard RAD library. With this library there should be many SbfI restriction sites where reads from both sides get mapped and possibly also their paired-end reads, allowing for longer PCR products. 
+
+\begin{table}[b]
+\centering
+\caption{a non-complete list of Locusta unigenes to which SbfI-AgeI RAD reads map to both sides of the SbfI site.}
+\begin{tabular}{c}
+\toprule
+unigene names\\
+\midrule
+LMC\_000661\\
+LMS\_004974\\
+LMS\_007593\\
+LMS\_005092\\
+LMS\_001256\\
+LMS\_001110\\
+\bottomrule
+\end{tabular}
+\label{both_sides_tab}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LMS_001256}
+\caption{Alignment of SbfI-AgeI reads to the Locusta unigene LMS\_001256 viewed in \texttt{IGV}. The left half shows alignments of reads to both sides of an SbfI restriction site.}
+\label{both_sides_fig}
+\end{figure}
+
+The alignments of both MiSeq libraries are generally wild and often very divergent reads get mapped to the same location in the reference (fig. \ref{igv_LMC_003278}). 
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LMC_003278}
+\caption{Alignments of SbfI-AgeI reads to the Locusta unigene LMC\_003278. Most alignments also show, among well aligned reads, very divergent \textit{Chorthippus} reads aligned to overlapping positions.}
+\label{igv_LMC_003278}
+\end{figure}
+
+I don't think it is worth spending time on trying to call SNP's with these alignments, although rare exceptions do exist (fig. \ref{igv_LMC_001848}). Given the small percentage of reads that map, I also don't deem it worth only using those successfully mapping reads as input for a de-novo assembly. Even if the reference contigs from such an assembly were more reliable than those created from all RAD reads (because expressed sequences supposedly are less repetitive), they would provide a reference for less than 10\% of reads. 
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LMC_001848}
+\caption{Clear A/G SNP in SbfI-EagI RAD tag between the individual ery\_30-12 and par\_34-20 at unigene LMC\_001848}
+\label{igv_LMC_001848}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LMC_001472}
+\caption{An SbfI-EagI RAD tag hitting Locusta unigene LMC\_001472 shows 4 divergent SNP's between the ery\_30-12  and the par\_34-20 individual. One SNP is concealed in the alignment due to the placement of a 2 base pair insertion at different positions in the two individuals.}
+\label{igv_LMC_001472}
+\end{figure}
+
+A \texttt{Muscle} alignment in clustalw output format of SbfI-EagI reads hitting Locusta unigene LMC\_001472 is shown in fig. \ref{muscle_LMC_001472}. Both individuals show a 2 base pair insertion with respect to the \textit{Locusta} reference, which stampy had placed at different positions in the two individuals.
+
+\begin{figure}
+\centering
+\begin{Verbatim}
+ery_30-12               CCATCACCAAGTGGGGGCAGACGCCGCTAGACATCGCCAGGGGCAACAACCAACAGCAGC
+par_34-20               CCATCACCAAGTGGGGGCAGACGCCGCTAGACATCGCCAGGGGGAACAACCAGCAGCAGC
+                        ******************************************* ******** *******
+
+ery_30-12               TGGTAGACCTGCTGACGAGAACCCAGCAGTCCTGCA
+par_34-20               TGGTGGACCTGCTGACGAGAGCCCAGCAGTCCTGCA
+                        **** *************** ***************
+\end{Verbatim}
+\caption{Alignment of the consensus sequences of the two individuals at locus LMC\_001472 (see fig. \ref{igv_LMC_001472}) revealing a hidden SNP due to different placement of an insertion in the two alignments. Multiple sequence alignment of the reads of both individuals would place the gap consistently and reveal all 4 SNP's. It is possible that the \texttt{samtools mpileup} command could deal with this.}
+\label{muscle_LMC_001472}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Amy's highly significant locus \texttt{4C-A12}}
+\label{4C-A12}
+%%%%%%%%%%%%%%%%%%%%%%%
+Note, 4C-A12 is not the only locus showing strong expression differences and SNP differences between the two subspecies.
+
+4C-A12 matches a single Locusta unigene, LMS\_002733, in a default \texttt{tblastx} with an e-value of 3e-29. However, these local alignments are not from translations within the reading frames of the longest ORF's that can be found in both sequences. They are most likely based on non-coding DNA sequence conservation. This \textit{Locusta} EST cluster is 686bp long. Its longest ORF is 86 aa long and on the 6th reading frame (from the output of \texttt{translation.pl} on  \texttt{Locusta\_single\_hit.fasta}). If this was a real ORF, then 62\% of that transcript would be UTR, which I think is unusual at least. The translations of the longest ORF's of each sequence do not show any similarity.
+
+Ms Badisco and Mr Vanden Broek have kindly sent me the \texttt{Phrap} assembled \textit{Schistocerca} transcriptome and \texttt{Blast2GO} annotation of it. The assembled transcriptome is in the file called \texttt{LC\_unique.seq}, which contains 12,709 sequences and is 10,849,701 bp long in total. I created a window- and dust masked blast database from this file and used \texttt{blastn} to query this database with the 4C-A12 sequence from \textit{Chorthippus}. I get one highly significant HSP with a \textit{Schistocerca} sequence that doesn't seem to have been clustered: LC03019B1F08.f1. This Schisto EST is 772 bp long and in lower case in the LC\_unique.seq file, indicating that a filtering programme has found this to be a repetitive sequence. Window- and Dustmasker mask only part of that sequence. \cite{Badisco2011} used \href{http://www.repeatmasker.org/}{RepeatMasker} to mask EST's before the assembly.
+
+I used \href{http://www.girinst.org/censor/index.php}{\textsf{RepBase}}'s web search interface (see fig \ref{censor}) to search the repeat database with the 4C-A12 from \textit{Chorthippus} and the two homolog sequences from \textit{Locusta} and \textit{Schistocerca}. The \textit{Chorthippus} sequence does not get a hit, but the the two other sequences do:
+\begin{itemize}
+\item the \textit{Locusta} sequence hits a DNA transposon from \textit{Drosophila ficusphila} with an alignment length of 81 bp
+\item the \textit{Schistocerca} sequence hits a 35 bp fragment of a DNA transposon from \textit{Acyrthosiphon pisum}
+\end{itemize}
+So there is tentative support for an annotation of 4C-A12 as a highly derived DNA transposon or rather a relict of it, given that the only short alignments are outside of ORF's for transposase. I have saved the \texttt{CENSOR} output as well alignment files on huluvu in \texttt{/data/claudius/Read\_mapping/4C-A12} .
+
+\begin{figure}
+\includegraphics[width=.9\textwidth]{./figure/CENSOR}
+\caption{The web interface to the RepBase.}
+\label{censor}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%
+\subsection{\textit{Schistocerca}}
+%%%%%%%%%%%%%%%%%
+
+This only contains Poly(A)-transcripts, from the central nervous system \citep{Badisco2011}. The cDNA was normalised (Evrogen) before Sanger sequencing. Repeat and low complexity sequences were identified and masked by using \textsf{RepeatMasker}. E. coli, vector, mitochondrial, ribosomal and viral DNA was detected with \textsf{blastn} and removed. Ds cDNA was size selected for fragments longer than 600 bp. Assembly of sequences into contigs was performed by using the \texttt{Phrap} software package. When transcripts were represented by only one sequence, the EST was referred to as a 'singleton'.
+
+I downloaded all 34,672 raw \textit{Schistocerca} EST's from \href{http://www.ncbi.nlm.nih.gov/nucest}{Genbank}, using the following search details:
+\verb! ("Schistocerca"[Organism] OR schistocerca[All Fields]) AND "Schistocerca gregaria"[porgn] ! \\
+
+I downloaded all sequences using the \textsf{Send to} button at the online interface to the Genbank EST database (fig. \ref{SendTo}).
+However, I also have the \texttt{Phrap} assembled Schistocerca transcriptome from Badisco and vanden Broek (see section \ref{4C-A12}).
+
+\begin{figure}
+\centering
+\includegraphics[width=.8\textwidth]{./figure/Schistocerca-EST-download}
+\caption{Via "Send To > File", all 34,673 sequences can be downloaded.}
+\label{SendTo}
+\end{figure}
+
+I used the \textit{Schisto} Phrap assembled transciptome as a reference for stampy mapping specifying again a substitution rate of 0.13. The stampy log files report again that 20\% of mapped nucleotides differ from the reference for both double digest libraries. The \textit{Schisto} transcriptome contains 12,709 contigs.
+
+I created sorted bam files that only contain mapped reads with a mapping quality of > 0 (i. e. unambiguous mapping position) with the following command line:
+\begin{command}
+\captionsetup{type=command}
+\caption{Example of a command that extracts mapped reads with mapping quality above 0 and creates a position sorted .bam file.}
+\begin{Verbatim}
+$ samtools view -hSF4 AgeI_ery_30-12.sam.gz | \
+awk '{if(/^\@/){print}else{if($5>0){print}}}' | samtools view -uhS - | \
+samtools sort - AgeI_ery_30-12_sorted
+\end{Verbatim}
+\label{filter_good_reads}
+\end{command}
+
+\begin{table}
+\centering
+\caption{Proportion of successfully mapped reads against the \textit{Schistocerca} transcriptome with mapping quality > 0.}
+\begin{tabular}{lr@{.}lccc}
+\toprule
+individual & \multicolumn{2}{c}{mapped reads}  & \# of contigs hit & contigs hit by both ind. & contigs hit by either ind.\\
+\midrule
+AgeI\_ery\_30-12 & \qquad 10&6\% & 723 & \multirow{2}*{326} & \multirow{2}*{864}\\
+AgeI\_par\_34-20 & 11&0\% & 503\\
+\midrule
+EagI\_ery\_30-12 & 12&1\% & 604 & \multirow{2}*{316} & \multirow{2}*{753}\\
+EagI\_par\_34-20 & 12&2\% & 465\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LC01050A1C05}
+\caption{At the \textit{Schistocerca} contig LC01050A1C05.f1 the AgeI\_par\_34-20 individual (bottom) is heterozygous for two SNP's. The two haplotypes in this individual have read count proportions 44\% and 56\% with a total read count of 39.}
+\label{igv_LC01050A1C05.f1}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LC01030A1G01}
+\caption{At the \textit{Schistocerca} contig LC01030A1G01, AgeI\_ery\_30-12 (top) has almost even coverage for its two haplotypes (55\% to 45\%) at a total read count of 47. In contrast, AgeI\_par\_34-20 (bottom) has coverage 18\% to 82\% for its two haplotypes at a total read count of 39.}
+\label{}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mapping of MiSeq reads against the \textit{Timema} reference genome}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+I have mapped the MiSeq reads against the \textit{Timema} genome reference called \emph{allpaths-assem-11nov12.lg}  kindly provided by Victor. Excluding N's used to separate contigs within scaffolds, the \textit{Timema} reference is 843,259,983 bases long.
+
+I have given \texttt{stampy} an expected substitution rate of 20\% this time. The parallel mapping of the 4 MiSeq files took 1 hour and 22 minutes. \texttt{stampy} reports that between 22\% and 26\% of mapped nucleotides differ from the reference. The mapping quality scores range only from 0 to 4. I don't understand why they are so low. Maybe this is due to the much bigger reference sequence as compared to the transcriptomes, which allows for more alternative mapping positions.
+
+I created sorted bam files only containing mapped reads with a quality score above 0 slightly differently as before: using the "-q" switch of the \texttt{samtools view} command to filter out reads mapped with ambiguous position instead of using an \texttt{awk} command for this. That change allowed me to parallelise this task:
+\begin{Verbatim}[fontsize=\scriptsize]
+$ ls *sam.gz | parallel 'samtools view -hSF4 -q1 {} | samtools view -uhS - | samtools sort - {.}_sorted' &
+\end{Verbatim}
+Only between 1,274 and 6,700 \textit{Chorthippus} reads get mapped to the \textit{Timema} reference, i. e. $\le$ 0.5\% of all input reads.
+
+In figure \ref{igv_lgNA_ordNA_scaf6182} the individual AgeI\_ery\_30-12 has reads mapped to both sides of the SbfI restriction site. While one side got more than 100 reads the other got only two. The other individual AgeI\_par\_34-20 did not get any reads from this locus. I think this pattern cannot be explained simply by random uneven coverage. Polymorphisms in the SbfI and/or AgeI restriction sites could explain this. However, this seems quite unlikely given the relatively low divergence towards the \textit{Timema} reference indicating a rather low substitution rate at this locus.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_lgNA_ordNA_scaf6182}
+\caption{Example of reads mapped to \textit{Timema} scaffold lgNA\_ordNA\_scaf6182 at position 2,417-2,645. }
+\label{igv_lgNA_ordNA_scaf6182}
+\end{figure}
+
+In figure \ref{igv_lg4_ord135_scaf170} the upper individual gets 166 reads, the lower 73. The upper individual got about twice as many reads in total from the sequencing run as the lower individual. So this can explain the difference in coverage at this locus. Also, the heterozygous SNP in the upper individual has allele coverage 45\% to 55\%. Taken together with observations from alignments to the transcriptomes, this indicates to me that  PCR drift generally has not caused uneven allele coverage and, hence, if strong allele bias is observed, other causes must be assumed, e. g. alignment of paralogous sequences together with allele-drop-out (due to polymorphism in the restriction site) at one of the two copies.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_lg4_ord135_scaf170}
+\caption{Example of reads mapped to \textit{Timema} scaffold lg4\_ord135\_scaf170 at position 376,852. See text for explanation.}
+\label{igv_lg4_ord135_scaf170}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mapping of the "Big Data" standard RAD paired reads}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+I first try to map the \texttt{process\_radtags} purified reads from one individual of each subspecies against the \textit{Schistocerca} reference. I am using the reads from \texttt{ery\_30-12} (1,227,495) and \texttt{par\_34-10} (975,810). These reads still contain adapter sequences, but the adapter contamination in these reads is much lower than in the libraries sequenced on MiSeq (on the order of 0.1-0.2\%, see command \ref{adapter_fuzzy_grep}). In contrast to de novo assemblies (see Kang-Wook's adapter screening script), reads into adapter should not interfere with independent mapping of reads. Reads into adapters will simply not map or with many mismatches. If they do map, they might interfere with SNP calling, though.
+
+\begin{command}
+\captionsetup{type=command} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
+\begin{Verbatim}
+$ zcat ery_30-10.fq_1.gz | awk '(NR-2)%4==0' | tre-agrep -1 AGATCGGAAG | wc -l
+\end{Verbatim}
+\caption{Searching reads for the first 10 bp's of adapter sequence with 1 bp fuzzy matching}
+\label{adapter_fuzzy_grep}
+\end{command}
+
+I used command \ref{qual_format} to check whether the reads in the Big Data set came with Phred+33 formatted quality strings. They did not. All reads in the Big Data set (4 GAIIx lanes) came with Phred+64 formatted quality strings. So, a base call quality score of 0 is encoded by "@". The single-end reads are 46 bp long (after removal of barcode sequence) and the paired-end reads are 51 bp long. The running time logging didn't work this time, but \texttt{stampy} took more than one hour to finish mapping the reads of both individuals. I ran \texttt{stampy} with a substitution rate of 13\% again and I specified a mean insert size of 400 bp and an insert size standard deviation of 100 bp. \texttt{stampy}'s estimate of the mean insert size is $\sim$100 bp only for both individuals with a standard deviation of only 34 bp, which for both individuals is based on $\sim$300,000 read pairs (see stampy log files). However, according to the reported SAM flags, there are only 47,240 read pairs from individual \texttt{ery\_30-12} where both reads got mapped, even if in improper pairs. The README file of \texttt{stampy} explains some of its output (section 10.2 SAM output format):
+\begin{quote}
+The "proper pair" flag bit (value 2) is set if two reads are correctly oriented, and their separation is within 5 standard deviations from the mean.
+\end{quote}
+So, it is not clear which read pairs \texttt{stampy} used to empirically determine the distribution of insert sizes. It is anyway not very surprising that the empirical insert size is much lower than expected from the size range extracted from the gel (minus the combined length of illumina adapters), i. e. $\sim$ 300-600 bp, since firstly PCR and illumina sequencing increase the proportion of small insert size fragments and secondly the mapping against a transcriptome means that often one mate of a read pair either maps on another contig/unigene or doesn't map at all and small insert size fragments are more likely to have both of their reads mapped to the same contig.
+
+\begin{table}
+\caption{\texttt{samtools view -X} prints a single letter or number for each bit set in the flag for a read in the SAM file.}
+\centering
+\begin{tabular}{cl}
+\toprule
+code & meaning \\
+\midrule
+p & read is paired in sequencing \\
+P & read and its mate have been properly mapped \\
+u & read is unmapped \\
+U & mate is unmapped \\
+r & read printed as reverse complement of input \\
+R & mate printed as reverse complement of input \\
+1 & read is first in pair \\
+2 & read is second in pair \\
+\bottomrule
+\end{tabular}
+\label{samtools_view_X}
+\end{table}
+
+I have written a little perl script \texttt{SAMflag.pl} which takes a .sam or .bam file and counts the number of reads for each SAM flag as well as reporting the meaning of the bits set in each flag. This way the horribly cryptic SAM flags become a bit more verbose. A totally undocumented alternative is the (hidden) "-X" switch to the \texttt{samtools view} command which replaces the integer flag in the SAM file with a code that indicates which bits have been set (see table \ref{samtools_view_X}). The flag integers 99, 147, 83 and 163 indicate that the read has been mapped in a proper pair (i. e. with inverse orientation of read pairs and an insert size within 5 sd of mean). For instance, the flag integer 99 is decimal for 11000110: the 0th bit is set $\rightarrow$ read is from paired-end sequencing; the 1st bit is set $\rightarrow$ read is mapped in a proper pair; the 5th bit is set $\rightarrow$ mate is printed as reverse complement of input; the 6th bit is set $\rightarrow$ read is first in pair (see table \ref{SAM_flag_bits}). Obviously, 99 is the sum of the bit values set.
+
+\begin{table}
+\centering
+\caption{SAM flag bits and their meaning taken from the \href{http://picard.sourceforge.net/explain-flags.html}{picard site}.}
+\begin{tabular}{crl}
+\toprule
+bit & value & meaning \\
+\midrule
+0 & 1 & read is from paired-end sequencing \\
+1 & 2 & read is mapped in a proper pair \\
+2 & 4 & read is unmapped \\
+3 & 8 & mate is unmapped \\
+4 & 16 & read is printed as reverse complement of input \\
+5 & 32 & mate is printed as reverse complement of input \\
+6 & 64 & read is first in pair \\
+7 & 128 & read is second in pair \\
+\bottomrule
+\label{SAM_flag_bits}
+\end{tabular}
+\end{table}
+
+This \href{http://picard.sourceforge.net/explain-flags.html}{picard site} explains the meaning of the 0th to 11th bit (from top to bottom) that can be set in the SAM flags and combinations thereof. Figure \ref{sam_flags_meaning} gives further clarification about the meaning of SAM flags.
+
+\begin{figure}[htp]
+\centering
+\includegraphics[height=.9\textheight]{./figure/sam_flags_meaning}
+\caption{The meaning of SAM flags explained. Taken from \href{http://ppotato.wordpress.com/2010/08/25/samtool-bitwise-flag-paired-reads/}{this} website. Note that for the reads "mapped within the insert size but with wrong orientation" \texttt{stampy} would not set the bit value 2 for "proper" mapping.}
+\label{sam_flags_meaning}
+\end{figure}
+
+In addition to properly mapped read pairs, I am also interested in looking at those pairs where both reads got mapped, even if not in the expected inverse orientation or with an insert size that is within 5 (empirical) standard deviations of the mean. With the "-F" switch to the \texttt{samtools view} command I can skip reads where either read in a pair has not been mapped. Those reads will either have the bit value 4 or 8 set. Command \ref{filter_unmapped_read_pairs} gets rid of read pairs where either read is unmapped. Note, that the two versions in command \ref{filter_unmapped_read_pairs} are equivalent.
+
+\begin{command}
+\captionsetup{type=command} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
+\begin{Verbatim}
+$ samtools view -F 12 -S ery_30-12.sam.gz
+$ samtools view -S ery_30-12.sam.gz | awk 'and($2, 12)==0'
+\end{Verbatim}
+\caption{Command line that extracts all read pairs where both reads in a pair got mapped (properly or not).}
+\label{filter_unmapped_read_pairs}
+\end{command}
+
+\texttt{stampy}'s README file explains what mapping quality is assigned to reads or read pairs with ambiguous mapping locations. In section \textrm{11.5 Multiple mapping locations} it says:
+\begin{quote}
+Normally, when Stampy identifies several equally good mapping locations for a read or read pair, it reports one of these at random (and assigns the choice a low mapping quality, of 3 or less).
+\end{quote}
+\textbf{So anything with a mapping quality below 4 is ambiguous not just mapping quality 0!}
+
+In the 5th column of the SAM file \texttt{stampy} reports the mapping quality for the read pair. The SM tag reports the mapping quality of the read considered as single read.
+
+I used command \ref{filter_good_reads} with modification of filtering for mapping quality above 3 to extract all mapped reads (regardless of whether their mate got mapped).
+I used the command \ref{reduced_reference} to extract from the indexed reference sequence file all contigs which got hit by either individual.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{./figure/igv_LC_1628_C1_Contig1776_standRAD}
+\caption{Alignment of standard RAD read pairs to both sides of an SbfI restriction site. Read pairs are connected by a line. The upper individual hs 7 unique read pairs, i. e. with different paired-end reads.}
+\label{LC.1628.C1.Contig1776_standRAD}
+\end{figure}
+
+Figure \ref{LC.1628.C1.Contig1776_standRAD} shows the alignment of standard RAD\footnote{SbfI restriction +  random shearing} reads against \textit{Schistocerca} contig igv\_LC.1628.C1.Contig1776 showing reads mapped to the same SbfI restriction site (centre) and their corresponding paired-end reads. The paired-end reads on both sides of the SbfI site can be used to design primers for qPCR. In the upper alignment window for individual ery\_30-12, PCR duplicates can be inferred from read pairs having the same alignment position for their paired-end reads.
+
+LC.1628.C1.Contig1776
+
+
+{\color{teal}{
+\begin{enumerate}
+\item check out \href{http://cran.r-project.org/web/packages/PopGenome/PopGenome.pdf}{PopGenome}
+\item check out Kang-Wook's adapter cleaning script
+\item map a RAD library with paired-end reads against the \textit{Timema} genomic reference and look for mappings to the same SbfI restriction site?
+\item If mapping against a reference is not an option $\Rightarrow$ de novo assembly:
+\begin{itemize}
+\item digital normalisation
+\item Tom Parchman's scripts
+\item \texttt{fastqc} provides info on overrepresented kmers in the raw sequence data. I could filter out all reads containing such kmers and thus maybe improve the RAD tag assembly.
+\item removing reads which contain over-represented kmers (\texttt{fastqc, windowmasker})
+\item \texttt{mcl} clustering as in \texttt{rtd}
+\item standard de novo assemblers, IDBU, ALLPATHS, velvet, etc.
+\end{itemize}
+\end{enumerate}
+}}
+{\color{teal}
+Can \texttt{stampy} deal with input sequences containing uncalled bases?
+\begin{itemize}
+\item MiSeq sequences for a start
+\item use reads used for the \texttt{rtd} run, which are only split by barcode, but have fake barcodes inserted at the beginning
+\item map stacks consensus tags from the standard RAD library against a Locust transcriptome and look for tags that map to the same restriction site
+\end{itemize}
+
+\begin{itemize}
+\item maker2
+\item allPaths-LG
+\item GapCloser
+\item REAPR
+\item CEGMA
+\end{itemize}
+}
+
+
+
+%%%%%%%%% -- REFERENCES -- %%%%%%%%%%%%%%%%
+\section{References}
+%% References with bibTeX database:
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+%%%%%%%% -- REFERENCES -- %%%%%%%%%%%%%%%%
+
+
+%%%%%%% -- EXAMPLE FROM TEMPLATE -- %%%%%%%%%%%
+\begin{comment}
+%You can test if \textbf{knitr} works with this minimal demo. OK, let's
+%get started with some boring random numbers:
+%
+%<<boring-random>>=
+%set.seed(1121)
+%(x=rnorm(20))
+%mean(x);var(x)
+%@
+%
+%The first element of \texttt{x} is x[1]. Boring boxplots
+%and histograms recorded by the PDF device:
+%
+%<<boring-plots, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
+%## two plots side by side (option fig.show='hold')
+%par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3,las=1)
+%boxplot(x)
+%hist(x,main='')
+%@
+%
+%Do the above chunks work? You should be able to compile the \TeX{}
+%document and get a PDF file like this one: \url{https://bitbucket.org/stat/knitr/downloads/knitr-minimal.pdf}.
+%The Rnw source of this document is at \url{https://github.com/yihui/knitr/blob/master/inst/examples/knitr-minimal.Rnw}.
+\end{comment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\end{document}

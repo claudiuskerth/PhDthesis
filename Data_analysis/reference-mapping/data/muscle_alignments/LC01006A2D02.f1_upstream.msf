@@ -1,0 +1,29 @@
+PileUp
+
+  MSF: 121  Type: N  Check: 0000  --
+
+ Name: contig4|size74|read8|cov5.51    Len: 121  Check:  6242  Weight: 0.192925
+ Name: contig3|size100|read9|cov4.59   Len: 121  Check:  5178  Weight: 0.192925
+ Name: contig5|size65|read2|cov1.57    Len: 121  Check:  5200  Weight: 0.206134
+ Name: contig1|size71|read21|cov15.08  Len: 121  Check:   495  Weight: 0.206134
+ Name: contig2|size74|read8|cov5.51    Len: 121  Check:  1237  Weight: 0.201881
+
+//
+
+contig4|size74|read8|cov5.51      CCGCGTGGAG CTGCTTAAAT AGTTCCATGC TGCA------ -GTACTGGAG
+contig3|size100|read9|cov4.59     ---------- -----CAAAC ATTACTAACT CGCACTCGTT GTTCGTAT-T
+contig5|size65|read2|cov1.57      ---------- ----CCAGTC ATCAACAATC TA---ATGTC GGTTTT---G
+contig1|size71|read21|cov15.08    ---------- ---CGGCGTT ATGTCTAGAA TGTGCTTGC- -ATCGTAGAT
+contig2|size74|read8|cov5.51      ---------- ---TGTGTTT ATCTGAAAAC TGTAAATGTT GGTCATATAG
+
+contig4|size74|read8|cov5.51      AAGT----TT CAGGAC---- ---------- -----TATTT CGAATGACGG
+contig3|size100|read9|cov4.59     ACGT-----T TAGAAACAAT CGTATTATCA GGCCATTATT CTAATGGAAA
+contig5|size65|read2|cov1.57      ACGG-----G CAGTCAGCAA CG-------- -----GTACT CGAGTG--GG
+contig1|size71|read21|cov15.08    ACATAATTCG CAACATGTAA CG-------- -----CTCTT TGTGAGATG-
+contig2|size74|read8|cov5.51      ACGT-----T CAATAATGAA CGAAT----- -----CAATT TGAAAGAAGA
+
+contig4|size74|read8|cov5.51      CGTT------ ---------- -
+contig3|size100|read9|cov4.59     ATTCCCGATT CTTCCGCGTG G
+contig5|size65|read2|cov1.57      CTTCG----- ---------- -
+contig1|size71|read21|cov15.08    ---------- ---------- -
+contig2|size74|read8|cov5.51      CT-------- ---------- -

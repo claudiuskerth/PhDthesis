@@ -1,0 +1,37 @@
+PileUp
+
+  MSF: 307  Type: N  Check: 0000  --
+
+ Name: contig2|size80|read12|cov7.65     Len: 307  Check:  4244  Weight: 0.374599
+ Name: contig1|size307|read120|cov19.93  Len: 307  Check:  5354  Weight: 0.312701
+ Name: contig3|size67|read3|cov2.28      Len: 307  Check:  9108  Weight: 0.312701
+
+//
+
+contig2|size80|read12|cov7.65       ---------- ---------- ---------- ---------- ----------
+contig1|size307|read120|cov19.93    GTGGACAGCT TACCAGAACT GACTCTTTCT TTACGCGCAC GCTTTACACT
+contig3|size67|read3|cov2.28        ---------- ---------- ---------- ---------- ----------
+
+contig2|size80|read12|cov7.65       ---------- ---------- ---------- ---------- ----------
+contig1|size307|read120|cov19.93    TGACACAGAA ACACCGGTGA ATTTTAATGT CATTGCTGCA AGTTCCTTGA
+contig3|size67|read3|cov2.28        ---------- ---------- ---------- ---------- ----------
+
+contig2|size80|read12|cov7.65       ---------- ---------- ---------A AAAAAGAAAA GTACGGACAA
+contig1|size307|read120|cov19.93    CCGGTAATGA ATTCATAATA GAGGGGGGCA AAAAAGAAAA GTACGGACAA
+contig3|size67|read3|cov2.28        ---------- ---------- ---------- ---------- ----GGACAA
+
+contig2|size80|read12|cov7.65       TGGAAACTAG ATTAAGTAAC ACAGGATACT GGAAACACTA GCAGCAGAAG
+contig1|size307|read120|cov19.93    TGGAAACTAG ATTAAGTAAC ATAGGATACT GGAAACAATA GCAGCAGAAG
+contig3|size67|read3|cov2.28        TGGAAACTAG ATTAAGTAAC ACAGGATACT GGAAACAATA GCAGCAGAAG
+
+contig2|size80|read12|cov7.65       ACGAAGAGA- ---------- ---------- ---------- ----------
+contig1|size307|read120|cov19.93    ACGAAGAGAC TGAACAAGAC ATAAATATCA AGATGACTAA TTTATATTTC
+contig3|size67|read3|cov2.28        ACGAAGAGAC T--------- ---------- ---------- ----------
+
+contig2|size80|read12|cov7.65       ---------- ---------- ---------- ---------- ----------
+contig1|size307|read120|cov19.93    CACAAGCAAC TAACTGGCAT CAACACTTTC CATACTTACT TAATACTCCA
+contig3|size67|read3|cov2.28        ---------- ---------- ---------- ---------- ----------
+
+contig2|size80|read12|cov7.65       -------
+contig1|size307|read120|cov19.93    GTTGATC
+contig3|size67|read3|cov2.28        -------

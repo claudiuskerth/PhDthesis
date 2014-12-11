@@ -1,0 +1,194 @@
+PileUp
+
+  MSF: 279  Type: N  Check: 0000  --
+
+ Name: contig20|size74|read7|cov4.82    Len: 279  Check:  1738  Weight: 0.0117527
+ Name: contig7|size77|read7|cov4.64     Len: 279  Check:  9994  Weight: 0.0188685
+ Name: contig15|size70|read7|cov5.10    Len: 279  Check:  9467  Weight: 0.0756855
+ Name: contig10|size117|read19|cov8.28  Len: 279  Check:  3261  Weight: 0.0715261
+ Name: contig13|size117|read8|cov3.49   Len: 279  Check:  2148  Weight: 0.0422793
+ Name: contig22|size88|read7|cov3.65    Len: 279  Check:  1524  Weight: 0.0113702
+ Name: contig21|size86|read5|cov2.97    Len: 279  Check:  6149  Weight: 0.0368717
+ Name: contig8|size80|read9|cov5.74     Len: 279  Check:  4886  Weight: 0.0801605
+ Name: contig17|size85|read4|cov2.40    Len: 279  Check:  6453  Weight: 0.0303244
+ Name: contig24|size79|read3|cov1.94    Len: 279  Check:  5937  Weight: 0.0108708
+ Name: contig23|size67|read6|cov4.57    Len: 279  Check:  3166  Weight: 0.0115614
+ Name: contig14|size53|read5|cov4.81    Len: 279  Check:  6922  Weight: 0.0428432
+ Name: contig12|size85|read6|cov3.60    Len: 279  Check:  2155  Weight: 0.0422793
+ Name: contig11|size57|read9|cov8.05    Len: 279  Check:  8832  Weight: 0.0646009
+ Name: contig25|size84|read3|cov1.82    Len: 279  Check:  6965  Weight: 0.0108708
+ Name: contig5|size55|read8|cov7.42     Len: 279  Check:   486  Weight: 0.0190204
+ Name: contig4|size79|read18|cov11.62   Len: 279  Check:  8175  Weight: 0.0477061
+ Name: contig16|size60|read5|cov4.25    Len: 279  Check:  4504  Weight: 0.0575589
+ Name: contig6|size64|read11|cov8.77    Len: 279  Check:  4864  Weight: 0.0188685
+ Name: contig26|size97|read4|cov2.10    Len: 279  Check:  6890  Weight: 0.0111261
+ Name: contig3|size220|read40|cov9.27   Len: 279  Check:  2094  Weight: 0.0431074
+ Name: contig19|size76|read6|cov4.03    Len: 279  Check:  9766  Weight: 0.0368717
+ Name: contig2|size65|read14|cov10.98   Len: 279  Check:  9179  Weight: 0.0566317
+ Name: contig9|size119|read12|cov4.93   Len: 279  Check:  5081  Weight: 0.0522963
+ Name: contig1|size63|read84|cov60.37   Len: 279  Check:   628  Weight: 0.0815739
+ Name: contig18|size46|read6|cov5.15    Len: 279  Check:   692  Weight: 0.0133737
+
+//
+
+contig20|size74|read7|cov4.82      ---------- ---------- ---------- ---------- ----------
+contig7|size77|read7|cov4.64       ---------- ---------- ---------- ---------- ----------
+contig15|size70|read7|cov5.10      ---------- ---------- ---------- ---------- ----------
+contig10|size117|read19|cov8.28    ---------- ---------- ---------- ---------- ----------
+contig13|size117|read8|cov3.49     ---------- ---------- ---------- ---------- ----------
+contig22|size88|read7|cov3.65      ---------- ---------- ---------- ---------- ----------
+contig21|size86|read5|cov2.97      ---------- ---------- ---------- ---------- ----------
+contig8|size80|read9|cov5.74       ---------- ---------- ---------- ---------- ----------
+contig17|size85|read4|cov2.40      ---------- ---------- ---------- ---------- ----------
+contig24|size79|read3|cov1.94      ---------- ---------- ---------- ---------- ----------
+contig23|size67|read6|cov4.57      ---------- ---------- ---------- ---------- ----------
+contig14|size53|read5|cov4.81      ---------- ---------- ---------- ---------- ----------
+contig12|size85|read6|cov3.60      ---------- ---------- ---------- ---------- ----------
+contig11|size57|read9|cov8.05      ---------- ---------- ---------- ---------- ----------
+contig25|size84|read3|cov1.82      ---------- ---------- ---------- ---------- ----------
+contig5|size55|read8|cov7.42       ---------- ---------- ---------- ---------- ----------
+contig4|size79|read18|cov11.62     ---------- ---------- ---------- ---------- ----------
+contig16|size60|read5|cov4.25      ---------- ---------- ---------- ---------- ----------
+contig6|size64|read11|cov8.77      ---------- ---------- ---------- ---------- ----------
+contig26|size97|read4|cov2.10      ---------- ---------- ---------- ---------- ----------
+contig3|size220|read40|cov9.27     TTGAGACATG GATTAGCCAT AGGAAAGGGG ATGTTTCCAG AATTATATTT
+contig19|size76|read6|cov4.03      ---------- ---------- ---------- ---------- ----------
+contig2|size65|read14|cov10.98     ---------- ---------- ---------- ---------- ----------
+contig9|size119|read12|cov4.93     ---------- ---------- ---------- ---------- ----------
+contig1|size63|read84|cov60.37     ---------- ---------- ---------- ---------- ----------
+contig18|size46|read6|cov5.15      ---------- ---------- ---------- ---------- ----------
+
+contig20|size74|read7|cov4.82      ---------- ---------- ---------- ---------- ----------
+contig7|size77|read7|cov4.64       ---------- ---------- ---------- ---------- ----------
+contig15|size70|read7|cov5.10      ---------- ---------- ---------- ---------- ----------
+contig10|size117|read19|cov8.28    ---------- ---------- ---------- -------ATA GGCACCCGCA
+contig13|size117|read8|cov3.49     ---------- ---------- ---------- ---------- ----------
+contig22|size88|read7|cov3.65      ---------- ---------- ---------- ---------- ----------
+contig21|size86|read5|cov2.97      ---------- ---------- ---------- ---------- ----------
+contig8|size80|read9|cov5.74       ---------- ---------- ---------- ---------- ----------
+contig17|size85|read4|cov2.40      ---------- ---------- ---------- ---------- ----------
+contig24|size79|read3|cov1.94      ---------- ---------- ---------- ---------- ----------
+contig23|size67|read6|cov4.57      ---------- ---------- ---------- ---------- ----------
+contig14|size53|read5|cov4.81      ---------- ---------- ---------- ---------- ----------
+contig12|size85|read6|cov3.60      ---------- ---------- ---------- ---------- ----------
+contig11|size57|read9|cov8.05      ---------- ---------- ---------- ---------- ----------
+contig25|size84|read3|cov1.82      ---------- ---------- ---------- ---------- ----------
+contig5|size55|read8|cov7.42       ---------- ---------- ---------- ---------- ----------
+contig4|size79|read18|cov11.62     ---------- ---------- ---------- ---------- ----------
+contig16|size60|read5|cov4.25      ---------- ---------- ---------- ---------- ----------
+contig6|size64|read11|cov8.77      ---------- ---------- ---------- ---------- ----------
+contig26|size97|read4|cov2.10      ---------- ---------- ---------- ---------- ----------
+contig3|size220|read40|cov9.27     TCACTCTGCA TCGGAGTGTG CGCTGATATG AAACTTCCTG GCGGATTAAA
+contig19|size76|read6|cov4.03      ---------- ---------- ---------- ---------- ----------
+contig2|size65|read14|cov10.98     ---------- ---------- ---------- ---------- ----------
+contig9|size119|read12|cov4.93     ---------- ---------- ---------- ---------- ----------
+contig1|size63|read84|cov60.37     ---------- ---------- ---------- ---------- ----------
+contig18|size46|read6|cov5.15      ---------- ---------- ---------- ---------- ----------
+
+contig20|size74|read7|cov4.82      ---------- ---------- ------GTCG ACCAATAATC CTTCGTGGTG
+contig7|size77|read7|cov4.64       ---------- ---------- ---------- ---------- -------GTC
+contig15|size70|read7|cov5.10      ---------- ---------- ---------- ---------- ----------
+contig10|size117|read19|cov8.28    CGAATCTGTT TGTTGCACAT GCTGCCGCAT TACGCCTGTA ATCAGTAAAT
+contig13|size117|read8|cov3.49     ---------- ---------- -TTCCAGAAT GATATTTTCA CTCTGCAGCT
+contig22|size88|read7|cov3.65      ---------- ---------G TTTCCAGAAT CATATTTTCA ATCTGCAGCA
+contig21|size86|read5|cov2.97      ---------C GCCTAAGAGC AATAACACGC CATGCCGTGT TGTGCTAATT
+contig8|size80|read9|cov5.74       ---------- ---------- ---------- --------AC TGCTGCGGTC
+contig17|size85|read4|cov2.40      ---------- ---------- ----AGTCAT CGCTCCCTAG AGTTACACAC
+contig24|size79|read3|cov1.94      ---------- ---------- ---------- CCTACAGGAG CTTGACGGCA
+contig23|size67|read6|cov4.57      ---------- ---------- ---------- ---------G TTATGTAGGT
+contig14|size53|read5|cov4.81      ---------- ---------- ---------- ---------- ----------
+contig12|size85|read6|cov3.60      ---------- ---------- ---------- ---------- ----------
+contig11|size57|read9|cov8.05      ---------- ---------- ---------- ----AGTCCG TTTTGGCACT
+contig25|size84|read3|cov1.82      ---------- ---------- ---------- CGACCCGGCA CGCTTCACGG
+contig5|size55|read8|cov7.42       ---------- ---------- ---------- ---------- --TCGCGGGC
+contig4|size79|read18|cov11.62     ---------C GAATCGGGAT TCGAACTCGG GACCTCTGCC TTTCGCGGGC
+contig16|size60|read5|cov4.25      ---------- -------GAT TCCAACTGGG GACCCCTGCC TTTCGCGGGC
+contig6|size64|read11|cov8.77      ---------- ---------- ---------- --CCCCTGCC TTTCACGGGC
+contig26|size97|read4|cov2.10      ---------- GAACCGGGAT TCGAACTCGG GACCCCTGCC TTTCGCGGTC
+contig3|size220|read40|cov9.27     ACTGTGTGCC GAACCGGGAT TCGAACTCGG GACCCCTGCC TTTCGCGGGC
+contig19|size76|read6|cov4.03      ---------- ---------- ---------- ---------- ---CAAACAC
+contig2|size65|read14|cov10.98     ---------- ---------- ---------- ---------- ----------
+contig9|size119|read12|cov4.93     ---------- ---------- ---------- ---------- ---TGCAGGA
+contig1|size63|read84|cov60.37     ---------- ---------- ---------- ---------- ---TGCAGGA
+contig18|size46|read6|cov5.15      ---------- ---------- ---------- ---------- ---TGCAGGA
+
+contig20|size74|read7|cov4.82      CAGTA----- GCCTTCAGTA GTC------- -ATATTGAGG TTAAATGAAA
+contig7|size77|read7|cov4.64       GGTTT----- TGATTCAAAT GAA-CAAGAC ACATTTCAAA GGTACAGAAA
+contig15|size70|read7|cov5.10      ---------- TTGCAAGACT AGC------- -ACTCCTGGA AGAAAGGATA
+contig10|size117|read19|cov8.28    ATCTT----- CAAGTCACTA AATACCTTGA AACTTCCAGG AGGATTAAAA
+contig13|size117|read8|cov3.49     GAGTG----- TGCACTGGTA TGT------- AACTTCCTGG CGGATTAAAA
+contig22|size88|read7|cov3.65      GAGGT----- TGCGCTGATA TGA------- AACTTCCTGG CGGATTAAAA
+contig21|size86|read5|cov2.97      AGTTGCCGCG TGTATCGATT GAC--AGCAA ACCTCTCACC AAGGTGC---
+contig8|size80|read9|cov5.74       ATCGG----- TCTCTAGTTT TAC-----AC ACTAATTAAA CAAACTTAAA
+contig17|size85|read4|cov2.40      TATTT----- TAAACTGACT TAC-ACTAAG AACAACACAT ATGCCTGAGA
+contig24|size79|read3|cov1.94      TATGC----- TCTCACAGTT ATGATTGTCC TCTACTCCGT AGATCACGTG
+contig23|size67|read6|cov4.57      AATCTGAAAG TACAAAAAAT AAGTTTGTGA AATACGGCGC GAGAGCGAAG
+contig14|size53|read5|cov4.81      ---------- -GTTTTAATG TGA------- -CTTTCATAA CCAATTTCAT
+contig12|size85|read6|cov3.60      CCTGC----- TCTACCAACT TGC------- -CTACTTTTT GTAATTTTTT
+contig11|size57|read9|cov8.05      CTGAC----- CGGGCAAGCT GAG------- -CTACCGCGC CCGGCTCCTA
+contig25|size84|read3|cov1.82      TCCCT----- CCTCATAGCT TTA------- -CTTCCACCA GTACCTCGCC
+contig5|size55|read8|cov7.42       AGTGC----- TCTACTAACT GAG------- -CTACCCGGC ACGCTTCTCG
+contig4|size79|read18|cov11.62     AGCGC----- TCTACCAACT GAG------- -ATACCCGGC ACGCTTCACG
+contig16|size60|read5|cov4.25      AGT-C----- TCTACCAACT GAG------- -CTACCCGGT A---------
+contig6|size64|read11|cov8.77      AGTGC----- TCTAAAAACT GAG------- -CTACCCGGC ACGCTTCACG
+contig26|size97|read4|cov2.10      AGTGC----- TCTACCAACT GAG------- -CTACCCGAC ACGCTTCACG
+contig3|size220|read40|cov9.27     AGTGC----- TCTACCAACT GAG------- -CTACCCGGC ACGCTTCACG
+contig19|size76|read6|cov4.03      AGACA----- TATGTAAACA GAG----TAC AGCGCTGCAG TTGGCAATGA
+contig2|size65|read14|cov10.98     GATTT----- TCCACACTTC TAA------- -ATTCTAACC AAGACTCAAA
+contig9|size119|read12|cov4.93     AGTTT----- CATATCAGC- ---------- -GCACCGCTG CAGAGTGAAA
+contig1|size63|read84|cov60.37     AGTTT----- CATATCAGCG CAC------- -ACTCCGCTG CAGAGTGAAA
+contig18|size46|read6|cov5.15      AGTTC----- CATATCAGCA CAC------- -ACTCCGCTG CAGAGTGAAA
+
+contig20|size74|read7|cov4.82      ACGCCATTAC AAG------- ---------- ---------- ----------
+contig7|size77|read7|cov4.64       ATTGATGCTC AAATGCATGC AGCAAGGCAG ---------- ----------
+contig15|size70|read7|cov5.10      CAGTGGAAAC GTGGCTTAGC CACAGCCAAG GGGATGTT-- ----------
+contig10|size117|read19|cov8.28    CTGTCTGCC- ---------- ---------- ---------- ----------
+contig13|size117|read8|cov3.49     CTGTGTGCCG GACCGGGTTT CGAACTCGGG ACCTCGGACT TTCGCGGGCA
+contig22|size88|read7|cov3.65      CTGTGAGCCG AACCGGGAT- ---------- ---------- ----------
+contig21|size86|read5|cov2.97      ---------- ---------- ---------- ---------- ----------
+contig8|size80|read9|cov5.74       CTAACTTACG CCAAGGACAA CACGAACA-- ---------- ----------
+contig17|size85|read4|cov2.40      GAGGACTTGA ACCTC----- ---------- ---------- ----------
+contig24|size79|read3|cov1.94      TTGCTTACTT ATAT------ ---------- ---------- ----------
+contig23|size67|read6|cov4.57      CGAAGT---- ---------- ---------- ---------- ----------
+contig14|size53|read5|cov4.81      TTGGGGACAG TTATAGATTC AT-------- ---------- ----------
+contig12|size85|read6|cov3.60      TTGTTCCTTT ATATAGATCT GGTTGTTGCG GTCGTTTATT CTGTTTGT--
+contig11|size57|read9|cov8.05      CAGG------ ---------- ---------- ---------- ----------
+contig25|size84|read3|cov1.82      TCGTTACCTT CCAAACTTCA CAGAAGC--- ---------- ----------
+contig5|size55|read8|cov7.42       GCTCGTCCCC ---------- ---------- ---------- ----------
+contig4|size79|read18|cov11.62     G--------- ---------- ---------- ---------- ----------
+contig16|size60|read5|cov4.25      ---------- ---------- ---------- ---------- ----------
+contig6|size64|read11|cov8.77      GTCCGTCCT- ---------- ---------- ---------- ----------
+contig26|size97|read4|cov2.10      GTCCGTCCTC ACAGCTTTAC ---------- ---------- ----------
+contig3|size220|read40|cov9.27     GTCCGTCCTC GTAGCTTTAC TTCCGCCAGT ACC------- ----------
+contig19|size76|read6|cov4.03      CTATATAAGA CAACAGGTAT CTGGTGCA-- ---------- ----------
+contig2|size65|read14|cov10.98     ATCCAAAATT TTGTAGTTCT AGCTTCAA-- ---------- ----------
+contig9|size119|read12|cov4.93     ATACCATTCT GGAAACATCC CCTAGGCTGT GGCTAAGCCA TGTCTCCACT
+contig1|size63|read84|cov60.37     ATATCATTCT GCACTTCTA- ---------- ---------- ----------
+contig18|size46|read6|cov5.15      AT-------- ---------- ---------- ---------- ----------
+
+contig20|size74|read7|cov4.82      ---------- ---------- ---------
+contig7|size77|read7|cov4.64       ---------- ---------- ---------
+contig15|size70|read7|cov5.10      ---------- ---------- ---------
+contig10|size117|read19|cov8.28    ---------- ---------- ---------
+contig13|size117|read8|cov3.49     ---------- ---------- ---------
+contig22|size88|read7|cov3.65      ---------- ---------- ---------
+contig21|size86|read5|cov2.97      ---------- ---------- ---------
+contig8|size80|read9|cov5.74       ---------- ---------- ---------
+contig17|size85|read4|cov2.40      ---------- ---------- ---------
+contig24|size79|read3|cov1.94      ---------- ---------- ---------
+contig23|size67|read6|cov4.57      ---------- ---------- ---------
+contig14|size53|read5|cov4.81      ---------- ---------- ---------
+contig12|size85|read6|cov3.60      ---------- ---------- ---------
+contig11|size57|read9|cov8.05      ---------- ---------- ---------
+contig25|size84|read3|cov1.82      ---------- ---------- ---------
+contig5|size55|read8|cov7.42       ---------- ---------- ---------
+contig4|size79|read18|cov11.62     ---------- ---------- ---------
+contig16|size60|read5|cov4.25      ---------- ---------- ---------
+contig6|size64|read11|cov8.77      ---------- ---------- ---------
+contig26|size97|read4|cov2.10      ---------- ---------- ---------
+contig3|size220|read40|cov9.27     ---------- ---------- ---------
+contig19|size76|read6|cov4.03      ---------- ---------- ---------
+contig2|size65|read14|cov10.98     ---------- ---------- ---------
+contig9|size119|read12|cov4.93     ATATCCTTTC TTCCAGGAGT GCTAGTCTT
+contig1|size63|read84|cov60.37     ---------- ---------- ---------
+contig18|size46|read6|cov5.15      ---------- ---------- ---------

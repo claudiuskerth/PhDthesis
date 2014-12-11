@@ -1,4 +1,7 @@
- % arara: clean: { files: [thesis.aux, thesis.bbl, thesis.blg, thesis.dvi, thesis.fdb_latexmk, thesis.fls, thesis.idx, thesis.ilg, thesis.ind, thesis.lof, thesis.log, thesis.lot, thesis.nlo, thesis.nls, thesis.out, thesis.pdf, thesis.ps, thesis.toc]}
+% Remember to save this document with a .Rnw file ending,
+% before you use the engine Knitr to compile it.
+% *** !TEX TS-program = pdflatexmk
+% arara: clean: { files: [thesis.aux, thesis.bbl, thesis.blg, thesis.dvi, thesis.fdb_latexmk, thesis.fls, thesis.idx, thesis.ilg, thesis.ind, thesis.lof, thesis.log, thesis.lot, thesis.nlo, thesis.nls, thesis.out, thesis.pdf, thesis.ps, thesis.toc]}
 % arara: latex:  { shell: yes }
 % arara: bibtex
 % arara: nomencl
@@ -11,7 +14,59 @@
 % ******************************* PhD Thesis Template **************************
 % Please have a look at the README.md file for info on how to use the template
 
-\documentclass[a4paper,12pt,times,numbered,print,index]{Classes/PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,numbered,print,index]{Classes/PhDThesisPSnPDF}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+% I copied PhDThesisPSnPDF.cls to /usr/local/texlive/2012/texmf/tex/latex
+% execute $ sudo texhash
+%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
 % ******************************************************************************
 % ******************************* Class Options ********************************
@@ -115,7 +170,12 @@
 \fi
 
 % ******************************** Front Matter ********************************
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
+
+%%%%%% -- KNITR SETUP -- %%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \frontmatter
 
@@ -145,13 +205,198 @@
 % ******************************** Main Matter *********************************
 \mainmatter
 
-\include{Chapter1/chapter1}
-\include{Chapter2/chapter2}
-\include{Chapter3/chapter3}
+%\include{Chapter1/chapter1}
+%\include{Chapter2/chapter2}
+%\include{Chapter3/chapter3}
 %\include{Chapter4/chapter4}
 %\include{Chapter5/chapter5}
 %\include{Chapter6/chapter6}
 %\include{Chapter7/chapter7}
+
+%%%%%% -- KNITR SETUP -- %%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{My third chapter}
+
+% **************************** Define Graphics Path **************************
+\ifpdf
+    \graphicspath{{Chapter3/Figs/Raster/}{Chapter3/Figs/PDF/}{Chapter3/Figs/}}
+\else
+    \graphicspath{{Chapter3/Figs/Vector/}{Chapter3/Figs/}}
+\fi
+
+\section{First section of the third chapter}
+And now I begin my third chapter here \dots
+
+And now to cite some more people~\citet{Rea85,Ancey1996}
+\citet{Baird2008} were the first to publish about RAD.
+
+
+
+\begin{figure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\linewidth]{/Figs/Knitr/fragments_mapped_per_ind-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Distribution of RAD fragment numbers mapped to 4 primer3ready reference contigs. A "fragment" is a properly mapped read pair from an individual with a unique insert size. If two read pairs on a RAD site from an individual have the same insert size, they constitute only one fragment, i. e. one read pair is likely to be a PCR duplicate.}
+\label{fragments-mapped-per-ind}
+\end{figure}
+
+\begin{quote}
+Bonzai: Are you as successful as you would like to be?
+
+Zappa: I would say that the basic characteristic of my life is failure. If there is one thing that I excel at, it's failure -- I manage to fail at 100 percent of the things that I do. Since most of the things that I set out to do are theoretically impossible, it's very easy to fail. I've learned to live with it. In terms of machinery and personnel, there never seems to be enough to get things done exactly right.
+\end{quote}
+
+
+
+\subsection{First subsection in the first section}
+\dots and some more 
+
+\subsection{Second subsection in the first section}
+\dots and some more \dots
+
+\subsubsection{First subsub section in the second subsection}
+\dots and some more in the first subsub section otherwise it all looks the same
+doesn't it? well we can add some text to it \dots
+
+\subsection{Third subsection in the first section}
+\dots and some more \dots
+
+\subsubsection{First subsub section in the third subsection}
+\dots and some more in the first subsub section otherwise it all looks the same
+doesn't it? well we can add some text to it and some more and some more and
+some more and some more and some more and some more and some more \dots
+
+\subsubsection{Second subsub section in the third subsection}
+\dots and some more in the first subsub section otherwise it all looks the same
+doesn't it? well we can add some text to it \dots
+
+\section{Second section of the third chapter}
+and here I write more \dots
+
+\section{The layout of formal tables}
+This section has been modified from ``Publication quality tables in \LaTeX*''
+ by Simon Fear.
+
+The layout of a table has been established over centuries of experience and 
+should only be altered in extraordinary circumstances. 
+
+When formatting a table, remember two simple guidelines at all times:
+
+\begin{enumerate}
+  \item Never, ever use vertical rules (lines).
+  \item Never use double rules.
+\end{enumerate}
+
+These guidelines may seem extreme but I have
+never found a good argument in favour of breaking them. For
+example, if you feel that the information in the left half of
+a table is so different from that on the right that it needs
+to be separated by a vertical line, then you should use two
+tables instead. Not everyone follows the second guideline:
+
+There are three further guidelines worth mentioning here as they
+are generally not known outside the circle of professional
+typesetters and subeditors:
+
+\begin{enumerate}\setcounter{enumi}{2}
+  \item Put the units in the column heading (not in the body of
+          the table).
+  \item Always precede a decimal point by a digit; thus 0.1
+      {\em not} just .1.
+  \item Do not use `ditto' signs or any other such convention to
+      repeat a previous value. In many circumstances a blank
+      will serve just as well. If it won't, then repeat the value.
+\end{enumerate}
+
+A frequently seen mistake is to use `\textbackslash begin\{center\}' \dots `\textbackslash end\{center\}' inside a figure or table environment. This center environment can cause additional vertical space. If you want to avoid that just use `\textbackslash centering'
+
+
+\begin{table}
+\caption{A badly formatted table}
+\centering
+\label{table:bad_table}
+\begin{tabular}{|l|c|c|c|c|}
+\hline 
+& \multicolumn{2}{c}{Species I} & \multicolumn{2}{c|}{Species II} \\ 
+\hline
+Dental measurement  & mean & SD  & mean & SD  \\ \hline 
+\hline
+I1MD & 6.23 & 0.91 & 5.2  & 0.7  \\
+\hline 
+I1LL & 7.48 & 0.56 & 8.7  & 0.71 \\
+\hline 
+I2MD & 3.99 & 0.63 & 4.22 & 0.54 \\
+\hline 
+I2LL & 6.81 & 0.02 & 6.66 & 0.01 \\
+\hline 
+CMD & 13.47 & 0.09 & 10.55 & 0.05 \\
+\hline 
+CBL & 11.88 & 0.05 & 13.11 & 0.04\\ 
+\hline 
+\end{tabular}
+\end{table}
+
+\begin{table}
+\caption{A nice looking table}
+\centering
+\label{table:nice_table}
+\begin{tabular}{l c c c c}
+\hline 
+\multirow{2}{*}{Dental measurement} & \multicolumn{2}{c}{Species I} & \multicolumn{2}{c}{Species II} \\ 
+\cline{2-5}
+  & mean & SD  & mean & SD  \\ 
+\hline
+I1MD & 6.23 & 0.91 & 5.2  & 0.7  \\
+
+I1LL & 7.48 & 0.56 & 8.7  & 0.71 \\
+
+I2MD & 3.99 & 0.63 & 4.22 & 0.54 \\
+
+I2LL & 6.81 & 0.02 & 6.66 & 0.01 \\
+
+CMD & 13.47 & 0.09 & 10.55 & 0.05 \\
+
+CBL & 11.88 & 0.05 & 13.11 & 0.04\\ 
+\hline 
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\caption{Even better looking table using booktabs}
+\centering
+\label{table:good_table}
+\begin{tabular}{l c c c c}
+\toprule
+\multirow{2}{*}{Dental measurement} & \multicolumn{2}{c}{Species I} & \multicolumn{2}{c}{Species II} \\ 
+\cmidrule{2-5}
+  & mean & SD  & mean & SD  \\ 
+\midrule
+I1MD & 6.23 & 0.91 & 5.2  & 0.7  \\
+
+I1LL & 7.48 & 0.56 & 8.7  & 0.71 \\
+
+I2MD & 3.99 & 0.63 & 4.22 & 0.54 \\
+
+I2LL & 6.81 & 0.02 & 6.66 & 0.01 \\
+
+CMD & 13.47 & 0.09 & 10.55 & 0.05 \\
+
+CBL & 11.88 & 0.05 & 13.11 & 0.04\\ 
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 
 
@@ -166,10 +411,11 @@
 % Bibliography style previews: http://nodonn.tipido.net/bibstyle.php
 % Reference styles: http://sites.stat.psu.edu/~surajit/present/bib.htm
 
-\bibliographystyle{apalike}
+%\bibliographystyle{apalike}
 %\bibliographystyle{plainnat} % use this to have URLs listed in References
+\bibliographystyle{elsarticle-harv} % use this to have URLs listed in References
 \cleardoublepage
-\bibliography{References/references} % Path to your References.bib file
+\bibliography{References/Literature} % Path to your References.bib file
 
 
 % If you would like to use BibLaTeX for your references, pass `custombib' as

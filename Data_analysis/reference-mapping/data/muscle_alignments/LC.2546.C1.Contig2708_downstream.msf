@@ -1,0 +1,17 @@
+PileUp
+
+  MSF: 131  Type: N  Check: 0000  --
+
+ Name: contig1|size119|read67|cov28.71  Len: 131  Check:  8499  Weight: 0.5
+ Name: contig2|size88|read8|cov4.64     Len: 131  Check:  8686  Weight: 0.5
+
+//
+
+contig1|size119|read67|cov28.71    -----GTACT TCAAA----- --ACACTTTT TCAGTTCTGG AGGGAGGGTT
+contig2|size88|read8|cov4.64       ATGCAGCGTT TCATGTGGTA CTGCGCTTCT TC--TTC--- ---GGGCATT
+
+contig1|size119|read67|cov28.71    TCCAGAACCT CCAGTGGATC GAGCCCTCCT GGACCAAGTC TTGCTTTACG
+contig2|size88|read8|cov4.64       TTCAGAATTG ---------- -----TTTCT TGAAGTAGTT TTATATCTTG
+
+contig1|size119|read67|cov28.71    TTCCTCTTCT TCAGCTTCGG CCAAAGCAGC C
+contig2|size88|read8|cov4.64       TACTT----- ---------- -CAAAAC--- -

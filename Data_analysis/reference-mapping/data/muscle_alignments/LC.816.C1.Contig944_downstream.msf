@@ -1,0 +1,37 @@
+PileUp
+
+  MSF: 333  Type: N  Check: 0000  --
+
+ Name: contig3|size71|read8|cov5.75      Len: 333  Check:  8655  Weight: 0.353162
+ Name: contig1|size176|read99|cov28.69   Len: 333  Check:  8920  Weight: 0.323419
+ Name: contig2|size232|read168|cov36.93  Len: 333  Check:  1603  Weight: 0.323419
+
+//
+
+contig3|size71|read8|cov5.75        ---------- ---------- ---------- ---------- ----------
+contig1|size176|read99|cov28.69     ---------- ---------- ---------- ---------- ----------
+contig2|size232|read168|cov36.93    TTGTTCCATT TATATGAAAT GGCGGACGAG GTGCTAGTTT CTTATTACTT
+
+contig3|size71|read8|cov5.75        ---------- ---------- ---------- ---------- ----------
+contig1|size176|read99|cov28.69     ---------- ---------- ---------- ---------- ----------
+contig2|size232|read168|cov36.93    TCTAGAACAG AAGGAATGGC AAAGTTTTCT GTTACAGAAG AAATTATCTC
+
+contig3|size71|read8|cov5.75        ------AACA TATGTCTCAC TTGCAGAATT GCTTACTGGT GTTGGTGGAA
+contig1|size176|read99|cov28.69     ---------- ---------- ---------- ---------- ----------
+contig2|size232|read168|cov36.93    TTCATTAACA TATGTCGCAC TTGCAGAATT GCTTACTGGT GTTGGTGGAA
+
+contig3|size71|read8|cov5.75        GTGGATGAGG AATAGGAATA GGAACAG--- ---------- ----------
+contig1|size176|read99|cov28.69     -------AGG GATAGGAATA TGAACAGGAG GAGGAGAAGG AGATGCTGTG
+contig2|size232|read168|cov36.93    GTGGATGAGG GATAGGAATA GGAACAGGAG GAGGAGAAGG AGATGCTGTG
+
+contig3|size71|read8|cov5.75        ---------- ---------- ---------- ---------- ----------
+contig1|size176|read99|cov28.69     CCCTGCGGGC TTATGGGACC ATTACTACTG CTTCCGACAC TGCTCAACCT
+contig2|size232|read168|cov36.93    CCCTGCGGGC TTATGGGACC ATTACTAATG CT-------- ----------
+
+contig3|size71|read8|cov5.75        ---------- ---------- ---------- ---------- ----------
+contig1|size176|read99|cov28.69     TGTCGACACT CCACTACCTT GTGACACAAA TCTTATACTT GTCGGCTGTC
+contig2|size232|read168|cov36.93    ---------- ---------- ---------- ---------- ----------
+
+contig3|size71|read8|cov5.75        ---------- ---------- ---------- ---
+contig1|size176|read99|cov28.69     CTGTGCGACT TCCTCTTCGT GCTGGAGCAG GAT
+contig2|size232|read168|cov36.93    ---------- ---------- ---------- ---

@@ -1,0 +1,17 @@
+PileUp
+
+  MSF: 67  Type: N  Check: 0000  --
+
+ Name: contig3|size52|read3|cov2.94    Len: 67  Check:  8058  Weight: 0.357405
+ Name: contig1|size67|read41|cov31.21  Len: 67  Check:  1002  Weight: 0.321298
+ Name: contig2|size60|read8|cov6.80    Len: 67  Check:  9722  Weight: 0.321298
+
+//
+
+contig3|size52|read3|cov2.94      CACATT---- ---TGAACAT TTGAGGTC-- --GCATGATC TCACGAGTT-
+contig1|size67|read41|cov31.21    TGTATCGAGC GGATGGACGT GTACGGGTAT GGACACAACC TCTTGAATAA
+contig2|size60|read8|cov6.80      ---ATCGAGT AGATGAACGT ATACAAGTAT GGAGACAACC TCGTGAATGC
+
+contig3|size52|read3|cov2.94      -TGATTTCAA AATGT--
+contig1|size67|read41|cov31.21    ATGAACCCTG CATTTCA
+contig2|size60|read8|cov6.80      ATGGACCCTG CAT----

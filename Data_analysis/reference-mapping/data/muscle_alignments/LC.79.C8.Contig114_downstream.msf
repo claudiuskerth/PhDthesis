@@ -1,0 +1,17 @@
+PileUp
+
+  MSF: 118  Type: N  Check: 0000  --
+
+ Name: contig1|size118|read15|cov6.48  Len: 118  Check:  7966  Weight: 0.5
+ Name: contig2|size72|read7|cov4.96    Len: 118  Check:  8350  Weight: 0.5
+
+//
+
+contig1|size118|read15|cov6.48    ATATATATAC ATATATATAT ATAGTGTGTG TGTGTGTGTG TTGTTGTTGT
+contig2|size72|read7|cov4.96      -------TAC CCTCCAATAC TAA------- ---------- --------AT
+
+contig1|size118|read15|cov6.48    TGTTGTGGTC TTCAGTCCGT AGACTGGTTT GATGCAGCTC TCCACGCTAC
+contig2|size72|read7|cov4.96      TGACGAGTCC TTAATGTCTC AGA------- -ATGTGCCCT ACCAATCGAT
+
+contig1|size118|read15|cov6.48    TCTATGCTGC GCAAACCT
+contig2|size72|read7|cov4.96      CCCTTCTTTT AG------

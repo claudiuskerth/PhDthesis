@@ -1,0 +1,21 @@
+PileUp
+
+  MSF: 122  Type: N  Check: 0000  --
+
+ Name: contig3|size59|read7|cov6.05    Len: 122  Check:  6216  Weight: 0.345825
+ Name: contig1|size84|read25|cov15.18  Len: 122  Check:  2943  Weight: 0.327087
+ Name: contig2|size69|read14|cov10.35  Len: 122  Check:  1361  Weight: 0.327087
+
+//
+
+contig3|size59|read7|cov6.05      ---------- -TGTTTGAA- ---------- ---------- -AATGATGGC
+contig1|size84|read25|cov15.18    CA-------- -TGCTAGACG GC-------- ---------- -AACGATG--
+contig2|size69|read14|cov10.35    CATGGGTTGT GTGCGCGTCG TCCATTCTCC GCCTACCATT GACTGATG--
+
+contig3|size59|read7|cov6.05      CACATTTTGG GGGAGGGACA TCACAATGAC --------TG CATTCGCACA
+contig1|size84|read25|cov15.18    --------TG TGGAACTATG CCACTGCGGC CTGGATAGTG TTTTCGTACG
+contig2|size69|read14|cov10.35    --------TG CAGAAACATG CTA-GACGGC ---------- ----------
+
+contig3|size59|read7|cov6.05      ---------- ---------- --
+contig1|size84|read25|cov15.18    AATCCGGGTC TGTTTGTTTG AA
+contig2|size69|read14|cov10.35    ---------- ---------- --

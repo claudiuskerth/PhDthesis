@@ -1,0 +1,25 @@
+PileUp
+
+  MSF: 123  Type: N  Check: 0000  --
+
+ Name: contig2|size113|read25|cov11.28  Len: 123  Check:  8180  Weight: 0.318926
+ Name: contig1|size63|read6|cov4.86     Len: 123  Check:  5680  Weight: 0.310808
+ Name: contig3|size53|read4|cov3.85     Len: 123  Check:  5726  Weight: 0.185133
+ Name: contig4|size52|read3|cov2.94     Len: 123  Check:  2350  Weight: 0.185133
+
+//
+
+contig2|size113|read25|cov11.28    ------AA-- -TTAGGGCAC -GTACAGAGG CATACAGGCA TTCATTTTTC
+contig1|size63|read6|cov4.86       ATATGTAA-- -ACAGAGTAC GGCGCTGCGG TCGGCA---- ----------
+contig3|size53|read4|cov3.85       ATACTAAAGT GCCAAGGAA- ---ACTGGTA TAGGC----- ----------
+contig4|size52|read3|cov2.94       ---------- --CAAGGAA- ---ACTGTTA CAGGC----- ----------
+
+contig2|size113|read25|cov11.28    CCTCGGTCTA TATGGGAGTG GAACCGAAAA GGAAACGACT AGTACTGGTA
+contig1|size63|read6|cov4.86       ---------- -ACGCCTATG TAAGTCAACA GGT---GTCT GGCG------
+contig3|size53|read4|cov3.85       ---------- -ATGAGTATG CAAACACAGA GAT------- ----------
+contig4|size52|read3|cov2.94       ---------- -AAGTGTATG CAAACACAGA GGTACAGCTA CGTA------
+
+contig2|size113|read25|cov11.28    CACTGTACCC TCCACCACGC ACC
+contig1|size63|read6|cov4.86       ---------- ---------- ---
+contig3|size53|read4|cov3.85       ---------- ---------- ---
+contig4|size52|read3|cov2.94       ---------- ---------- ---

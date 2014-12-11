@@ -1,0 +1,12 @@
+# How the file "fragments_mapped_per_ind_plus_process_radtags_counts" eas created:
+#
+$ for i in *withRGt.bam; 
+do 
+	echo -n `echo $i | sed -r 's/.*_([ep].*)_with.*/\1/'`; echo -n "       "; 
+	samtools view -f2 -F128 $i LC.3629.C1.Contig3766_primer3ready_with_SE_RADtags 
+	| cut -f8 | sort -n | uniq | wc -l; 
+done > LC.3629.C1.Contig3766_fragments_mapped_per_ind
+
+join -1 1 -2 1 <(join -1 1 -2 1 <(join -1 1 -2 1 LC.816.C1.Contig944_fragments_mapped_per_ind LC.3629.C1.Contig3766_fragments_mapped_per_ind) LC.1628.C1.Contig1776_fragments_mapped_per_ind) LC.153.C1.Contig213_fragments_mapped_per_ind
+
+head -1 reads_mapped_per_ind_plus_process_radtags_counts | cat - <(join -1 1 -2 1 <(tail -n +2 fragments_mapped_per_ind | sort -k1,1) <(tail -n +2 reads_mapped_per_ind_plus_process_radtags_counts | sort -k1,1| cut -f1,6-)) | sed 's/ /\t/g' > fragments_mapped_per_ind_plus_process_radtags_counts

@@ -1,0 +1,18 @@
+     1	LC.1365.C1.Contig1509_primer3ready_with_SE_RADtags	very few reads map, no PE read maps to upstream contig	low	-	rep
+     2	LC.153.C1.Contig213_primer3ready_with_SE_RADtags	good	-	-	-
+     3	LC.1628.C1.Contig1776_primer3ready_with_SE_RADtags	good	-	-	-
+     4	LC.2546.C1.Contig2708_primer3ready_with_SE_RADtags	acceptable, not many individuals have reads mapped, repeat masking in upstream contig	low	-	rep
+     5	LC.29.C2.Contig39_primer3ready_with_SE_RADtags	acceptable, only one ery has reads mapped to the downstream contig, several par ind have reads mapped to downstream contig, still overall bias towards upstream contig, when manually merging SSAKE contigs for upstream contig I noted that it might be duplicated	low	-	rep
+     6	LC.3629.C1.Contig3766_primer3ready_with_SE_RADtags	good	-	-	-
+     7	LC.3754.C1.Contig3884_primer3ready_with_SE_RADtags	this RAD site does not seem to occur in ery, only in par	-	-	-
+     8	LC.4254.C1.Contig4373_primer3ready_with_SE_RADtags	acceptable, the number and divergence of the reads indicates that this locus contains repeated sequences	high	div	rep
+     9	LC.46.C1.Contig64_primer3ready_with_SE_RADtags	acceptable, generally low number of reads, only one has more than one fragment sequenced, no ind has reads mapped on both sides of the RAD site	low	-	-
+    10	LC.637.C2.Contig746_primer3ready_with_SE_RADtags	acceptable, however the high number of reads mapped and their high divergence indicates that this locus contains repeated sequences	high	div	rep
+    11	LC.689.C1.Contig803_primer3ready_with_SE_RADtags	acceptable, but ery has mostly indel containing reads mapped to the upstream RAD tag, generally low number of reads	low	div	-
+    12	LC.816.C1.Contig944_primer3ready_with_SE_RADtags	good	-	-	-
+    13	LC01005A2G05.f1_primer3ready_with_SE_RADtags	the extremely high number of reads and their divergence indicate that this locus contains repeated sequences	high	div	rep
+    14	LC01010B2D11.f1_primer3ready_with_SE_RADtags	acceptable, but not many ind have reads mapped and if so with only one fragment on either side	low	-	-
+    15	LC01053A2H03.f1_primer3ready_with_SE_RADtags	good, but with some divergent reads mapped and some SE reads that map to the downstream contig, which indicates that this locus has reptetitive sequences	-	div	rep
+    16	LC02008A1C02.f1_primer3ready_with_SE_RADtags	the reads that map mostly contain indels and highly numerous --> repetitive	high	div	rep
+    17	LC03001B1D09.f1_primer3ready_with_SE_RADtags	repetitive	high	div	rep
+    18	LC03012B1A04.f1_primer3ready_with_SE_RADtags	dodgy, no consistent mapping of SE reads to the RAD site and wrong orientation mapping of PE reads --> repetitive	-	div	rep
