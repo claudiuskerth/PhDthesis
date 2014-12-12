@@ -1,7 +1,7 @@
 %%%%%% -- KNITR SETUP -- %%%%%%%%%%
 <<setup_ch3, include=FALSE, cache=FALSE>>=
 # set global chunk options for this child doc
-opts_chunk$set(fig.path='/Figs/Knitr/', 
+opts_chunk$set(fig.path='Chapter3/Figs/Knitr/', 
 	fig.align='center', 
 	fig.show='hold'
 	)

@@ -1,5 +1,5 @@
 ## @knitr fragments_mapped_per_ind
-setwd("/Users/Claudius/Documents/PhD/THESIS/kks32/Latex/Data_analysis/reference-mapping/data")
+setwd("~/Data_analysis/reference-mapping/data")
 
 fragments_per_ind <- read.delim("fragments_mapped_per_ind",
                             header=T)
