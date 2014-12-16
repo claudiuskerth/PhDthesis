@@ -35,6 +35,7 @@
 
 \RequirePackage[labelsep=space,tableposition=top]{caption}
 \renewcommand{\figurename}{Fig.} %to support older versions of captions.sty
+\usepackage{varioref}
 
 
 % *************************** Graphics and figures *****************************
@@ -75,9 +76,19 @@
 % Choose linespacing as appropriate. Default is one-half line spacing as per the
 % University guidelines
 
+%\usepackage{setspace} % already loaded
 % \doublespacing
 % \onehalfspacing
 % \singlespacing
+% \setstretch{<baselinestretch>}
+
+% e. g.:
+%\begin{spacing}{1.2}
+%\tableofcontents
+%\listoffigures
+%\listoftables
+%\end{spacing}
+\raggedbottom % leaves empty space at the bottom of pages if necessary
 
 
 % ************************ Formatting / Footnote *******************************
@@ -146,7 +157,7 @@
 
 
 % ******************************* Nomenclature *********************************
-
+ 
 % To change the name of the Nomenclature section, uncomment the following line
 
 %\renewcommand{\nomname}{Symbols}
@@ -192,4 +203,13 @@
 
 % Example todo: \mynote{Hey! I have a note}
 
+%******************************** Glossary ***************************************************
+\input{Glossary/glossary}
+%\usepackage[toc]{glossaries}
+%\makeglossaries
+%\renewcommand*{\glstextformat}[1]{\textsf{#1}}
+%
+%\newglossaryentry{fragment}{name=fragment, description={not a PCR duplicate}}
+%
+%\newacronym{snp}{SNP}{single nucleotide polymorphism}
 

@@ -14,7 +14,7 @@
 % ******************************* PhD Thesis Template **************************
 % Please have a look at the README.md file for info on how to use the template
 
-\documentclass[a4paper,12pt,times,numbered,print,index]{Classes/PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,authoryear,oneside,openright,online,index]{Classes/PhDThesisPSnPDF}
 % I copied PhDThesisPSnPDF.cls to /usr/local/texlive/2012/texmf/tex/latex
 % execute $ sudo texhash
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
@@ -97,7 +97,7 @@
 \input{Preamble/preamble}
 
 % ************************ Thesis Information & Meta-data **********************
-% Thesis title and author information, refernce file for biblatex
+% Thesis title and author information, reference file for biblatex
 \input{thesis-info}
 
 % ***************************** Abstract Separate ******************************
@@ -113,7 +113,7 @@
 % ***************************** Chapter Mode ***********************************
 % The chapter mode allows user to only print particular chapters with references
 % Title, Contents, Frontmatter are disabled by default
-% Useful option to review a particular chapter or to send it to supervisior.
+% Useful option to review a particular chapter or to send it to a supervisor.
 % To use choose `chapter' option in the document class
 
 \ifdefineChapter
@@ -159,6 +159,8 @@ options(replace.assign=TRUE,width=90)
 
 \printnomencl
 
+\printglossaries
+
 % ******************************** Main Matter *********************************
 \mainmatter
 
@@ -169,6 +171,7 @@ options(replace.assign=TRUE,width=90)
 %\include{Chapter5/chapter5}
 %\include{Chapter6/chapter6}
 %\include{Chapter7/chapter7}
+
 <<chapter3, child='Chapter3/chapter3.Rnw'>>=
 @
 

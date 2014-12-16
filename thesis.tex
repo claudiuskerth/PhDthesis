@@ -14,7 +14,7 @@
 % ******************************* PhD Thesis Template **************************
 % Please have a look at the README.md file for info on how to use the template
 
-\documentclass[a4paper,12pt,times,numbered,print,index]{Classes/PhDThesisPSnPDF}\usepackage[]{graphicx}\usepackage[]{color}
+\documentclass[a4paper,12pt,times,authoryear,oneside,openright,online,index]{Classes/PhDThesisPSnPDF}\usepackage[]{graphicx}\usepackage[]{color}
 %% maxwidth is the original width if it is less than linewidth
 %% otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -146,7 +146,7 @@
 \input{Preamble/preamble}
 
 % ************************ Thesis Information & Meta-data **********************
-% Thesis title and author information, refernce file for biblatex
+% Thesis title and author information, reference file for biblatex
 \input{thesis-info}
 
 % ***************************** Abstract Separate ******************************
@@ -162,7 +162,7 @@
 % ***************************** Chapter Mode ***********************************
 % The chapter mode allows user to only print particular chapters with references
 % Title, Contents, Frontmatter are disabled by default
-% Useful option to review a particular chapter or to send it to supervisior.
+% Useful option to review a particular chapter or to send it to a supervisor.
 % To use choose `chapter' option in the document class
 
 \ifdefineChapter
@@ -202,6 +202,8 @@
 
 \printnomencl
 
+\printglossaries
+
 % ******************************** Main Matter *********************************
 \mainmatter
 
@@ -212,6 +214,7 @@
 %\include{Chapter5/chapter5}
 %\include{Chapter6/chapter6}
 %\include{Chapter7/chapter7}
+
 
 %%%%%% -- KNITR SETUP -- %%%%%%%%%%
 
@@ -227,33 +230,43 @@
     \graphicspath{{Chapter3/Figs/Vector/}{Chapter3/Figs/}}
 \fi
 
+% ************************************************************************************%   
+
 \section{First section of the third chapter}
 And now I begin my third chapter here \dots
 
 And now to cite some more people~\citet{Rea85,Ancey1996}
-\citet{Baird2008} were the first to publish about RAD.
+\citet{Baird2008} were the first to publish about RAD. \SI{12,3}{\micro\metre}
 
+Fig.~\vref{fragments-mapped-per-ind} shows the number of \glspl{fragment} mapped per individual.
+I am trying to find \glspl{snp} among individuals of the sample.
 
 
 \begin{figure}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\linewidth]{/Figs/Knitr/fragments_mapped_per_ind-1} 
+{\centering \includegraphics[width=\linewidth]{Chapter3/Figs/Knitr/fragments_mapped_per_ind-1} 
 
 }
 
 
 
 \end{knitrout}
-\caption{Distribution of RAD fragment numbers mapped to 4 primer3ready reference contigs. A "fragment" is a properly mapped read pair from an individual with a unique insert size. If two read pairs on a RAD site from an individual have the same insert size, they constitute only one fragment, i. e. one read pair is likely to be a PCR duplicate.}
+\caption{Distribution of RAD fragment numbers mapped to 4 primer3ready reference contigs. 
+A "fragment" is a properly mapped read pair from an individual with a unique insert size. 
+If two read pairs on a RAD site from an individual have the same insert size, they constitute only one fragment, i. e. one read pair is likely to be a PCR duplicate.}
 \label{fragments-mapped-per-ind}
 \end{figure}
 
 \begin{quote}
 Bonzai: Are you as successful as you would like to be?
 
-Zappa: I would say that the basic characteristic of my life is failure. If there is one thing that I excel at, it's failure -- I manage to fail at 100 percent of the things that I do. Since most of the things that I set out to do are theoretically impossible, it's very easy to fail. I've learned to live with it. In terms of machinery and personnel, there never seems to be enough to get things done exactly right.
+Zappa: I would say that the basic characteristic of my life is failure. 
+If there is one thing that I excel at, it's failure -- I manage to fail at 100 percent of the things that I do. 
+Since most of the things that I set out to do are theoretically impossible, it's very easy to fail. 
+I've learned to live with it. 
+In terms of machinery and personnel, there never seems to be enough to get things done exactly right.
 \end{quote}
 
 

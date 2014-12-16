@@ -33,7 +33,6 @@
 *.ind*
 *.ist
 *.ist*
-*.latexmkrc*
 *.lof
 *.lof*
 *.log
