@@ -75,5 +75,9 @@ thesis.txt*
 #*.jpg
 *cache*
 thesis.pdf
-Chapter*/Figs/Knitr
+chapter*.pdf
+Data_analysis/reference-mapping/ref-map-doc.pdf
+*.vrb
+Presentations/Group_meeting/incomplete_digestion.pdf
+*Chapter*/Figs/Knitr
 *.tiff
