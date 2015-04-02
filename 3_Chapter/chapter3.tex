@@ -50,6 +50,8 @@
 \usepackage{alltt}
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
+\usepackage{import}
+
 \input{../Preamble/preamble}
 
 %******************************** Glossary *********************************************
@@ -67,10 +69,19 @@
 
 % **************************** Define Graphics Path **************************
 \ifpdf
-    \graphicspath{{3_Chapter/Figs/Raster/}{3_Chapter/Figs/PDF/}{3_Chapter/Figs/}}
+    \graphicspath{
+    {./Figs/Raster/}
+    {./Figs/PDF/}
+    {./Figs/}
+    }
 \else
-    \graphicspath{{3_Chapter/Figs/Vector/}{3_Chapter/Figs/}}
+    \graphicspath{ 
+    {./Figs/Vector/}
+    {./Figs/}
+%    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs}
+    }
 \fi
+
 
 % ************************************************************************************
 
@@ -88,12 +99,87 @@ I've learned to live with it.
 In terms of machinery and personnel, there never seems to be enough to get things done exactly right.
 }{interview with Frank Zappa, 1985}
 
-\section{The Problem}
 
-describe the observations in the stacks output
-incomplete digestion as a possible underlying cause
+% --------------------------------
+\section{Introduction}
+% --------------------------------
+The initial goal was to do a hybrid zone analysis and a QTL mapping study with a genetic marker technique that would allow the reliable scoring of genotypes at 1000$+$ loci in the genome of the grasshoppers at relatively low cost. The \gls{rad} marker technique, first described by \cite{Baird2008}, seemed to fulfil that promise.  \gls{rad}, aka RADseq, is the high-throughput sequencing of restriction fragment ends. \\
 
-\section{Data and Methods}
+%% ------------------------------------
+\subsection{Why use RAD?}
+%% ------------------------------------
+RADseq requires no prior genome sequence information. Only genome size and GC content are required to estimate the required read number for a certain target coverage. 
+RADseq can yield co-dominant \gls{snp} markers in \glspl{RAD tag}, dominant presence/absence markers when the restriction site sequence is polymorphic or short indel polymorphisms when the clustering algorithm allows for them. Additionally, when doing \gls{pe} sequencing, a \gls{pe} contig can be assembled for a given \gls{RAD tag} (figure \ref{RAD_protocol_overview}).
+Given enough coverage and when using adapters with barcode sequences, individual genotypes can be scored and hybrid zone analysis (especially genomic clines analysis) as well as QTL mapping require genotypes not population allele frequencies. 
+
+Since the original version of \gls{rad} sequences tags around every restriction site (figure \ref{RAD_protocol_overview}), it allows for only limited complexity reduction. Further complexity reduction can be achieved by skipping the shaering of restriction fragments and instead size selecting a range of restriction fragments that have the right size for the sequencing platform. Further fine tuning of fragment number can be achieved when digesting DNA with two enzymes, so-called double-digest \gls{rad} \citep{Peterson2012}.
+
+% ---- add glossary entrywithout generating text ----
+\glsadd[]{barcode} % allows to use \glshyperlink in captions
+
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{RADprotocolOverview}
+\caption{Overview of the \gls{rad} marker technique. (1) One restriction enzyme is used to digest genomic DNA. The first illumina adapter (P1), containing a different \glshyperlink[barcode]{barcode} (here called index) sequence for each individual, is then ligated to the restriction fragments. The restriction fragments are then sheared, usually by high-frequency sonication, into a fragment size range that is suitable for illumina sequencing, which is selected on an agarose gel. After ligation of the second illumina adapter (P2), fragments with at least one P1 adapter are enriched by selective PCR. (2) The \gls{se} reads start with a barcode sequence, followed by the remainder of the restriction site. Only relatively short sequences (tags) are generated from the ends of the fragments. (3) Due to random shearing of restriction fragments, the \gls{pe} reads start at variable genomic distance from the restriction site (unless they are PCR duplicates) and thus can be assembled into short \gls{pe} contigs, depending on the size range selected on the gel. Taken from \cite{Atwood2011}. }
+\label{RAD_protocol_overview}
+\end{figure}
+
+\begin{figure}
+%\includegraphics[width=\textwidth]{/Users/Claudius/Documents/PhD/sRAD/RAD_sketches/RAD_sketches}\\
+%\includegraphics[width=\textwidth]{/Users/Claudius/Documents/PhD/sRAD/RAD_sketches/RAD_sketches_1}\\
+\def\svgwidth{\textwidth}
+\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_1.pdf_tex}
+\caption{double-digest RAD protocol overview}
+\label{ddRAD_protocol_overview}
+\end{figure}
+
+
+
+\begin{enumerate}
+\item ddRAD protocol sketch
+\end{enumerate}
+
+%% ------------------------------------
+\subsection{The Problem}
+%% ------------------------------------
+one standard RAD library \\
+one ddRAD library \\
+assembly/clustering of reads into putative RAD tags \\
+filtering paralogs in highly repetitive genomes \\
+
+
+\begin{itemize}
+\item large genome size $+$ genome size variation
+\item assembly of RAD tags into loci that can only be found in 1 or 2 individuals
+\item graphs of frequency distributions of putative RAD loci over number of individuals in which they were found
+\end{itemize}
+
+\begin{itemize}
+\item what problems did arise
+\item describe the observations in the stacks output, uneven coverage
+\item incomplete digestion as a possible underlying cause
+\end{itemize}
+
+\section{Methods \& and Results}
+
+\begin{itemize}
+\item work off questions
+\item leave details including command lines for suppl. material
+\item how much heterozygosity within populations, after long distance dispersal
+\item leap-frog dispersal
+\item Lunt, Cooper, Cpn1, mitochondria
+\end{itemize}
+
+
+
+\section{Estimating divergence time of the two subspecies}
+
+\begin{itemize}
+\item ABS, simCoal
+\item long dispersal tail --> potential for contact between distal populations
+\item test gene flow <-> no gene flow model
+\end{itemize}
+
 
 \section{Results}
 
@@ -269,6 +355,10 @@ CBL & 11.88 & 0.05 & 13.11 & 0.04\\
 \bottomrule
 \end{tabular}
 \end{table}
+
+%----------------------------
+% Bibliography
+%----------------------------
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
