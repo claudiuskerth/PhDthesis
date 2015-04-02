@@ -70,7 +70,8 @@ thesis.bcf*
 thesis.run.xml*
 thesis.txt*
 *.ps
-#*.pdf
+*.pdf
+*.pdf_tex
 #*.png
 #*.jpg
 *cache*

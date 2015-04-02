@@ -76,23 +76,30 @@ RADseq requires no prior genome sequence information. Only genome size and GC co
 RADseq can yield co-dominant \gls{snp} markers in \glspl{RAD tag}, dominant presence/absence markers when the restriction site sequence is polymorphic or short indel polymorphisms when the clustering algorithm allows for them. Additionally, when doing \gls{pe} sequencing, a \gls{pe} contig can be assembled for a given \gls{RAD tag} (figure \ref{RAD_protocol_overview}).
 Given enough coverage and when using adapters with barcode sequences, individual genotypes can be scored and hybrid zone analysis (especially genomic clines analysis) as well as QTL mapping require genotypes not population allele frequencies. 
 
-Since the original version of \gls{rad} sequences tags around every restriction site (figure \ref{RAD_protocol_overview}), it allows for only limited complexity reduction. Further complexity reduction can be achieved by skipping the shaering of restriction fragments and instead size selecting a range of restriction fragments that have the right size for the sequencing platform. Further fine tuning of fragment number can be achieved when digesting DNA with two enzymes, so-called double-digest \gls{rad} \citep{Peterson2012}.
-
+Since the original version of \gls{rad} sequences tags around every restriction site (figure \ref{RAD_protocol_overview}), it allows for only limited complexity reduction. Further complexity reduction can be achieved by skipping the step of shaering the restriction fragments and instead size selecting a range of restriction fragments that have the right size for the sequencing platform. Further fine tuning of fragment number can be achieved when digesting DNA with two enzymes, so-called double-digest \gls{rad} (figure \ref{ddRAD_protocol_overview}) \citep{Peterson2012}.
 % ---- add glossary entrywithout generating text ----
 \glsadd[]{barcode} % allows to use \glshyperlink in captions
 
 \begin{figure}
 \centering
 \includegraphics[width=.7\textwidth]{RADprotocolOverview}
-\caption{Overview of the \gls{rad} marker technique. (1) One restriction enzyme is used to digest genomic DNA. The first illumina adapter (P1), containing a different \glshyperlink[barcode]{barcode} (here called index) sequence for each individual, is then ligated to the restriction fragments. The restriction fragments are then sheared, usually by high-frequency sonication, into a fragment size range that is suitable for illumina sequencing, which is selected on an agarose gel. After ligation of the second illumina adapter (P2), fragments with at least one P1 adapter are enriched by selective PCR. (2) The \gls{se} reads start with a barcode sequence, followed by the remainder of the restriction site. Only relatively short sequences (tags) are generated from the ends of the fragments. (3) Due to random shearing of restriction fragments, the \gls{pe} reads start at variable genomic distance from the restriction site (unless they are PCR duplicates) and thus can be assembled into short \gls{pe} contigs, depending on the size range selected on the gel. Taken from \cite{Atwood2011}. }
+\caption{Overview of the \gls{rad} marker technique. (1) One restriction enzyme is used to digest genomic DNA. The first illumina adapter (P1), containing a different \glshyperlink[\textsf{barcode}]{barcode} (here called index) sequence for each individual, is then ligated to the restriction fragments. The restriction fragments are then sheared, usually by high-frequency sonication, into a fragment size range that is suitable for illumina sequencing, which is selected on an agarose gel. After ligation of the second illumina adapter (P2), fragments with at least one P1 adapter are enriched by selective PCR. (2) The \gls{se} reads start with a barcode sequence, followed by the remainder of the restriction site. Only relatively short sequences (tags) are generated from the ends of the fragments. (3) Due to random shearing of restriction fragments, the \gls{pe} reads start at variable genomic distance from the restriction site (unless they are PCR duplicates) and thus can be assembled into short \gls{pe} contigs, depending on the size range selected on the gel. Taken from \cite{Atwood2011}. }
 \label{RAD_protocol_overview}
 \end{figure}
 
 \begin{figure}
 %\includegraphics[width=\textwidth]{/Users/Claudius/Documents/PhD/sRAD/RAD_sketches/RAD_sketches}\\
 %\includegraphics[width=\textwidth]{/Users/Claudius/Documents/PhD/sRAD/RAD_sketches/RAD_sketches_1}\\
+\def\svgwidth{.9\textwidth}
+\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_1.pdf_tex}\\ 
 \def\svgwidth{\textwidth}
-\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_1.pdf_tex}
+\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_2.pdf_tex}\\
+\def\svgwidth{.9\textwidth}
+\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_3.pdf_tex}\\
+\def\svgwidth{.9\textwidth}
+\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_4.pdf_tex}\\
+\def\svgwidth{.9\textwidth}
+\subimport{./Figs/Inkscape_Graphics/}{ddRAD_overview_5.pdf_tex}
 \caption{double-digest RAD protocol overview}
 \label{ddRAD_protocol_overview}
 \end{figure}
