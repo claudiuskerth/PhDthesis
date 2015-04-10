@@ -1,5 +1,29 @@
-## @knitr fragments_mapped_per_ind
-setwd("~/Data_analysis/reference-mapping/data")
+# ## ---- set working directory ----
+# setwd("~/Data_analysis/reference-mapping/data")
+
+## ---- freq dist of genotype calls for stacks loci ----
+
+rm(list=ls())
+
+geno_calls <- read.delim("export_depth_cov_09042015.tsv", header=T)
+
+x <- table(geno_calls$geno_calls)
+y <- x/sum(x)
+
+# sum(y[1:2])
+
+par(mfrow=c(1,1), bg="cornsilk")
+
+barplot(
+        y,
+        ylim=c(0, max(y)*1.2),
+        ylab="proportion of all loci in the catalog",
+        xlab="number of genotype calls",
+        main="standard RAD library with SbfI"
+)
+
+
+## ---- fragments_mapped_per_ind ----
 
 fragments_per_ind <- read.delim("fragments_mapped_per_ind",
                             header=T)

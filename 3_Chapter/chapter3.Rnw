@@ -17,11 +17,14 @@ opts_chunk$set(
 	fig.show='hold'
 	)
 options(replace.assign=TRUE,width=90)
+# set up working directory for all code chunks, obviates the need to
+# setwd() in each chunk
+opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
+# read in external R code file
+read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
 # include preamble from main doc for isolated compilation
 # doesn't currently work because relative paths are used there
 # set_parent('../thesis.Rnw')
-#
-read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -67,6 +70,10 @@ I've learned to live with it.
 In terms of machinery and personnel, there never seems to be enough to get things done exactly right.
 }{interview with Frank Zappa, 1985}
 
+% ------------------------------------------------------------------------------------------------
+<<set working directory, echo=FALSE, cache=TRUE>>=
+@
+% ------------------------------------------------------------------------------------------------
 
 % --------------------------------
 \section{Introduction}
@@ -117,29 +124,41 @@ Since the original version of \gls{rad} sequences tags around every restriction 
 %% ------------------------------------
 \subsection{The Problem}
 %% ------------------------------------
-one standard RAD library \\
-one ddRAD library \\
-assembly/clustering of reads into putative RAD tags \\
-filtering paralogs in highly repetitive genomes \\
 
+A standard RAD library was prepared according to the protocol of Paul Etter, (University of Oregon, \citealt{Baird2008}). The RAD library contained DNA from 36 grasshoppers sampled from the two distal populations ("Aunat" and "Greixer") of a transect through the \textit{Chorthippus parallelus / erythropus} hybrid zone in the Pyrenees between France and Spain. The RAD library was sequenced on an illumina GAIIx and the resulting reads assembled with the programme suite \texttt{stacks}.
 
-\begin{itemize}
-\item large genome size $+$ genome size variation
+Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distribution of loci -- reconstructed by \texttt{stacks} version 0.998 -- over the number of individuals that have a genotype called for that locus. \texttt{Stacks} was run with a minimum allele coverage of 3 per individual and a maximum number of mismatches between alleles of 2 for merging alleles into loci within individuals as well as assembling a catalog of loci for the whole sample of 36 grasshoppers (further details can be looked up on the \href{http://creskolab.uoregon.edu/stacks/param_tut.php}{\texttt{stacks}} home page). About 50\% of the 379,720 unfiltered reconstructed loci have only a genotype call in one or two of the 36 individuals.
+
+\begin{enumerate}
+\item what is the expected number of RAD loci from standard and double-digest libraries
 \item assembly of RAD tags into loci that can only be found in 1 or 2 individuals
 \item graphs of frequency distributions of putative RAD loci over number of individuals in which they were found
-\end{itemize}
-
-\begin{itemize}
-\item what problems did arise
 \item describe the observations in the stacks output, uneven coverage
+\item what problems did arise
+\item one ddRAD library
 \item incomplete digestion as a possible underlying cause
-\end{itemize}
+\item assembly/clustering of reads into putative RAD tags
+\end{enumerate}
 
+
+
+\begin{figure}
+\centering
+<<freq dist of genotype calls for stacks loci, echo=FALSE, out.width='.9\\linewidth', cache=TRUE>>=
+@
+\caption{Frequency distribution of loci, reconstructed by \texttt{stacks} (i. e. so-called "catalog stacks"), over the number of individuals in which they have a genotype call.}
+\label{Big_Data:freq_dist_of_genotype_calls}
+\end{figure}
+
+
+%% ---------------------------------------------------
 \section{Methods \& and Results}
+%% ---------------------------------------------------
 
 \begin{itemize}
 \item work off questions
 \item leave details including command lines for suppl. material
+\item template amount estimation with fluorometer before and after PCR, qPCR
 \item how much heterozygosity within populations, after long distance dispersal
 \item leap-frog dispersal
 \item Lunt, Cooper, Cpn1, mitochondria
@@ -153,6 +172,8 @@ filtering paralogs in highly repetitive genomes \\
 \item ABS, simCoal
 \item long dispersal tail --> potential for contact between distal populations
 \item test gene flow <-> no gene flow model
+\item filtering paralogs in highly repetitive genomes
+\item large genome size $+$ genome size variation
 \end{itemize}
 
 
