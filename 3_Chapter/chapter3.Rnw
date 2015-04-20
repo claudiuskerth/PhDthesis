@@ -34,6 +34,8 @@ read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
 
 \listoffigures
 
+\listof{cmd}{List of commands}
+
 \printglossaries
 
 \chapter{Testing incomplete digestion}
@@ -78,16 +80,16 @@ In terms of machinery and personnel, there never seems to be enough to get thing
 % --------------------------------
 \section{Introduction}
 % --------------------------------
-The initial goal was to do a hybrid zone analysis and a QTL mapping study with a genetic marker technique that would allow the reliable scoring of genotypes at 1000$+$ loci in the genome of the grasshoppers at relatively low cost. The \gls{rad} marker technique, first described by \cite{Baird2008}, seemed to fulfil that promise.  \gls{rad}, aka RADseq, is the high-throughput sequencing of restriction fragment ends. \\
+The initial goal was to do a hybrid zone analysis and a QTL mapping study with a genetic marker technique that would allow the reliable scoring of genotypes at 1000$+$ loci in the genome of the grasshoppers at relatively low cost. The \gls{rad} marker technique, first described by \cite{Baird2008}, seemed to fulfil that promise.
 
 %% ------------------------------------
 \subsection{Why use RAD?}
 %% ------------------------------------
-RADseq requires no prior genome sequence information. Only genome size and GC content are required to estimate the required read number for a certain target coverage. 
+\gls{rad}, aka RADseq, is the high-throughput sequencing of restriction fragment ends (figure \ref{RAD_protocol_overview}). It requires no prior genome sequence information. Only genome size and GC content are required to estimate the required number of reads for a certain target coverage. 
 RADseq can yield co-dominant \gls{snp} markers in \glspl{RAD tag}, dominant presence/absence markers when the restriction site sequence is polymorphic or short indel polymorphisms when the clustering algorithm allows for them. Additionally, when doing \gls{pe} sequencing, a \gls{pe} contig can be assembled for a given \gls{RAD tag} (figure \ref{RAD_protocol_overview}).
-Given enough coverage and when using adapters with barcode sequences, individual genotypes can be scored and hybrid zone analysis (especially genomic clines analysis) as well as QTL mapping require genotypes not population allele frequencies. 
+Given enough coverage and when using adapters with barcode sequences, individual genotypes can be scored which is required for hybrid zone analysis (especially genomic clines analysis) as well as QTL mapping. 
 
-Since the original version of \gls{rad} sequences tags around every restriction site (figure \ref{RAD_protocol_overview}), it allows for only limited complexity reduction. Further complexity reduction can be achieved by skipping the step of shaering the restriction fragments and instead size selecting a range of restriction fragments that have the right size for the sequencing platform. Further fine tuning of fragment number can be achieved when digesting DNA with two enzymes, so-called double-digest \gls{rad} (figure \ref{ddRAD_protocol_overview}) \citep{Peterson2012}.
+Since the original version of \gls{rad} sequences tags around every restriction site (figure \ref{RAD_protocol_overview}), it allows for only limited complexity reduction. Further complexity reduction can be achieved by skipping the step of shearing the restriction fragments and instead size selecting a range of restriction fragments that have the right size for the sequencing platform. Further fine tuning of fragment number can be achieved when digesting DNA with two enzymes, so-called double-digest \gls{rad} (figure \ref{ddRAD_protocol_overview}) \citep{Peterson2012}.
 % ---- add glossary entrywithout generating text ----
 \glsadd[]{barcode} % allows to use \glshyperlink in captions
 
@@ -125,30 +127,53 @@ Since the original version of \gls{rad} sequences tags around every restriction 
 \subsection{The Problem}
 %% ------------------------------------
 
-A standard RAD library was prepared according to the protocol of Paul Etter, (University of Oregon, \citealt{Baird2008}). The RAD library contained DNA from 36 grasshoppers sampled from the two distal populations ("Aunat" and "Greixer") of a transect through the \textit{Chorthippus parallelus / erythropus} hybrid zone in the Pyrenees between France and Spain. The RAD library was sequenced on an illumina GAIIx and the resulting reads assembled with the programme suite \texttt{stacks}.
+A standard RAD was prepared according to the protocol of Paul Etter, (University of Oregon, \citealt{Baird2008}). The RAD library contained DNA from 36 grasshoppers sampled from the two distal populations ("Aunat" and "Greixer") of a transect through the \textit{Chorthippus parallelus / erythropus} hybrid zone in the Pyrenees between France and Spain. The RAD library was sequenced on an illumina GAIIx and the resulting reads assembled with the programme suite \texttt{stacks} \citep{Catchen2011}.
 
-Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distribution of loci -- reconstructed by \texttt{stacks} version 0.998 -- over the number of individuals that have a genotype called for that locus. \texttt{Stacks} was run with a minimum allele coverage of 3 per individual and a maximum number of mismatches between alleles of 2 for merging alleles into loci within individuals as well as assembling a catalog of loci for the whole sample of 36 grasshoppers (further details can be looked up on the \href{http://creskolab.uoregon.edu/stacks/param_tut.php}{\texttt{stacks}} home page). About 50\% of the 379,720 unfiltered reconstructed loci have only a genotype call in one or two of the 36 individuals.
+Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distribution of loci -- reconstructed by \texttt{stacks} version 0.998 -- over the number of individuals that have a genotype called for that locus. \texttt{Stacks} was run with a minimum allele coverage of 3 per individual and a maximum number of mismatches between alleles of 2 for merging alleles into loci within individuals as well as assembling a catalog of loci for the whole sample of 36 grasshoppers (further details can be looked up on the \href{http://creskolab.uoregon.edu/stacks/param_tut.php}{\texttt{stacks}} home page). About 50\% of the 379,720 unfiltered reconstructed loci have only a genotype call in one or two of the 36 individuals. About 170,000 RAD markers were expected from this library (see section \ref{ch:RAD_marker_number}) assuming a genome size of 12 giga \glspl{bp} (see section \ref{ch:Genome_size}).
 
-\begin{enumerate}
-\item what is the expected number of RAD loci from standard and double-digest libraries
-\item assembly of RAD tags into loci that can only be found in 1 or 2 individuals
-\item graphs of frequency distributions of putative RAD loci over number of individuals in which they were found
-\item describe the observations in the stacks output, uneven coverage
-\item what problems did arise
-\item one ddRAD library
-\item incomplete digestion as a possible underlying cause
-\item assembly/clustering of reads into putative RAD tags
-\end{enumerate}
+%\begin{figure}
+%\centering
+%<<freq dist of genotype calls Big Data, echo=FALSE, out.width='.9\\linewidth', cache=TRUE>>=
+%@
+%\caption{Frequency distribution of loci, reconstructed by \texttt{stacks} (i. e. so-called "catalog stacks"), over the number of individuals in which they have a genotype call.}
+%\label{Big_Data:freq_dist_of_genotype_calls}
+%\end{figure}
 
+Figure \ref{ddRAD:freq_dist_of_genotype_calls} shows the frequency distribution of reconstructed loci over the number of individuals for which they have a genotype called for the data of an \gls{SbfI}$+$\gls{XhoI} double-digest RAD library. The \gls{se} and \gls{pe} \glspl{RAD tag} have been merged before the assembly with \texttt{stacks}. \texttt{Stacks} was run with a minimum allele depth of 3 and maximum mismatch distance of 6 for merging alleles into read stacks within individuals as well as assembling a catalog stack from the individual stacks of all 36 grasshoppers (plus 2 technical replicates). Of the 156,532 loci (i. e. catalog stacks) that \texttt{stacks} had assembled, 51\% can only be found in one individual and only 3.5\% can be found in 20 or more individuals. Around 16,000 RAD markers were expected from this double-digest library (see equation \ref{eq:exp_number_ddRAD_loci} in chapter \ref{ch:RAD_marker_number}).
 
+%\begin{figure}
+%\centering
+%<<freq dist of genotype calls SbfI-XhoI, echo=FALSE, out.width='.9\\linewidth', cache=TRUE>>=
+%@
+%\caption{Frequency distribution of catalog tags over the number of individuals in which they have a genotype call.}
+%\label{ddRAD:freq_dist_of_genotype_calls}
+%\end{figure}
 
 \begin{figure}
 \centering
-<<freq dist of genotype calls for stacks loci, echo=FALSE, out.width='.9\\linewidth', cache=TRUE>>=
+\begin{subfigure}[t]{.495\textwidth}
+<<freq dist of genotype calls Big Data, echo=FALSE, out.width='.9\\linewidth', cache=TRUE>>=
 @
-\caption{Frequency distribution of loci, reconstructed by \texttt{stacks} (i. e. so-called "catalog stacks"), over the number of individuals in which they have a genotype call.}
+\caption{}
 \label{Big_Data:freq_dist_of_genotype_calls}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{.495\textwidth}
+<<freq dist of genotype calls SbfI-XhoI, echo=FALSE, out.width='.9\\linewidth', cache=TRUE>>=
+@
+\caption{}
+\label{ddRAD:freq_dist_of_genotype_calls}
+\end{subfigure}
+\caption{Frequency distribution of loci, reconstructed by \texttt{stacks} (i. e. so-called "catalog stacks"), over the number of individuals in which they have a genotype call.}
 \end{figure}
+
+
+
+\begin{enumerate}
+\item describe observation of SbfI sites in RAD reads
+\item incomplete digestion as a possible underlying cause
+%\item assembly/clustering of reads into putative RAD tags
+\end{enumerate}
 
 
 %% ---------------------------------------------------
@@ -164,9 +189,167 @@ Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distributi
 \item Lunt, Cooper, Cpn1, mitochondria
 \end{itemize}
 
+%% ---------------------------------------------------
+\section{Supplementary Methods}
+%% ---------------------------------------------------
+
+%% ---------------------------------------------------
+\section{Adapter sequences for SbfI$+$XhoI ddRAD}
+%% ---------------------------------------------------
+\begin{figure}[h]
+\begin{Verbatim}[fontfamily=courier, fontsize=\relsize{-7}, commandchars=\\\{\}, frame=single, framesep=10pt, label=P1 and P2 adapters for ddRAD]
+          {\footnotesize P1 adapter}                                        {\footnotesize insert}                                   {\footnotesize P2 adapter}
+5'-\underline{AATGATACGGCGACCACCGA}GATCTACACTCTTTCCCTACACGA\colorbox{white}{CGCTCTTCCGATCT}xxxxx{\color{blue}TGC*A}     GGNNNNNNNNNNNC     P-{\color{red}TCGA}\colorbox{orange}{A-GATCGGAAGAGCG}GTTCAGCAGGAATGCCGAGACCG\rotatebox{30}{\textit{TAGAGCATA*C}-3'}
+3'-TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGGATGTGCT\colorbox{orange}{GCGAGAAGGCTAGA}xxxxx-P    {\color{blue}ACGT}CCNNNNNNNNNNNG{\color{red}AGCT}       \colorbox{white}{T*CTAGCCTTCTCGC}CAAGTCGTCCTTACGGCTCTGGCTAG\underline{AGCATACGGCAGAAGACGAAC-5'}
+\end{Verbatim}
+\caption{Outline of P1 and P2 adapters for double-digest RAD. Underlined sequences are selective PCR primer sequences. An asterisk * stands for a phosphorothioate bond. A "P" stands for a phosphate group. Sequences in \textit{italics} are non-complementary (wavy). Sequences with an orange background are identical to each other. An "x" stands for a base in a barcode sequence.}
+\label{adapter-outline} % note, label has to come after caption
+\end{figure}
 
 
+%% ---------------------------------------------------
+\FloatBarrier
+\subsection{Estimating genome wide GC content}\label{ch:gc}
+%% ---------------------------------------------------
+
+\begin{cmd}
+\begin{Verbatim}[formatcom=\color{darkgray}, fontsize=\scriptsize]
+
+$ for i in *fq_2.gz; do ( awk '(NR-2)%4==0' <(zcat $i) | perl -ne' $h{$_}=1;END{foreach $s (keys %h)
+{$gc += $s =~ tr/GC/GC/;} print $gc/(51 * scalar keys %h), "\n";} ' )& done | 
+perl -ne'$sum+=$_; END{print $sum/$., "\n";}'
+
+0.4607
+\end{Verbatim}
+\caption[Determine GC content from standard RAD PE reads]{For each individual, this command takes the \glspl{pe} reads, uniques them and determines their overall GC content. Finally, the average of the individual GC contents is taken. Note the brute-force parallelisation by sending each iteration of the \texttt{for} loop into the background with \texttt{(\ldots )\&}.}
+\label{cmd:GC_1}
+\end{cmd}
+
+Using the \gls{se} reads from the \gls{SbfI} RAD library (excluding the SbfI recognition sequence part) and command \ref{cmd:GC_2} I have determined the GC content of the \gls{se} reads: 49.5\%.
+
+\begin{cmd}
+\begin{Verbatim*}[formatcom=\color{darkgray}, fontsize=\scriptsize, numbers=left]
+$ gc(){ awk '(NR-2)%4==0' | sed 's/^......//' |
+perl -ne'$h{$_}=1;END{foreach $s (keys %h){$gc+=$s=~tr/GC/GC/;} print $gc/(40*scalar keys %h), "\n";}' ;}
+$ export -f gc
+$ mean(){ perl -ne'$sum+=$_; END{print $sum/$., "\n";}'; }
+$ export -f mean
+$ parallel -j 10 'zcat {} | gc' ::: *fq_1.gz | mean
+
+0.4956
+\end{Verbatim*}
+\caption[Determine GC content of \gls{se} reads]{This command is a different version of command \ref{cmd:GC_1}. However, it is used here to determine the GC content of all \gls{se} reads from the standard \gls{SbfI} RAD library. It first creates and exports two functions, \texttt{gc} and \texttt{mean}, and then uses the programme \texttt{parallel} in order to parallelise the determination of GC content over 10 cores. After stripping barcode and the remainder of the restriction site, the reads are 40 base pairs long. Note, the space between \{ and \texttt{awk} (line 1) as well as \{ and \texttt{perl} (line 4) is required.}
+\label{cmd:GC_2}
+\end{cmd}
+
+So, it seems that sequences close to \gls{SbfI} sites are more GC rich than further distant sequences. 
+
+%% --------------------------------------------------------------------------------------------------------------------------
+\FloatBarrier
+\section{Genome size of \textit{Chorthippus parallelus}}\label{ch:Genome_size}
+%% --------------------------------------------------------------------------------------------------------------------------
+
+\textit{Chorthippus parallelus} has a chromosome complement of 2n = 16 + X. Males have one X-chromosomes, females have two. Table \ref{ta:genome_size_studies} shows four studies that provide genome size estimates for \textit{Chorthippus parallelus}. Note that all studies are measuring the DNA content of spermatids. However, none of the studies explicitly deal with the issue that half of their measurements are missing the contribution from the X chromosome. Table \ref{ta:genome_size_studies} mentions the country of origin of the grasshoppers used for genome size estimates. Note, however, that only \cite{Belda1991} provide sampling locations. For the rest it is assumed that individuals were sampled closed to the authors institutes. So two studies provide genome size estimates for \textit{C. parallelus parallelus} and two for \textit{C. parallelus erythropus}. The \textit{parallelus} subspecies seems to have a genome 2--4 giga \glspl{bp} larger than the one of subspecies \textit{erythropus}. Apart from possible systematic differences in methodology, this apparent difference in genome size could be real, since several studies have shown chromosomal differentiation between the two subspecies, in particular on the X chromosome: an active nucleolar organiser region (NOR) distally on the X in \textit{C. p. parallelus} but not in \textit{C. p. erythropus} \citep{Gosalvez1988}. This NOR on X lies in or near a distinctive distal C-band\footnote{\gls{heterochromatin} stained with Giemsa}. In addition, Pyrenean \textit{C. p. erythropus} also show an interstitial C-band on X that does not occur in pure \textit{C. p. parallelus} \citep{Bella2007}. Further chromosomal differences are listed in table 1 of \cite{Ferris1993}.
+
+\ctable[
+width=\textwidth,
+doinside={ \relsize{-1.5} \setlength{\tabcolsep}{3pt} },
+caption=Studies that provide genome size estimates for \textit{Chorthippus parallelus},
+cap=Genome size estimates,
+label=ta:genome_size_studies
+]
+{l c >{\raggedleft}p{.6cm}@{.}l >{\centering}p{2.5cm} l X}
+{
+\tnote[a]{\scriptsize see their table 3}
+\tnote[b]{\scriptsize 5 individuals}
+\tnote[c]{\scriptsize assuming 6.4 on relative scale corresponds to C-value of 5.5 pg}
+\tnote[d]{\scriptsize see their table 2}
+\tnote[e]{\scriptsize \textit{C. longicornis} syn. of \textit{C. parallelus}}
+\tnote[f]{\scriptsize 3 individuals}
+\tnote[g]{\scriptsize 3 individuals}
+}
+{
+\toprule
+\multirow{2}{*}{\textbf{study}} & \multirow{2}{1cm}{\textbf{sample source}}  & \multicolumn{2}{c}{\textbf{C-value}} & \multirow{2}{*}{\textbf{Method}} & \multirow{2}{*}{\textbf{tissue type}} & \multirow{2}{*}{\textbf{standard species}} \\
+                                      &                                                              & \multicolumn{2}{c}{ [$10^{-12}$g]} &                                &                                                 &                                                           \\
+\midrule
+\cite{John1966}\tmark[a] & UK & 12&37 ($\pm$ 0.75)\tmark[b] & Feulgen staining, microdensitometry & spermatid & \textit{Locusta migratoria}\tmark[c] \\[0.7cm]
+\cite{Wilmore1975}\tmark[d] & UK & 13&36 ($\pm$ 0.04) & Feulgen staining, microdensitometry & spermatid & mouse spermatid \\[0.7cm]
+\cite{Gosalvez1980}\tmark[e] & Spain & 8&58 ($\pm$ 0.47)\tmark[f]   & Feulgen staining, microdensitometry & spermatid & \textit{Allium cepa}, root tissue \\[0.7cm]
+\cite{Belda1991} & Spain & 10&73 ($\pm$ 0.97)\tmark[g]  & Feulgen staining, microdensitometry & spermatid & chick erythrocytes \\
+\bottomrule
+}
+
+\cite{Gosalvez1988} showed that all the heterochromatin present in both subspecies is particularly rich in GC DNA base pairs.
+
+
+%\begin{table}
+%\caption{Studies that provide genome size estimates for \textit{Chorthippus parallelus}}
+%\label{ta:genome_size}
+%\centering
+%\small
+%\resizebox{\textwidth}{!}{
+%\begin{tabular}[h]{c c >{\raggedleft}p{.6cm}@{.}l >{\centering}p{3cm} c c}
+%\toprule
+%\multirow{2}{*}{\textbf{study}} & \multirow{2}{1cm}{\textbf{sample source}}  & \multicolumn{2}{c}{\textbf{C-value}} & \multirow{2}{*}{\textbf{Method}} & \multirow{2}{*}{\textbf{tissue type}} & \multirow{2}{*}{\textbf{standard species}} \\
+%                                      &                                                              & \multicolumn{2}{c}{ [$10^{-12}$g]} &                                &                                                 &                                                           \\
+%\midrule
+%\cite{John1966} & UK & 12&37 $\pm$ 0.75 & Feulgen staining, microdensitometry & spermatid & \textit{Locusta migratoria}\\[0.7cm]
+%\cite{Wilmore1975} & UK & 13&36  & Feulgen staining, microdensitometry & spermatid & mouse spermatid \\[0.7cm]
+%\cite{Gosalvez1980} & Spain & 8&58   & Feulgen staining, microdensitometry & spermatid & \textit{Allium cepa}, root tissue \\[0.7cm]
+%\cite{Belda1991} & Spain & 10&73  & Feulgen staining, microdensitometry & spermatid & chick erythrocytes \\
+%\bottomrule
+%\end{tabular}
+%}
+%\end{table}
+
+
+%% --------------------------------------------------------------------------------------------------------------------------
+\FloatBarrier
+\subsection{Expected RAD marker number}\label{ch:RAD_marker_number}
+%% --------------------------------------------------------------------------------------------------------------------------
+
+Using PE reads from the standard RAD library -- uniqued  per individual -- as a proxy for the whole genome, I estimate the GC content of the \textit{Chorthippus parallelus} genome to be around 46\% (\ref{ch:gc}). However, \cite{Wilmore1975} have determined the GC content of the \textit{C. p. parallelus} genome from thermal dissociation profiles (41.2\%) and sedimentation in CsCl and Cs$_{2}$SO$_{4}$ density gradients (41.7\% and 42.0\%)\footnote{see their table 1}. I think that \gls{pe} reads from SbfI standard RAD are still a biased sample towards GC rich regions of the genome due to the GC rich \gls{SbfI} recognition sequence. 
+Assuming a genome size of 12 giga base pairs, the expected number of RAD tag loci from a standard RAD library with \gls{SbfI} in the grasshopper genome is $\sim$170,000 (equation \ref{eq:exp_num_standard_RAD_loci}). 
+
+\scriptsize
+\begin{align}
+\text{expected number of \glspl{RAD tag}} &= \underbrace{12 \times 10^{9}}_{\text{genome size}} \times 
+\underbrace{ \left( \frac{0.42}{2}\right)^{6} \times \left( \frac{(1-0.42)}{2} \right)^{2} }_{\text{SbfI site probability}} \times 
+\underbrace{2}_{\text{tags per SbfI site}}
+\label{eq:exp_num_standard_RAD_loci} \\[5pt] 
+&= 173,110 \nonumber
+\end{align}
+\normalsize
+
+The number (and identity) of markers in a double-digest RAD library depends very much on the size selection of restriction fragments. I selected fragments roughly between 300 and 800 \gls{bp} length. The P1 adapter is 63 bp long (excluding 4 bp overhang), the P2 adapter is 61 bp long (excluding 4 bp overhang). The \gls{SbfI} remainder after the cut is 6 \gls{bp} long and the \gls{XhoI} remainder is 5 \gls{bp} long. If \gls{XhoI} cuts a fragment at a distance less than about $300 - 63 - 61 -6 -5 = 165$ \gls{bp} away from the SbfI cut site, then this fragment would not be size selected because it would be shorter than the lower bound of size selection (in this example). The \gls{se} sequences (excluding the SbfI recognition sequence parts) have a mean GC content of 49.5\% (see command \ref{cmd:GC_2}). 
+The following formula requires the GC content of sequences of length 168 \gls{bp} adjacent to SbfI sites. I will use the average of \gls{se} and \gls{pe} GC contents -- 48\% (see~chapter \ref{ch:gc}) -- for calculating the probability of an XhoI cut within the first 168bp after the SbfI restriction site. In the next 500 \gls{bp} then needs to be at least one \gls{XhoI} site to make the SbfI fragment a marker.
+The expected number of RAD markers per genome with an SbfI-XhoI double-digest and a selected size range of 300--800bp is:
+
+
+\scriptsize
+%\begin{preview}
+\begin{align} % use align instead of equation for multi-line long equations
+\text{RAD markers per genome} &\simeq 12 \times 10^{9} 
+	&&\text{(genome size in bp)}  \label{eq:exp_number_ddRAD_loci} \\[5pt]
+&\times \left(\frac{0.42}{2}\right)^{6}\times \left(\frac{(1-0.42)}{2}\right)^{2} &&\text{(SbfI cut prob. per bp)} \notag \\[5pt]
+&\times 2 
+	&&\text{(each cut creates two potential RAD tags)} \notag \\[5pt]
+&\times \left[1-\left(\frac{0.48}{2}\right)^{4} \times \left( \frac{(1-0.48)}{2}\right)^{2} \right]^{165} 
+	&&\text{(prob. of no XhoI cut in the first 165 bp after SbfI site)} \notag \\[5pt]
+&\times \left(1- \left[1-\left(\frac{0.46}{4}\right)^{2} \times \left( \frac{(1-0.46)}{4}\right)^{4} \right]^{500} \right) 
+	&&\text{(prob. of at least one XhoI cut in the following 500bp)} \notag \\[5pt]
+%&\quad \times \ 2 \tag{two markers per SbfI cut{\color{red}*}}  \\
+&\simeq 16,000 \nonumber
+\end{align}
+%\end{preview}
+\normalsize
+
+I have created an Excel file called \texttt{ComplexityReduction.xls} that implements equation \ref{eq:exp_number_ddRAD_loci} and that allows easy modification of variables.
+
+%% ---------------------------------------------------
 \section{Estimating divergence time of the two subspecies}
+%% ---------------------------------------------------
 
 \begin{itemize}
 \item ABS, simCoal
@@ -174,6 +357,7 @@ Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distributi
 \item test gene flow <-> no gene flow model
 \item filtering paralogs in highly repetitive genomes
 \item large genome size $+$ genome size variation
+\item clustering algorithms: DNAclust, CD-Hit, afcluster, ustacks, starcode, UNEAK
 \end{itemize}
 
 

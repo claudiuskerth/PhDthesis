@@ -1,7 +1,11 @@
 # ## ---- set working directory ----
-# setwd("~/Data_analysis/reference-mapping/data")
+setwd("~/Data_analysis/reference-mapping/data")
 
-## ---- freq dist of genotype calls for stacks loci ----
+## ---- freq dist of genotype calls Big Data ----
+# from Big Data standard RAD data set
+# assembly with stacks version 0998
+# export of all catalog RADtags with their allele depths
+# coverage.pl counts genotype calls
 
 rm(list=ls())
 
@@ -20,6 +24,33 @@ barplot(
         ylab="proportion of all loci in the catalog",
         xlab="number of genotype calls",
         main="standard RAD library with SbfI"
+)
+
+## ---- freq dist of genotype calls SbfI-XhoI ----
+# double digest library with SbfI and XhoI
+# merged SE and PE RADtags
+# stacks version 09991
+# second run with stack
+# export of all catalog RADtags with allele depths
+# coverage.pl
+# from export_sql_allele_depth_20052012.tsv
+rm(list=ls())
+
+geno_calls <- read.delim("geno_calls_per_locus", header=T, comment.char="#")
+#str(geno_calls)
+x <- table(geno_calls$geno_calls)
+y <- x/sum(x)
+
+# sum(y[1:2])
+
+par(mfrow=c(1,1), bg="cornsilk")
+
+barplot(
+        y,
+        ylim=c(0, max(y)*1.2),
+        ylab="proportion of all loci in the catalog",
+        xlab="number of genotype calls",
+        main="double-digest RAD library with SbfI and XhoI"
 )
 
 

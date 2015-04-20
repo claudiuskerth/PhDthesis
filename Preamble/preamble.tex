@@ -25,6 +25,38 @@
 
 \usepackage{epigraph}
 
+%% ---- package for formatting code with line numbers
+\usepackage{fancyvrb} %% for verbatim text
+
+% **** Custom Floats ****
+\usepackage{float}
+\floatstyle{ruled}
+\newfloat{cmd}{htb}{loc}[chapter]
+\floatname{cmd}{Command}
+% **** **** **** **** **** **** **** ****
+
+%% ---- provides "\rowcolors" command
+\usepackage[dvipsnames,table]{xcolor}
+
+\usepackage{colortbl}
+
+\usepackage{ctable}
+
+\usepackage{subcaption}
+
+% ---- the following package call ensures that floats will not pass a section boundary ----
+\usepackage[section]{placeins}
+% ---- insert “\FloatBarrier” at places that floats should not move past, perhaps at every “\section”.
+
+% ---- if I want to extract LaTeX formulas, for instance, 
+% ---- to convert them into other picture formats from pdf
+%\usepackage[active,tightpage]{preview}
+% ---- use \begin{preiview} ... \end{preview}
+
+\usepackage{relsize}
+\renewcommand\RSsmallest{4pt}
+
+
 % ************************* Algorithms and Pseudocode **************************
 
 %\usepackage{algpseudocode}
