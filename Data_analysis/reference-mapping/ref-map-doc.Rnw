@@ -42,10 +42,12 @@ urlcolor=Periwinkle,%
 \usepackage{multirow}
 \usepackage[format=hang, font=small, labelfont=md]{caption} % package can be used to format captions of all floats in the same way. It overrides any hangcaption/normalcaption commands though.
 \usepackage{subcaption}
-\graphicspath{/Users/Claudius/Documents/PhD/THESIS/data_analysis/reference-mapping/figure}
+\graphicspath{ {/Users/Claudius/Documents/PhD/THESIS/data_analysis/reference-mapping/figure} }
+%% ---- 
 \usepackage{float}
 \floatstyle{ruled}
 \newfloat{command}{htp}{cmd}
+%% ----
 \usepackage{epigraph} % allows nice quotes with author underneath
 \setlength{\epigraphwidth}{.9\textwidth} % set width of quotations to 90% of text width
 \renewcommand{\epigraphflush}{center} % centre quotations on the page
@@ -363,10 +365,12 @@ $ samtools index AgeI_ery_30-12_sorted.bam
 \end{Verbatim}
 
 6.9\% of all EagI\_ery\_30-12 and 7\% of all EagI\_par\_34-20 reads map to the Locusta transcriptome. With a mapping quality of above 0, there are 352 Locusta unigenes that get hit by EagI\_par\_34-20  and 462 that get hit by EagI\_ery\_30-12 reads. There are 212 Locusta unigenes that get hit by both EagI individuals with a mapping quality of above 0.
+
 \begin{Verbatim}
 $ cat unigenes_hit_by_EagI_ery_30-12 unigenes_hit_by_EagI_par_34-20 | sort | uniq | wc -l
 \end{Verbatim}
 There are 602 unigenes that got hit by either EagI individual. I order to produce a reduced reference sequence, which only contains unigene sequences which got hit by either EagI individual, I used the \texttt{samtools faidx} command.
+
 \begin{command}
 \captionsetup{type=command}
 \begin{Verbatim}
@@ -374,9 +378,10 @@ $ perl -ne'system("samtools faidx Locust.Unigene_short_head.fa $_") == 0 or die 
 unigenes_hit_by_either_EagI_ind \
 >> unigenes_hit_by_either_EagI_ind.fa
 \end{Verbatim}
-\caption{Example of a command line that extracts fasta sequences from an indexed multi-fasta file using a file listing fasta headers.}
+\caption{\small Example of a command line that extracts fasta sequences from an indexed multi-fasta file using a file listing fasta headers.}
 \label{reduced_reference}
 \end{command}
+
 I then load this reduced reference sequence into IGV together with the sorted and indexed .bam file of each individual.
 
 The first thing that is conspicuous is how rarely mapped reads from both sides of the SbfI restriction site can be found. However, with a double-digest library this is expected! In fact, in order to get reads from both sides of the restriction site, there would need to be an AgeI (or EagI, depending on the library) restriction site within a few hundred base pairs on either side of the SbfI restriction site. There are, however, several cases where reads map to both sides of an SbfI restriction site (tab. \ref{both_sides_tab} and fig. \ref{both_sides_fig}). PCR primers could be designed for them in order to test complete digestion with SbfI via qPCR. The PCR products would only be around 180bp long. The first RAD library I sequenced was a standard RAD library. With this library there should be many SbfI restriction sites where reads from both sides get mapped and possibly also their paired-end reads, allowing for longer PCR products. 
@@ -679,6 +684,7 @@ In the 5th column of the SAM file \texttt{stampy} reports the mapping quality fo
 
 I used command \ref{filter_good_reads} with modification of filtering for mapping quality above 3 to extract all mapped reads (regardless of whether their mate got mapped).
 I used the command \ref{reduced_reference} to extract from the indexed reference sequence file all contigs which got hit by either individual.
+
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{./figure/igv_LC_1628_C1_Contig1776_standRAD}
@@ -871,7 +877,7 @@ $ for i in *fq_1; do j=`echo $i | sed 's/_1$//'`; cat $i "$j"_2 > $j; done &
 \begin{Verbatim}[fontsize=\footnotesize]
 $ parallel 'SSAKE -f {} -w 1 -o 1 -m 15 -c 1 2&>1 > /dev/null' ::: *fa
 \end{Verbatim}
-\caption{Command to run the de novo assembler \texttt{SSAKE} in parallel on all fasta files. The minimum perfect overlap for an extension is 15 bp and 1 read is enough prove to make that extension. No contig clipping due to low coverage at the ends.}
+\caption{Command to run the de novo assembler \texttt{SSAKE} in parallel on all fasta files. The minimum perfect overlap (kmer) for an extension is 15 bp and 1 read is enough prove to make that extension. No contig clipping due to low coverage at the ends.}
 \label{SSAKE}
 \end{command}
 
@@ -936,7 +942,7 @@ blastn -query *LC03012A1D06.f1_downstream.fa.ssake*.contigs \
 -subject *LC03012A1D06.f1_downstream.fa.ssake*.contigs -task blastn \
 -evalue 1e-10 -outfmt 6 | awk '$1 != $2' | sort -k3 -nk11 | awk 'NR%2' | less -S
 \end{Verbatim}
-\caption{This command line example is a very quick way to find out which sequences in a multi fasta file are similar to each other. It prints out hits of an all by all blastn of the sequences in a file. Note that query and subject get the same file. The first awk command removes hits against itself, the sort part brings reciprocal hits together and the second awk command keeps only one line for each pair of matching sequences.}
+\caption{\small This command line example is a very quick way to find out which sequences in a multi fasta file are similar to each other. It prints out hits of an all by all blastn of the sequences in a file. Note that query and subject get the same file. The first awk command removes hits against itself, the sort part brings reciprocal hits together and the second awk command keeps only one line for each pair of matching sequences.}
 \label{blastn}
 \end{command}
 
@@ -1070,7 +1076,7 @@ I am going to use \href{https://www.neb.com/protocols/2012/09/06/protocol-phusio
 
 \roger{I want to insert the single-end RAD tag sequences into the primer3\_ready sequences in order to use them as reference for a mapping of all reads of each individual. I want to examine how many individuals get reads mapped to those RADtag sites and whether individuals have reads mapped to both RAD tags at an SbfI restriction site or not. }
 
-For the determination of the consensus single-end sequences I obviously only want to use reads whose mate was used for the assembly of the \texttt{SSAKE} PE-contig that I finally picked (see section \ref{pick}). That's because \texttt{find\_linked\_Radtags.pl} had printed out all paired reads that mapped to a detected linked RADtags site in the \texttt{Schistocerca} reference, but after the \texttt{SSAKE} assembly I mostly only picked PE-contigs that got a \texttt{blast} hit to their \texttt{Schistocerca} reference contig. Other \texttt{SSAKE} contigs are much more likely to derive from similar but non-homologous loci to the \texttt{Schistcerca} reference contig.
+For the determination of the consensus single-end sequences I obviously only want to use reads whose mate was used for the assembly of the \texttt{SSAKE} PE-contig that I finally picked (see section \ref{pick}). That's because \texttt{find\_linked\_Radtags.pl} had printed out all paired reads that mapped to a detected linked RADtags site in the \textit{Schistocerca} reference, but after the \texttt{SSAKE} assembly I mostly only picked PE-contigs that got a \texttt{blast} hit to their \textit{Schistocerca} reference contig. Other \texttt{SSAKE} contigs are much more likely to derive from similar but non-homologous loci to the \textit{Schistcerca} reference contig.
 
 In the \texttt{Primer3} directory I created a subdirectory called \texttt{SE-sequences} where I put symlinks to the 40 single-end sequence files that \texttt{find\_linked\_RADtags.pl} had put out for the \texttt{Schistocerca} reference contigs for which I ultimately was able to create primer3\_ready sequences. In this subdirectory I created another subdirectory called \texttt{PE\_contigs} into which I put symlinks to the 40 PE contig consensus sequences that I used to create the 20 primer3\_ready sequences. I also put symlinks to the 40 corresponding PE read files into that directory. I then used command \ref{blast_mapping} in order to extract the fastq headers from those paired-end reads that get a blast hit to their inferred PE contig.
 
@@ -1083,7 +1089,7 @@ blastn -subject `basename $i .fq_2`_consensus.fas -evalue 1e-10 -outfmt 6 | \
 cut -f1 | sed 's/2$/1/' > `basename $i .fq_2`_blast_mapped.ids; \
 done
 \end{Verbatim}
-\caption{Using \texttt{blastn} to find PE reads that map to the inferred PE contig (see section \ref{pick}). The \texttt{for} loop iterates over all 40 PE read files. The first part of the loop converts fastq to fasta format. The second line feeds that into \texttt{blastn} (using megablast by default) and uses the corresponding PE contig (from section \ref{pick}) as subject. The third line takes the first column with the query headers from the blast output table and writes it to an output file.
+\caption{\small Using \texttt{blastn} to find PE reads that map to the inferred PE contig (see section \ref{pick}). The \texttt{for} loop iterates over all 40 PE read files. The first part of the loop converts fastq to fasta format. The second line feeds that into \texttt{blastn} (using megablast by default) and uses the corresponding PE contig (from section \ref{pick}) as subject. The third line takes the first column with the query headers from the blast output table and writes it to an output file.
 }
 \label{blast_mapping} 
 \end{command}
@@ -1098,7 +1104,7 @@ do grep -A1 -f $i ../all_Big_Data_`basename $i _blast_mapped.ids`.fq_1 | \
 egrep -v "\-\-" | sed 's/@/>/' > `basename $i .ids`_SE.fas; \
 done
 \end{Verbatim}
-\caption{Using the header files created by the previous command to extract corresponding SE reads from \texttt{find\_linked\_RADtags.pl} SE read files.}
+\caption{\small Using the header files created by the previous command to extract corresponding SE reads from \texttt{find\_linked\_RADtags.pl} SE read files.}
 \label{grep_filter}
 \end{command}
 
@@ -1197,7 +1203,7 @@ The new version of \texttt{find\_linked\_RADtags.pl} finds 82 unigene contigs wi
 grep -vxf <(awk '{print $1}' flR_output_version_2/all_Big_Data_linked_RADtag_contigs.out) \
 Primer3_ready_Schisto_unigenes
 \end{Verbatim}
-\caption{Command that determines the ID of \textit{Schistocerca} unigenes that have been detected by the old version of \texttt{find\_linked\_RADtags.pl} but not with the new version. The command prints out lines from the second file (Primer3\_ready\_Schisto\_unigenes) that have not been matched by the patterns (here: unigene ID's) in the first "file": <(...). I need to provide a file to the "-f" switch of \texttt{grep}, but I only want to present the first column of all\_Big\_Data\_linked\_RADtag\_contigs.out as patterns. So I am using a \href{http://www.vincebuffalo.com/2013/08/08/the-mighty-named-pipe.html}{process substitution} with \texttt{<(...)} instead of an intermediate file.}
+\caption{\small Command that determines the ID of \textit{Schistocerca} unigenes that have been detected by the old version of \texttt{find\_linked\_RADtags.pl} but not with the new version. The command prints out lines from the second file (Primer3\_ready\_Schisto\_unigenes) that have not been matched by the patterns (here: unigene ID's) in the first "file": <(...). I need to provide a file to the "-f" switch of \texttt{grep}, but I only want to present the first column of all\_Big\_Data\_linked\_RADtag\_contigs.out as patterns. So I am using a \href{http://www.vincebuffalo.com/2013/08/08/the-mighty-named-pipe.html}{process substitution} with \texttt{<(...)} instead of an intermediate file.}
 \label{process-subst}
 \end{command}
 
@@ -1228,7 +1234,7 @@ LC.4313.C1.Contig4431 & many thousand reads mapped, most reads have indels, \\
 \end{tabular}
 \end{table}
 
-I selected 3 of the 14 extra unigenes detected by the new version of \texttt{find\_linked\_RADtags.pl}, which were given names containing a contig number indicating that they  could be annotated. I checked their alignments in \texttt{IGV}. Table \ref{extra-unigenes} summarizes the alignments. I conclude from this sample that the new version of \texttt{find\_linked\_RADtags.pl} does not detect new genuine RAD sites. I, therefore, have revert back to the previous detection algorithm that ignored indels. However, instead of simply adding the read length to the mapping position of reverse mapping reads, the script now uses the numbers in the CIGAR string and adds the lengths of "M" and "I" to the mapping position. 
+I selected 3 of the 14 extra unigenes detected by the new version of \texttt{find\_linked\_RADtags.pl}, which were given names containing a contig number indicating that they  could be annotated. I checked their alignments in \texttt{IGV}. Table \ref{extra-unigenes} summarizes the alignments. I conclude from this sample that the new version of \texttt{find\_linked\_RADtags.pl} does not detect new genuine RAD sites. \roger{I, therefore, have reverted back to the previous detection algorithm that ignored indels. However, instead of simply adding the read length to the mapping position of reverse mapping reads, the script now uses the numbers in the CIGAR string and adds the lengths of "M" and "I" to the mapping position.}
 
 \begin{figure}
 \centering
@@ -1237,7 +1243,7 @@ I selected 3 of the 14 extra unigenes detected by the new version of \texttt{fin
 \label{coval-refine_err-corr}
 \end{figure}
 
-The current version of \texttt{find\_linked\_RADtags.pl} will subtract the length of an initial insertion from the mapping position. That is why reads at the bottom of figure \ref{all_SE_pp_on_LC.1628.C1.Contig1776} can detect the RAD site whereas reverse mapping reads that contain insertions after some initial mapping bases (upper half of figure \ref{all_SE_pp_on_LC.1628.C1.Contig1776}) will have an inferred 3 prime mapping position that is beyond the restriction site. So the current version of \texttt{find\_linked\_RADtags.pl} ignores indels unless they occur at the beginning of the aligned read. That is the reason why certain reads map to the "primer3ready\_with\_RADtags" reference that haven't been collected by \texttt{find\_linked\_RADtags.pl}, \hyperlink{CCGGT}{see above}.
+\roger{The current version of \texttt{find\_linked\_RADtags.pl} will subtract the length of an initial insertion from the mapping position.} That is why reads at the bottom of figure \ref{all_SE_pp_on_LC.1628.C1.Contig1776} can detect the RAD site whereas reverse mapping reads that contain insertions after some initial mapping bases (upper half of figure \ref{all_SE_pp_on_LC.1628.C1.Contig1776}) will have an inferred 3 prime mapping position that is beyond the restriction site. \roger{So the current version of \texttt{find\_linked\_RADtags.pl} ignores indels unless they occur at the beginning of the aligned read.} That is the reason why certain reads map to the "primer3ready\_with\_RADtags" reference that haven't been collected by \texttt{find\_linked\_RADtags.pl}, \hyperlink{CCGGT}{see above}.
 
 \begin{figure}[htb]
 \centering
@@ -1255,16 +1261,16 @@ The current version of \texttt{find\_linked\_RADtags.pl} will subtract the lengt
 I have transferred the .bam files for all 36 individuals to my Mac into the folder \\
 \texttt{coval-refined\_RWYMKSinterpreted\_indels\_count\_2\_withRGt}. 
 \\
-I have also transferred the 18 reference sequences in the file \texttt{Primer3\_ready\_with\_SE\_RADtags.multifas}. I can then open \texttt{IGV} locally on my Mac, load the "genome" and the \texttt{withRGt.bam.list} file. Right-clicking on any read opens a context menu, which allows to select "View as Pairs", "Color Alignments by >  sample" and "Group Alignments by > Read group". This shows the reads of each individual (that has reads mapped the selected reference sequence) in a separate track which is separated by vertical lines from the reads of other individuals (see fig. \ref{IGV-view_group-by-RG}).
+I have also transferred the 18 reference sequences in the file \texttt{Primer3\_ready\_with\_SE\_RADtags.multifas}. I can then open \texttt{IGV} locally on my Mac, load the "genome" and the \texttt{withRGt.bam.list} file. Right-clicking on any read opens a context menu, which allows to select "View as Pairs", "Color Alignments by >  sample" and "Group Alignments by > Read group". This shows the reads of each individual (that has reads mapped the selected reference sequence) in a separate track which is separated by horizontal lines from the reads of other individuals (see fig. \ref{IGV-view_group-by-RG}).
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{./figure/IGV-view_group-by-RG}
-\caption{Example view of back mapping result on one primer3ready reference sequence. One can see colouring by population. Reads from different individuals are grouped into tracks separated by vertical lines from the reads of other individuals.}
+\caption{Example view of back mapping result on one primer3ready reference sequence. One can see colouring by population. Reads from different individuals are grouped into tracks separated by horizontal lines from the reads of other individuals.}
 \label{IGV-view_group-by-RG}
 \end{figure}
 
-I have had a closer look at the mapping result toward all 18 reference contigs. I have written down a brief descriptions in the \texttt{back-mapping-summary.tab} file, part of which is show in table \ref{back-mapping-summary}. The top 5 reference sequences in table \ref{back-mapping-summary}:
+I have had a closer look at the mapping result toward all 18 reference sequences. I have written down a brief descriptions in the \texttt{back-mapping-summary.tab} file, part of which is show in table \ref{back-mapping-summary}. The top 5 reference sequences in table \ref{back-mapping-summary}:
 
 \begin{itemize}
 \item do not show very high or very low number of reads mapped
@@ -1275,7 +1281,7 @@ I have had a closer look at the mapping result toward all 18 reference contigs. 
 \texttt{LC.3754.C1.Contig3884} only gets reads from \textit{parallelus} (12 individuals) and none from \textit{erythropus}\footnote{except dodgy mappings on the downstream contig}. The assembly of the PE contigs for this unigene was unambiguous. So it is likely that this RAD site does not occur in \textit{erythropus}.
 
 
-For LC.29.C2.Contig39, only 1 of 17 \textit{erythropus} individuals has a fragment mapped to the downstream side of the RAD site. During the manual merging of \texttt{SSAKE} contigs I noted for this locus that the UPstream PE contig might be duplicated (suspiciously high polymorphism). So one explanation would be that this locus is almost completely absent in \textit{erythropus} and the \textit{erythropus} reads mapping on the upstream side belong to a very similar but different locus.
+For {\color{red}LC.29.C2.Contig39}, only 1 of 17 \textit{erythropus} individuals has a fragment mapped to the downstream side of the RAD site. During the manual merging of \texttt{SSAKE} contigs I noted for this locus that the UPstream PE contig might be duplicated (suspiciously high polymorphism). So one explanation would be that this locus is almost completely absent in \textit{erythropus} and the \textit{erythropus} reads mapping on the upstream side belong to a very similar but different locus.
   
 \begin{table}
 \centering

@@ -10,7 +10,7 @@
 %--------------
 % Glossary
 %--------------
-\newglossaryentry{fragment}{name=fragment, description={not a PCR duplicate}}
+\newglossaryentry{fragment}{name=fragment, description={not a PCR duplicate. With paired reads from standard RAD (i. e. including random shearing of restriction fragments) typically identified by having different PE read sequences or different insert sizes after read mapping against a reference}}
 \newglossaryentry{RAD tag}{name=RAD tag, description={genetic marker from RAD sequencing; the sequence up or downstream of a restriction site}}
 \newglossaryentry{barcode}{name=barcode, description={short DNA sequence incorporated into adapter oligonucleotides that becomes part of the sequence read. Barcodes are used in order to be able to pool the DNA of different individuals, populations, treatments, etc. into one library that can be sequenced on one lane of an illumina flow cell}}
 \newglossaryentry{index}{name=index, description={similar to barcode and serves the same purpose; generally incorporated into the centre of the adapter so that special sequencing run for the index is required} }
@@ -18,6 +18,13 @@
 \newglossaryentry{SbfI}{name=SbfI, description={restriction enzyme with the recognition sequence CCTGCA$\downarrow$GG} }
 \newglossaryentry{XhoI}{name=XhoI, description={restriction enzyme with the recognition sequence C$\downarrow$TCGAG} }
 \newglossaryentry{heterochromatin}{name=heterochromatin, description={Chromatin that remains in a highly condensed state throughout the cell cycle}}
+\newglossaryentry{contig}{name=contig, description={longer consensus sequence derived from assembling smaller overlapping (contiguous) sequence reads}}
+\newglossaryentry{linked RAD tag site}{name=linked RAD tag site, description={position in a reference sequence with at least one "properly mapped" read pair on either side of a putative restriction site and the SE reads overlapping each other as expected from the restriction enzyme}}
+\newglossaryentry{proper pair}{name=proper pair, description={read pair from illumina paired-end sequencing that got mapped to a reference in the correct orientation within a maximum expected distance from each other that is determined by the fragment size selection during the sequencing library preparation}}
+\newglossaryentry{kmer}{name=kmer, description={subsequence with a specified length (k) of a longer sequence}}
+\newglossaryentry{e-value}{name=Expect (E) value, description={The Expect value (E) is a parameter that describes the number of hits one can "expect" to see by chance when searching a database of a particular size}}
+\newglossaryentry{read}{name=read, description={any sequence that comes out of the sequencer}}
+\newglossaryentry{edit distance}{name=edit distance, description={minimum number of operations (one symbol insertion, deletion or substitution) required to change one string of symbols into another. Also known as \emph{Levenshtein distance}}}
 
 %----------------
 % Acronyms
@@ -27,3 +34,4 @@
 \newacronym{pe}{PE}{paired-end}
 \newacronym{se}{SE}{single-end}
 \newacronym{bp}{bp}{base pair}
+\newacronym{indel}{indel}{sequence insertion or deletion polymorphism}

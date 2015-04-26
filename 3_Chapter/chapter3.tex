@@ -74,11 +74,13 @@
 \chapter{Testing incomplete digestion}
 
 % **************************** Define Graphics Path **************************
+%% Note, every path needs to end with a "/" !!!
 \ifpdf
     \graphicspath{
     {./Figs/Raster/}
     {./Figs/PDF/}
     {./Figs/}
+    {../Data_analysis/reference-mapping/figure/}
     }
 \else
     \graphicspath{ 
@@ -117,7 +119,7 @@ The initial goal was to do a hybrid zone analysis and a QTL mapping study with a
 %% ------------------------------------
 \subsection{Why use RAD?}
 %% ------------------------------------
-\gls{rad}, aka RADseq, is the high-throughput sequencing of restriction fragment ends (figure \ref{RAD_protocol_overview}). It requires no prior genome sequence information. Only genome size and GC content are required to estimate the required number of reads for a certain target coverage. 
+\gls{rad}, aka RADseq, is the high-throughput sequencing of restriction fragment ends (figure \ref{RAD_protocol_overview}). It requires no prior genome sequence information. Only genome size and GC content are required to estimate the required number of \glspl{read} for a certain target coverage. 
 RADseq can yield co-dominant \gls{snp} markers in \glspl{RAD tag}, dominant presence/absence markers when the restriction site sequence is polymorphic or short indel polymorphisms when the clustering algorithm allows for them. Additionally, when doing \gls{pe} sequencing, a \gls{pe} contig can be assembled for a given \gls{RAD tag} (figure \ref{RAD_protocol_overview}).
 Given enough coverage and when using adapters with barcode sequences, individual genotypes can be scored which is required for hybrid zone analysis (especially genomic clines analysis) as well as QTL mapping. 
 
@@ -151,7 +153,7 @@ Since the original version of \gls{rad} sequences tags around every restriction 
 
 \begin{figure}[t]
 \ContinuedFloat
-\caption[]{Genomic DNA is first digested by two different restriction enzymes (red and green). Illumina adapters (P1 and P2) are then ligated to the restriction fragments. The P2 adapter is a so-called divergent-Y adapter that only contains the reverse-complement of the backward PCR primer binding site needed during the selective PCR step. Restriction fragments are then size-selected on a gel. Here, in contrast to the standard RAD protocol (see fig. \ref{RAD_protocol_overview}), gel size selection selects which markers get into the final sequencing library. The selective PCR step enriches the library for fragments with at least one P1 adapter ligated to it. Bridge-amplification on the illumina flow cell requires a P1 and a P2 adapter. Illumina paired-end sequencing results in two RAD tags per fragment that can be assembled and used for SNP and indel calling.}
+\caption[]{Genomic DNA is first digested by two different restriction enzymes (red and green). Illumina adapters (P1 and P2) are then ligated to the restriction fragments. The P2 adapter is a so-called divergent-Y adapter that, if anything, only contains the reverse-complement of the backward PCR primer binding site needed during the selective PCR step (see figure \ref{adapter_outline}). Restriction fragments are then size-selected on a gel. Here, in contrast to the standard RAD protocol (see fig. \ref{RAD_protocol_overview}), gel size selection selects which markers get into the final sequencing library. The selective PCR step enriches the library for fragments with at least one P1 adapter ligated to it. Bridge-amplification on the illumina flow cell requires a P1 and a P2 adapter. Illumina paired-end sequencing results in two RAD tags per fragment that can be assembled and used for SNP and indel calling.}
 \end{figure}
 
 
@@ -159,7 +161,7 @@ Since the original version of \gls{rad} sequences tags around every restriction 
 \subsection{The Problem}
 %% ------------------------------------
 
-A standard RAD was prepared according to the protocol of Paul Etter, (University of Oregon, \citealt{Baird2008}). The RAD library contained DNA from 36 grasshoppers sampled from the two distal populations ("Aunat" and "Greixer") of a transect through the \textit{Chorthippus parallelus / erythropus} hybrid zone in the Pyrenees between France and Spain. The RAD library was sequenced on an illumina GAIIx and the resulting reads assembled with the programme suite \texttt{stacks} \citep{Catchen2011}.
+A standard RAD library with the restriction enzyme \gls{SbfI} was prepared according to the protocol of Paul Etter, (University of Oregon, \citealt{Baird2008}). The RAD library contained DNA from 36 grasshoppers sampled from the two distal populations ("Aunat" and "Greixer") of a transect through the \textit{Chorthippus parallelus / erythropus} hybrid zone in the Pyrenees between France and Spain. The RAD library was sequenced on an illumina GAIIx and the resulting reads assembled with the programme suite \texttt{stacks} \citep{Catchen2011}.
 
 Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distribution of loci -- reconstructed by \texttt{stacks} version 0.998 -- over the number of individuals that have a genotype called for that locus. \texttt{Stacks} was run with a minimum allele coverage of 3 per individual and a maximum number of mismatches between alleles of 2 for merging alleles into loci within individuals as well as assembling a catalog of loci for the whole sample of 36 grasshoppers (further details can be looked up on the \href{http://creskolab.uoregon.edu/stacks/param_tut.php}{\texttt{stacks}} home page). About 50\% of the 379,720 unfiltered reconstructed loci have only a genotype call in one or two of the 36 individuals. About 170,000 RAD markers were expected from this library (see section \ref{ch:RAD_marker_number}) assuming a genome size of 12 giga \glspl{bp} (see section \ref{ch:Genome_size}).
 
@@ -213,28 +215,147 @@ Figure \ref{ddRAD:freq_dist_of_genotype_calls} shows the frequency distribution 
 \label{ddRAD:freq_dist_of_genotype_calls}
 \end{subfigure}
 \caption{Frequency distribution of loci, reconstructed by \texttt{stacks} (i. e. so-called "catalog stacks"), over the number of individuals in which they have a genotype call.}
+\label{freq_dist_of_genotype_calls}
 \end{figure}
 
 
+In the standard RAD data set, there are 5,014 SE reads and 25,268 PE reads that apparently contain SbfI recognition sites within them (30,282 in total)\footnote{counted with \texttt{grep -c}}. I searched in 88,734,712 quality filtered reads altogether. That is, 0.034\% of quality filtered reads contain an SbfI recognition site. Figure \ref{SbfI_frequency_dist_per_ind} shows the frequency distributions of SbfI sites in SE and PE reads for all 36 individuals separately. Obviously, if SbfI restriction and following P1 adapter ligation were 100\% efficient, there should be no SbfI recognition sequences in either SE or PE reads. 
 
-\begin{enumerate}
-\item describe observation of SbfI sites in RAD reads
-\item incomplete digestion as a possible underlying cause
-%\item assembly/clustering of reads into putative RAD tags
-\end{enumerate}
+\begin{figure}[htb]
+\centering
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=.8\linewidth]{figure/SbfI_frequency_dist__per_ind_-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{SbfI site frequency spectrum across (a) SE and (b) PE reads for each of the 36 individuals}
+\label{SbfI_frequency_dist_per_ind}
+\end{figure}
+
+
+Could this pattern be an indication that SbfI restriction during the library preparation was incomplete? If so, could there be systematic variation between individuals  in the completeness of SbfI restriction that could lead to many loci only being detected in a few individuals as shown in figure \ref{freq_dist_of_genotype_calls}?
+Incomplete digestion for a specific SbfI site could in principle be tested with a PCR (or more quantitatively with qPCR) across this site before and after digestion \citep{Luca2011}. However, no close reference sequence is available for PCR primer design\footnote{as of April 2014}. For a given \gls{RAD tag} from a standard RAD library, the PE reads can be used to assemble them into a \gls{contig} that could be long enough for primer design (see figure \ref{RAD_protocol_overview}).
+Still, for PCR primer design, \emph{pairs} of PE \glspl{contig} need to be created. This requires some reference sequence to provide the information which \glspl{RAD tag} come from the same SbfI site in the genome.
 
 
 %% ---------------------------------------------------
-\section{Methods \& and Results}
+\section{Methods \& Results}
 %% ---------------------------------------------------
+
+I used the transcriptome of the desert locust \textit{Schistocerca gregaria} (\textit{Cyrtacanthacridinae}) \citep{Badisco2011} as a reference sequence. The transcriptome of another grasshopper -- \textit{Locusta migratoria} (\textit{Oedipodinae}) \citep{Kang2004} -- was also available, but \cite{Liu2008a} have shown that the family \textit{Cyrtacanthacridinae} is more closely related to \textit{Gomphocerinae} -- the family that \textit{Chorthippus parallelus} belongs to -- than the family \textit{Oedipodinae}.
+
+I have mapped the standard RAD reads\footnote{informal name "Big Data"} of all 36 individuals against the \textit{Schistocerca} transcriptome with \texttt{stampy} \citep{Lunter2011} (see \vref{ch:read_mapping}). I merged all individual mapping output files into one big file with \texttt{samtools merge} and ran my custom script \texttt{find\_linked\_RADtags.pl} on it (further description in section \ref{ch:find_linked_RADtags}). That way, I extracted from all individuals all PE reads that belong to a \gls{linked RAD tag site} that was detected in as little as one individual.
+
+In order to design PCR primers I need to assemble the paired-end reads from single-end reads that map to the same restriction site. The \texttt{find\_linked\_RADtags.pl} script required at least one \gls{proper pair} of reads mapping on either side of a restriction site to detect a contig from the transcriptome reference. It detected 77 \textit{Schistocerca} reference contigs with \glspl{linked RAD tag site}.
+
+I used the programme \texttt{SSAKE} \citep{Warren2007} together with my wrapper script \texttt{SSAKEoptimiser.pl} for the de novo assembly of \gls{pe} contigs (see section \ref{ch:PE_read_assembly}). \texttt{SSAKEoptimiser.pl} finds the optimal \gls{kmer} length for each individual assembly, optimising for the length of the longest contig assembled. There are 64 \textit{Schistocerca} reference contigs with a RAD tag site for which at least one upstream and one downstream \texttt{SSAKE} contig could be assembled.
+
+The \texttt{SSAKEoptimiser} output for each assembly generally contains several \glspl{contig} of similar length and with similar read counts. It is therefore not straightforward to pick those \texttt{SSAKE } contigs upstream and downstream of the restriction site that genuinely belong together, i. e. come from the same locus. For 20 \textit{Schistocerca} cDNA contigs I could assemble and confidently pick down and upstream \texttt{SSAKE} contigs for PCR primer design (see section \ref{ch:picking_right_contig}). 
+
+I combined pairs of PE contigs by aligning them to their putative \textit{Schistocerca} reference contig and filled the gap between them with N's. I then used these 20 newly created \textit{C. parallelus} consensus sequences as a reference against which to map all standard SbfI-RAD reads. I would like to know how many of the 36 individuals get reads mapped to these \glspl{linked RAD tag site} and whether individuals have reads mapped to both \glspl{RAD tag} at an SbfI restriction site.
+
+Among the 20 \emph{PE contig pair} reference sequences, there are 5 which:
 
 \begin{itemize}
-\item work off questions
-\item leave details including command lines for suppl. material
-\item template amount estimation with fluorometer before and after PCR, qPCR
-\item how much heterozygosity within populations, after long distance dispersal
-\item leap-frog dispersal
-\item Lunt, Cooper, Cpn1, mitochondria
+\item do not show very high or very low number of reads mapped
+\item do not show large numbers of very divergent reads mostly containing \glspl{indel}
+\item do not show other signs of repetitiveness, e. g. SE reads mapping to PE contigs instead of the \glspl{RAD tag}
+\end{itemize}
+
+One of these 5 reference sequences has only reads mapped from \textit{C. p. parallelus} (12 individuals) and none from \textit{C. p. erythropus}. This could be caused by a polymorphism in the restriction site sequence. For each individual, I counted the number of \glspl{fragment} mapped towards the remaining four reference sequences by taking only SE reads from \glspl{proper pair} and \texttt{uniq}-ing on insert size\footnote{i. e. collapsing multiple occurrences of the same insert size into one}. Figure \ref{fragments-mapped-per-ind} shows the distribution of these counts over all 36 individuals for the four \emph{PE contig pair} reference sequences.
+
+\begin{figure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\linewidth]{figure/fragments_mapped_per_ind-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Distribution of RAD \gls{fragment} numbers mapped to 4 \emph{PE contig pair} reference sequences.  
+If two read pairs on a RAD site from an individual have the same insert size, they constitute only one fragment, i. e. one read pair is likely to be a PCR duplicate.}
+\label{fragments-mapped-per-ind}
+\end{figure}
+
+Figure \ref{fragments-mapped-per-ind} indicates that none of the 4 loci is a good candidate to test possible variation in restriction enzyme digestion with PCR. The distribution of coverage at the 4 loci is rather even across the 36 individuals. Even though between individual variation in the completeness of digestion cannot be ruled out by this data yet, a different pattern would be expected if it was common. That is, more individuals would have no fragments mapping while others would have many. Given this data, incomplete digestion is now less likely to be the reason for the dominance of singleton loci in the \texttt{stacks} assembly (see figure \ref{freq_dist_of_genotype_calls}). The variation in coverage among individuals in figure \ref{fragments-mapped-per-ind} can largely be explained by variation in the number of input reads (figure \ref{frag_input_corr_fig}).
+
+\begin{figure}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=.49\linewidth]{figure/fragments_input_reads_corr-1} 
+\includegraphics[width=.49\linewidth]{figure/fragments_input_reads_corr-2} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Correlation of locus dropout (left) and fragment counts (right) with number of input reads. Left: Locus dropout is the number of loci (which are the same as in figure \ref{fragments-mapped-per-ind}) for which an individual had no \gls{fragment} mapped. Right: the sum of mapped \glspl{fragment} over the four loci for each individual versus the number of input reads for the read mapping.}
+\label{frag_input_corr_fig}
+\end{figure}
+
+The \gls{fragment} count is generally not very high (see table \ref{mean_sd_fragNum_per_locus}), indicating that low unique template amount for sequencing prevented any individual from having many fragments mapped. I started the standard SbfI RAD library preparation with about 130 ng of DNA from each grasshopper. Assuming that the genome is 12 Gbp long (see section \ref{ch:Genome_size}), this would only correspond to 9,884 copies of the genome (equation \ref{eq:genome_copies}).
+
+% latex table generated in R 3.1.2 by xtable 1.7-4 package
+% Sun Apr 26 18:52:20 2015
+\begin{table}[ht]
+\centering
+\caption{Mean and coefficient of variation of fragment counts for the 4 loci shown in figure \ref{fragments-mapped-per-ind}.} 
+\label{mean_sd_fragNum_per_locus}
+\begin{tabular}{rrr}
+  \toprule
+ & mean & CV \\ 
+  \midrule
+Contig944 & 3.5 & 0.5 \\ 
+  Contig3766 & 4.5 & 0.6 \\ 
+  Contig1776 & 4.8 & 0.5 \\ 
+  Contig213 & 1.9 & 0.8 \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+
+
+\footnotesize
+\begin{align}
+\text{molar amount of template} &= \frac{\text{amount of DNA}}{\text{MW of bp} \times \text{genome size}} 
+= \frac{130 \times 10^{-9}\text{g}}{660 \frac{\text{g}}{\text{mol} \times \text{bp}} \times 12 \times 10^{9} \text{bp}} \label{eq:genome_copies} \\
+&= 1.26 \times 10^{-20} \text{mol} \nonumber \\[5pt]
+%\end{align}
+%\begin{align}
+\text{number of template molecules} &= 1.26 \times 10^{-20} \text{mol} \times \text{Avogadro's number} \nonumber \\
+&= 1.26 \times 10^{-20} \text{mol} \times 6.0221413 \times 10^{23} \nonumber \\
+&= 9884 \nonumber
+\end{align}
+\normalsize
+
+The problem of low \gls{fragment} count is unlikely to be alleviated much by creating more sequence reads from this library (figure \ref{PCRduplicates}).
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.7]{PCR_duplicates}
+\caption{The same library was sequenced on four different illumina GAIIx flow cell lanes with increased sequence template amount resulting in an increased read yield. However, this increased sequencing effort for the same RAD library generated an ever higher proportion of PCR duplicates.}
+\label{PCRduplicates}
+\end{center}
+\end{figure}
+
+Instead, the template amount from each individual for the selective PCR during the library preparation needs to be increased. One obvious way would be to increase the total DNA input from each individual, but that reduces the number of individuals that can be pooled during the library preparation since the capacity of spin columns and the agarose gel (for size selection) is then reached with fewer individuals. Another option could be to postpone the gel fragment size selection until after a selective PCR, thus increasing the template amount for the PCR.
+
+I used qPCR to estimate the template amount that went into my selective PCR's! See \texttt{../sRAD/qPCR} and my RAD\_double\_dig\_protocol
+
+\begin{itemize}
+\item template amount estimation with qPCR
+\item check RAD protocols
+\item incomplete digestion or just genomic religation?
 \end{itemize}
 
 %% ---------------------------------------------------
@@ -242,8 +363,9 @@ Figure \ref{ddRAD:freq_dist_of_genotype_calls} shows the frequency distribution 
 %% ---------------------------------------------------
 
 %% ---------------------------------------------------
-\section{Adapter sequences for SbfI$+$XhoI ddRAD}
+\subsection{Adapter sequences for SbfI$+$XhoI ddRAD}\label{ch:adapter_sequences}
 %% ---------------------------------------------------
+
 \begin{figure}[h]
 \begin{Verbatim}[fontfamily=courier, fontsize=\relsize{-7}, commandchars=\\\{\}, frame=single, framesep=10pt, label=P1 and P2 adapters for ddRAD]
           {\footnotesize P1 adapter}                                        {\footnotesize insert}                                   {\footnotesize P2 adapter}
@@ -251,7 +373,7 @@ Figure \ref{ddRAD:freq_dist_of_genotype_calls} shows the frequency distribution 
 3'-TTACTATGCCGCTGGTGGCTCTAGATGTGAGAAAGGGATGTGCT\colorbox{orange}{GCGAGAAGGCTAGA}xxxxx-P    {\color{blue}ACGT}CCNNNNNNNNNNNG{\color{red}AGCT}       \colorbox{white}{T*CTAGCCTTCTCGC}CAAGTCGTCCTTACGGCTCTGGCTAG\underline{AGCATACGGCAGAAGACGAAC-5'}
 \end{Verbatim}
 \caption{Outline of P1 and P2 adapters for double-digest RAD. Underlined sequences are selective PCR primer sequences. An asterisk * stands for a phosphorothioate bond. A "P" stands for a phosphate group. Sequences in \textit{italics} are non-complementary (wavy). Sequences with an orange background are identical to each other. An "x" stands for a base in a barcode sequence.}
-\label{adapter-outline} % note, label has to come after caption
+\label{adapter_outline} % note, label has to come after caption
 \end{figure}
 
 
@@ -261,6 +383,7 @@ Figure \ref{ddRAD:freq_dist_of_genotype_calls} shows the frequency distribution 
 %% ---------------------------------------------------
 
 \begin{cmd}
+\captionsetup{type=cmd} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
 \begin{Verbatim}[formatcom=\color{darkgray}, fontsize=\scriptsize]
 
 $ for i in *fq_2.gz; do ( awk '(NR-2)%4==0' <(zcat $i) | perl -ne' $h{$_}=1;END{foreach $s (keys %h)
@@ -269,13 +392,14 @@ perl -ne'$sum+=$_; END{print $sum/$., "\n";}'
 
 0.4607
 \end{Verbatim}
-\caption[Determine GC content from standard RAD PE reads]{For each individual, this command takes the \glspl{pe} reads, uniques them and determines their overall GC content. Finally, the average of the individual GC contents is taken. Note the brute-force parallelisation by sending each iteration of the \texttt{for} loop into the background with \texttt{(\ldots )\&}.}
+\caption[Determine GC content from standard RAD PE reads]{\small For each individual, this command takes the \glspl{pe} reads, uniques them and determines their overall GC content. Finally, the average of the individual GC contents is taken. Note the brute-force parallelisation by sending each iteration of the \texttt{for} loop into the background with \texttt{(\ldots )\&}.}
 \label{cmd:GC_1}
 \end{cmd}
 
 Using the \gls{se} reads from the \gls{SbfI} RAD library (excluding the SbfI recognition sequence part) and command \ref{cmd:GC_2} I have determined the GC content of the \gls{se} reads: 49.5\%.
 
 \begin{cmd}
+\captionsetup{type=cmd} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
 \begin{Verbatim*}[formatcom=\color{darkgray}, fontsize=\scriptsize, numbers=left]
 $ gc(){ awk '(NR-2)%4==0' | sed 's/^......//' |
 perl -ne'$h{$_}=1;END{foreach $s (keys %h){$gc+=$s=~tr/GC/GC/;} print $gc/(40*scalar keys %h), "\n";}' ;}
@@ -286,7 +410,7 @@ $ parallel -j 10 'zcat {} | gc' ::: *fq_1.gz | mean
 
 0.4956
 \end{Verbatim*}
-\caption[Determine GC content of \gls{se} reads]{This command is a different version of command \ref{cmd:GC_1}. However, it is used here to determine the GC content of all \gls{se} reads from the standard \gls{SbfI} RAD library. It first creates and exports two functions, \texttt{gc} and \texttt{mean}, and then uses the programme \texttt{parallel} in order to parallelise the determination of GC content over 10 cores. After stripping barcode and the remainder of the restriction site, the reads are 40 base pairs long. Note, the space between \{ and \texttt{awk} (line 1) as well as \{ and \texttt{perl} (line 4) is required.}
+\caption[Determine GC content of \gls{se} reads]{\small This command is a different version of command \ref{cmd:GC_1}. However, it is used here to determine the GC content of all \gls{se} reads from the standard \gls{SbfI} RAD library. It first creates and exports two functions, \texttt{gc} and \texttt{mean}, and then uses the programme \texttt{parallel} in order to parallelise the determination of GC content over 10 cores. After stripping barcode and the remainder of the restriction site, the reads are 40 base pairs long. Note, the space between \{ and \texttt{awk} (line 1) as well as \{ and \texttt{perl} (line 4) is required.}
 \label{cmd:GC_2}
 \end{cmd}
 
@@ -395,11 +519,222 @@ The expected number of RAD markers per genome with an SbfI-XhoI double-digest an
 
 I have created an Excel file called \texttt{ComplexityReduction.xls} that implements equation \ref{eq:exp_number_ddRAD_loci} and that allows easy modification of variables.
 
+
+%% ---------------------------------------------------
+\FloatBarrier
+\subsection{Read mapping against reference sequence}\label{ch:read_mapping}
+%% ---------------------------------------------------
+
+49,351,479 \texttt{process\_radtags} quality filtered reads with ``-s 20'' (discard read if average quality score in the sliding window drops below 20). The 49 million reads had been quality filtered with \texttt{process\_radtags} from the \texttt{stacks} pipeline. The Big Data standard RAD reads used here (as in the previous section) were \texttt{process\_radtags} purified with a quality score threshold of 20 in a 20 bp sliding window. I used command \ref{cmd:sam_to_bam_via_awk_in_parallel} in order to extract all SAM records, where at least one read in a pair got mapped, with subsequent position sorting.
+
+\begin{cmd}
+\captionsetup{type=cmd} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+
+for i in *sam.gz; \
+do (samtools view -hS $i | gawk '/^\@/ || and($2, 4)==0 || and($2, 8)==0' | \
+samtools view -uhS - | samtools sort - `basename $i .fq_1.sam.gz`) & done
+\end{Verbatim}
+\caption{Command line that uses \texttt{samtools} and \texttt{awk} to create position sorted bam files in parallel that only contain records of paired reads where at least one read of the pair got mapped (i. e. skipping records with flag 77 and 141). \scriptsize{Note the brackets around the command line and the skipping of ";" between "\&" and "done"}. }
+\label{cmd:sam_to_bam_via_awk_in_parallel}
+\end{cmd}
+
+%% ---------------------------------------------------
+\FloatBarrier
+\subsection{\texttt{find\_linked\_RADtags.pl}}\label{ch:find_linked_RADtags}
+%% ---------------------------------------------------
+
+\gls{proper pair} (with a "properly mapped" pair on either side of the restriction site, see above)
+
+Visually inspecting all contigs with \texttt{IGV} for whether they have read pairs mapped to both sides of one SbfI restriction site is very tedious and time consuming. So I wrote a script called \texttt{find\_linked\_RADtags.pl} which reports reference contigs where at least two read pairs map to opposite sites of an SbfI restriction site (or any cut site leaving a 4 bp overhang). This script also detects the contig shown in figure \ref{LC.1628.C1.Contig1776_standRAD}. With this script the detection of a reference contig requires one "properly" mapped read pair on either side of an SbfI restriction site. So SE as well as PE reads need to map on both sides of the restriction site. This is stringent and will obviously miss contigs with genuine SbfI RADtag sites, but it is necessary to remove many false positive detections. The purpose of the script is not to detect as many contigs as possible, but only to detect several contigs with genuine SbfI RADtag sites.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{igv_LC_1628_C1_Contig1776_standRAD}
+\caption{Alignment of standard RAD read pairs to both sides of an SbfI restriction site. Read pairs are connected by a line. Forward mapping reads are pink, backward mapping reads are blue. The upper individual has 7 unique read pairs, i. e. with different paired-end reads.}
+\label{LC.1628.C1.Contig1776_standRAD}
+\end{figure}
+
+\texttt{find\_linked\_RADtags.pl} collects all paired-end reads that are mates of single-end reads that mapped to a detected \gls{linked RAD tag site}. It prints reads upstream or downstream of that site to separate files for each detected reference contig. 
+
+%% ---------------------------------------------------------------------------------------------
+\FloatBarrier
+\subsection{de novo assembly of PE reads}\label{ch:PE_read_assembly}
+%% ---------------------------------------------------------------------------------------------
+
+I attempted to use \href{http://www.vicbioinformatics.com/software.velvetoptimiser.shtml}{\texttt{VelvetOptimiser.pl}} to assemble the collected \gls{pe} reads into PE contigs \citep{Zerbino2008}. However, the programme fails to assemble three PE read contigs with low read coverage -- Contig1776\_downstream (see figure  \ref{LC.1628.C1.Contig1776_standRAD}), Contig4139\_upstream and LC03019A1F03.f1\_upstream -- despite my diligent attempts to provide the necessary settings \citep{Zerbino2010}.
+
+\texttt{SSAKE} \citep{Warren2007} is a simpler but also less heuristic and more tunable assembly programme than \texttt{Velvet}. It does not take base quality scores into account and takes only multi-fasta files as input. It searches for \emph{perfect} \gls{kmer} matches between reads. i. e. does not allow for sequencing error or \glspl{snp}.
+
+\begin{cmd}
+\captionsetup{type=cmd} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+
+for i in ../*fq; do awk '(NR-1)%4==0 || (NR-2)%4==0' $i | sed 's/^@/>/' > `basename $i .fq`.fa; done
+\end{Verbatim}
+\caption[ fastq files into multi-fasta files]{Command line that turns fastq files into multi-fasta files. It takes all fastq files in the parent directory, extracts the header and sequence part (while skipping the quality string), replaces the "@" at the beginning of the fastq headers with a required ">" sign and writes the stream to a new file with the same base name.}
+\label{fastq_to_fasta}
+\end{cmd}
+
+\texttt{SSAKE} by default does not allow setting a minimum overlap (\texttt{-m}) of less than 16 \gls{bp}. This could be too stringent for some of the low coverage PE contigs that I want to assemble. I, therefore, modified \texttt{SSAKE} to allow a minimum overlap of as small as 10 bp. When calling \texttt{SSAKE} with 
+\begin{description}
+\item[\texttt{-w 1}] Minimum depth of coverage allowed for contigs
+\item[\texttt{-o 1}] Minimum number of reads needed to call a base during an extension
+\end{description}
+\dots ~on the "Contig1776\_downstream" reads for PE assembly (just two overlapping reads, see fig. \ref{LC.1628.C1.Contig1776_standRAD}), it is able to assemble a full length contig of 81 bp.
+
+Any non-genomic sequence, i. e. adapter sequence, in the reads should interfere with de novo assembly. The Perl script \texttt{TagCle} by Kang-Wook Kim (Sheffield University) detects overlap between paired reads by Smith-Waterman local alignment and clips off read segments downstream of the end of the local alignment, i. e. generally adapter sequence. So this script can also detect a \emph{single} adapter (or barcode) base at the end of a read. I used command \ref{tagcle_run} to remove adapter sequences from the reads.
+
+\begin{cmd}
+\captionsetup{type=cmd} % this is necessary for the hyperlink to work, see manual for caption package, 6.5 about hyperref
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+
+$ for i in ../input/*fq_1; 
+do (j=`echo $i | sed 's/1$/2/'`; TagCle_0.70.pl -me -i1 $i -i2 $j > `basename $i .fq_1`.log ) & 
+done
+\end{Verbatim}
+\caption{The command line that I used in order to run Kang-Wook's script \texttt{TagCle} on all 154 pairs of input files in parallel. The \texttt{-me} switch turns off any direct search for adapter sequences.}
+\label{tagcle_run}
+\end{cmd}
+
+\texttt{TagCle} clipped 159 SE and 216 PE reads of a total of 1,584,732 reads (0.02\%). It did not discard any sequence.
+
+All de novo assemblers require optimisation of \gls{kmer} length, which is mainly what \texttt{VelvetOptimiser.pl} does with \texttt{Velvet}. So I wrote a script called \texttt{SSAKEoptimiser.pl} which iterates through \gls{kmer} lengths of 11 to 33 and keeps the assembly which produces the longest contig. This script exists in several parallelised versions (using different parallelisation modules) that parallelise not only over input files but also over iterations through \gls{kmer} lengths. This full parallelisation greatly speeds up execution on a multi-core machine (figure \ref{runtimes}).
+
+\begin{figure}
+\centering
+\includegraphics[width=.9\textwidth]{Parallel_Module_Comp}
+\caption{The run times of the four parallelised versions of the \texttt{SSAKEoptimiser} script on 11 input files.}
+\label{runtimes}
+\end{figure}
+
+
+
+\texttt{SSAKE} generally assembles many contigs for a region. In some cases this is due to different SE RADtags mapping to the same position in the \textit{Schistocerca} transcriptome. In other cases, this is clearly due to insufficient merging of contigs by \texttt{SSAKE} due to low coverage and SNPs (fig. \ref{contig_alignment})
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{contig_alignment}
+\caption{Multiple sequence alignment of \texttt{SSAKE} contigs assembled from reads collected from the downstream side of the RADtag site in the \textit{Schistocerca} reference contig "LC.1628.C1.Contig1776". The aligment view was created with the command: \texttt{muscle -in *LC.1628.C1.Contig1776\_downstream*contigs -msf | belvu -}~. The 7 contigs can clearly be merged into one big contig if allowing for a few SNP's.}
+\label{contig_alignment}
+\end{figure}
+
+That's why I created multiple alignments of \texttt{SSAKE} contigs with \texttt{Muscle} \citep{Edgar2004} from each assembly in order to manually merge them in the alignment editor of \texttt{MEGA} \citep{Tamura2013}.
+
+
+%% ---------------------------------------------------------------------------------------------
+\FloatBarrier
+\subsection{picking the right \texttt{SSAKE} contigs}\label{ch:picking_right_contig}
+%% ---------------------------------------------------------------------------------------------
+
+Since the \texttt{SSAKEoptimiser} output generally contains several \glspl{contig} of similar length and with similar read counts, it is difficult to pick those contigs upstream and downstream that genuinely belong together, i. e. come from the same locus. It is by no means always the longest \gls{contig} assembled that aligns significantly to the \textit{Schistocerca} reference\footnote{visual inspection of a pairwise alignment}.
+
+For each PE read assembly, I determined the length of the longest contig assembled, the total number of contigs assembled as well as the number of contigs with length $>100$, $>200$ and $>300$ \gls{bp}.
+
+An important piece of information for picking the right \texttt{SSAKE} contigs would be a significant \texttt{blast} hit against their putative \textit{Schistocerca} reference contig. So I extracted all 64 \textit{Schistocerca} reference contig sequences\footnote{also called \emph{unigenes}} from the \textit{Schistocerca} reference file with \texttt{samtools faidx} (see command \ref{samtools_faidx}).
+
+\begin{cmd}
+\captionsetup{type=cmd}
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+for i in `cat reference_contig_names_with_up-downstream_contig`; \
+do samtools faidx LC_unique.seq  $i > $i.fa; \
+done
+\end{Verbatim}
+\caption{\small Example of a command line that extracts fasta sequences from an indexed multi-fasta file using a file listing fasta headers.}
+\label{samtools_faidx}
+\end{cmd}
+
+With my script \texttt{blast2seq.pl} -- calling \texttt{NCBI blastn 2.2.28+} \citep{Camacho2009} -- I then blasted all 128 relevant \texttt{SSAKE} contigs files against their putative \textit{Schistocerca} reference contig sequence and recorded the number of blast hits as well as the fasta headers of the 10 best hitting \texttt{SSAKE} contigs together with their \gls{e-value} (\href{http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=FAQ#expect}{further explanation}) in a \textsf{.SSAKE\_contig\_stats} file. I only recorded \texttt{blastn} hits with an \gls{e-value} of less than $10^{-10}$. I then used this table as a guide for picking and possibly merging \texttt{SSAKE} contigs in \texttt{MEGA}. I used command lines similar to \ref{blastn}, in order to find overlapping \texttt{SSAKE} contigs that haven't been merged by \texttt{SSAKE}.
+
+\begin{cmd}
+\captionsetup{type=cmd}
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+blastn -query *LC03012A1D06.f1_downstream.fa.ssake*.contigs \
+-subject *LC03012A1D06.f1_downstream.fa.ssake*.contigs -task blastn \
+-evalue 1e-10 -outfmt 6 | awk '$1 != $2' | sort -k3 -nk11 | awk 'NR%2' | less -S
+\end{Verbatim}
+\caption{\small This command line example is a very quick way to find out which sequences in a multi fasta file are similar to each other. It prints out hits of an all by all \texttt{blastn} of the sequences in a file. Note that query and subject get the same file. The first \texttt{awk} command removes hits against itself, the sort part brings reciprocal hits together and the second \texttt{awk} command keeps only one line for each pair of matching sequences.}
+\label{blastn}
+\end{cmd}
+
+After picking and potentially merging \texttt{SSAKE} contigs, I aligned upstream and reverse complemented downstream\footnote{with respect to the restriction site} contigs against their putative \textit{Schistocerca} reference contig (if possible, i. e. significant blast hit) and filled the gap between them with N's. I thus created a new \emph{PE contig pair} consensus sequence for each \textit{Schistocerca} reference contig from upstream and downstream \texttt{SSAKE} contig sequences. 
+
+%% ---------------------------------------------------------------------------------------------
+\FloatBarrier
+\subsection{Backmapping}\label{ch:Backmapping}
+%% ---------------------------------------------------------------------------------------------
+
+\subsubsection{Including SE RAD tag sequences into the new reference}
+
+Before backmapping of all reads against the newly created PE contig pair reference, I wanted to include the SE \gls{RAD tag} sequences into the PE contig pair consensus sequences. For the determination of the consensus single-end sequences I obviously only want to use reads whose mate was used for the assembly of the \texttt{SSAKE} PE-contig that I finally picked (see section \ref{ch:picking_right_contig}). That's because \texttt{find\_linked\_Radtags.pl} had printed out all paired reads that mapped to a detected linked RADtags site in the \textit{Schistocerca} reference, but after the \texttt{SSAKE} assembly I mostly only picked PE-contigs that got a \texttt{blast} hit to their \textit{Schistocerca} reference contig. Other \texttt{SSAKE} contigs are much more likely to derive from similar but non-homologous loci to the \textit{Schistcerca} reference contig. I used command \ref{blast_mapping} in order to extract the fastq headers from those paired-end reads that get a blast hit to their inferred PE contig.
+
+\begin{cmd}
+\captionsetup{type=cmd}
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+for i in *fq_2; \
+do awk '(NR-2)%4==0 || (NR-1)%4==0' $i | sed 's/@/>/' | sed 's/_pp//' | \
+blastn -subject `basename $i .fq_2`_consensus.fas -evalue 1e-10 -outfmt 6 | \
+cut -f1 | sed 's/2$/1/' > `basename $i .fq_2`_blast_mapped.ids; \
+done
+\end{Verbatim}
+\caption{\small Using \texttt{blastn} to find PE reads that map to the inferred PE contig (see section \vref{ch:picking_right_contig}). The \texttt{for} loop iterates over all 40 PE read files. The first part of the loop converts fastq to fasta format. The second line feeds that into \texttt{blastn} (using megablast by default) and uses the corresponding PE contig (from section \ref{ch:picking_right_contig}) as subject. The third line takes the first column with the query headers from the blast output table and writes it to an output file.
+}
+\label{blast_mapping} 
+\end{cmd}
+
+I can then use these \texttt{*.ids} files, containing headers of the required SE sequences, as pattern files for a \texttt{grep} filter of the SE read files that \texttt{find\_linked\_RADtags.pl} has put out (see command \ref{grep_filter}).
+
+\begin{cmd}
+\captionsetup{type=cmd}
+\begin{Verbatim}[fontsize=\scriptsize, formatcom=\color{darkgray}]
+for i in *ids; \
+do grep -A1 -f $i ../all_Big_Data_`basename $i _blast_mapped.ids`.fq_1 | \
+egrep -v "\-\-" | sed 's/@/>/' > `basename $i .ids`_SE.fas; \
+done
+\end{Verbatim}
+\caption{\small Using the header files created by the previous command (\ref{blast_mapping}) to extract corresponding SE reads from \texttt{find\_linked\_RADtags.pl} SE read files.}
+\label{grep_filter}
+\end{cmd}
+
+I then created multiple sequences alignments with \texttt{muscle} in \texttt{.msf} format, which I could then use for the \texttt{consambig} programme from the \href{http://emboss.sourceforge.net/apps/release/6.6/emboss/apps/consambig.html}{\texttt{emboss}} package in order to create SE \gls{RAD tag} consensus sequences. I included these sequences into the 20 PE contig pair consensus sequences manually in \texttt{MEGA}. I used \texttt{stampy} to align all standard SbfI RAD reads from all 36 individuals against this new set of reference sequences.
+
+\subsubsection{Targeted alignment and clean up of mapping result}
+
+Figure \ref{stampy_par_34-10_vs_primer3ready_igv} shows an example of alignment of this \texttt{stampy} mapping. There are many low quality mappings which are very likely wrong (e. g. SE reads mapped to PE contig without SbfI site). However, here I have been using reads derived from a much larger source than is represented in the small reference of 20 \glspl{linked RAD tag site}. Therefore, \texttt{stampy} finds unambiguous mapping locations\footnote{indicated by a mapping quality >3} for reads that have an \gls{edit distance} of 17 to the reference sequence. \texttt{stampy} does not have an option for maximum allowed distance to the reference.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{stampy_par_34-10_vs_primer3ready_igv}
+\caption{Example read alignment of all standard RAD reads of individual par\_34-10 against one detected \gls{linked RAD tag site} sequence.}
+\label{stampy_par_34-10_vs_primer3ready_igv}
+\end{figure}
+
+\cite{Kosugi2013} have developed a few Perl scripts that deal with the problem of false positive alignments especially when doing a so-called \emph{targeted alignment}\footnote{when the reference sequence is much smaller than the source of the reads to be mapped} by removing reads that map with too high a number of mismatches. They show that filtering by mapping quality score is rather ineffective when trying to improve a targeted alignment. 
+
+\texttt{Coval-refine} by default removes all reads with more than 2 \glspl{indel}, 1 indel and 1 soft-clipped end and 2 soft-clipped ends. I have set the maximum proportion of mismatches to 0.1. The single-end reads are 46 base pairs long and are allowed to have up to 5 mismatches. The 51 base pair long paired-end reads are also allowed up to 5 mismatches.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{stampy_par_34-10_vs_primer3ready_after_coval-refine_igv}
+\caption{Read alignment of all standard RAD reads of individual par\_34-10 against one detected linked RADtags sequence in the primer3ready\_with\_RADtags reference. Upper track after \texttt{coval-refine} filtering. Lower track is without \texttt{coval-refine} filtering for comparison.}
+\label{coval-refine}
+\end{figure}
+
+Figure \ref{coval-refine} shows the mapping result after \texttt{coval-refine} treatment for one individual and one reference sequence.
+
+By default, \texttt{coval-refine} counts ambiguous positions in the reference as mismatches. I changed \texttt{coval-refine-sam.pl} to take correct account of the dual ambiguity codes RWYMKS. I also made it count \glspl{indel} like two mismatches.
+
 %% ---------------------------------------------------
 \section{Estimating divergence time of the two subspecies}
 %% ---------------------------------------------------
 
 \begin{itemize}
+\item work off questions
+\item leave details including command lines for suppl. material
+\item template amount estimation with fluorometer before and after PCR, qPCR
+\item how much heterozygosity within populations, after long distance dispersal
+\item leap-frog dispersal
+\item Lunt, Cooper, Cpn1, mitochondria
 \item ABS, simCoal
 \item long dispersal tail --> potential for contact between distal populations
 \item test gene flow <-> no gene flow model
@@ -424,22 +759,7 @@ Fig.~\vref{fragments-mapped-per-ind} shows the number of \glspl{fragment} mapped
 I am trying to find \glspl{snp} among individuals of the sample.
 % ********************************************************
 
-\begin{figure}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\linewidth]{figure/fragments_mapped_per_ind-1} 
-
-}
-
-
-
-\end{knitrout}
-\caption{Distribution of RAD fragment numbers mapped to 4 primer3ready reference contigs. 
-A "fragment" is a properly mapped read pair from an individual with a unique insert size. 
-If two read pairs on a RAD site from an individual have the same insert size, they constitute only one fragment, i. e. one read pair is likely to be a PCR duplicate.}
-\label{fragments-mapped-per-ind}
-\end{figure}
 
 
 

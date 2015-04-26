@@ -41,7 +41,7 @@ geno_calls <- read.delim("geno_calls_per_locus", header=T, comment.char="#")
 x <- table(geno_calls$geno_calls)
 y <- x/sum(x)
 
-# sum(y[1:2])
+# sum(y[20:38])
 
 par(mfrow=c(1,1), bg="cornsilk")
 
@@ -53,6 +53,119 @@ barplot(
         main="double-digest RAD library with SbfI and XhoI"
 )
 
+## ---- SbfI frequency dist. per ind. ----
+
+rm(list=ls())
+
+## read in SbfI site positions in uniqued (by individual) PE reads
+## see 'position.pl'
+
+## read in SbfI site positions in uniqued (by individual) SE reads
+
+# column number determination on command line:
+# $ head -n 1 SE_SbfI_position.out | perl -ne 'print scalar split(","), "\n";'
+# $ 90
+SE <- read.table("SE_SbfI_position.out", 
+                 colClasses = c("character", rep("integer", 89)),
+                 sep=",",
+                 row.names=1
+)
+
+names(SE) <- 1:89
+SE <- t(SE)
+
+# column number determination on command line:
+# $ head -n 1 PE_SbfI_position.out | perl -ne 'print scalar split(","), "\n";'
+# $ 783
+# the last field is followed by "\n" not a "," ==> 783 
+# $ wc -l PE_SbfI_position.out
+# $ 36
+PE <- read.table("PE_SbfI_position.out",
+                 row.names=1,
+                 sep=",",
+                 colClasses=c("character", rep("integer", 782))
+)
+
+names(PE) <- 1:782
+PE <- t(PE)
+
+# Here I am redefining the 'count' function to be able to count
+# the occurrence of a single number (n) in a vector (x) OR
+# count the occurrences of a vector of numbers (n) in the vector x.
+# The function achieves the second mode by letting 'sapply' call
+# the 'count' function (i. e. itself) for all numbers in the vector n.
+
+# count <- function(x, n=39){
+#         if(length(n) == 1){
+#                 return( sum(x==n, na.rm=T) )
+#         }else{
+#                 return( sapply(X=n, FUN=count, x=x) )
+#         }
+# }
+
+# For each column in the matrix SE, this returns a vector of length 39
+# containing the counts of the numbers 1 to 39 in that column. The 'apply'
+# function puts these vectors into a new matrix. The vectors have to be of 
+# equal length for the collection into a matrix by the 'apply' function.
+# SE.c <- apply(SE, 2, count, n=1:39)
+# dim(SE.c)
+
+# Instead of using my new 'count' function, I could have used the 'tabulate'
+# function. Note it is important to specify the number of bins (nbins) to get
+# a count of 1 to 'nbins' even if no number as high as 'nbins' is found.
+SE.c <- apply(SE, 2, tabulate, nbins=39)
+# SE.c[,1:5]
+row.names(SE.c) <- 1:39
+# t(SE.c)[,38:39]
+
+## now, let's plot all SbfI frequency distributions of all indviduals
+
+par(mfrow=c(2,1), mar=c(4,4,3,1))
+
+matplot(SE.c, 
+        type="l", 
+        col=rgb(1,0,0,.5), 
+        lty=1, 
+        ylim=c(0,60),
+        xlab="position in read (1-based)",
+        ylab="unique read count",
+        xaxp=c(1,39, 38)
+)
+mtext("a) single-end reads", side=3, adj=0, line=1)
+
+## now let's do the same for the PE reads
+
+# PE.c <- apply(PE, 2, count, n=1:44)
+PE.c <- apply(PE, 2, tabulate, nbins=44)
+
+matplot(PE.c, 
+        type="l", 
+        col=rgb(0,0,1,.5), 
+        lty=1,
+        xlab="position in read (1-based)",
+        ylab="unique read count",
+        xaxp=c(1,44, 43)
+)
+mtext("b) paired-end reads", side=3, adj=0, line=1)
+# There are two individuals with exceptionally high number of SbfI overall.
+
+# class(PE.c)
+# dimnames(PE.c)
+# colSums(PE.c)
+# matplot(PE.c[,c("ery_30-17.fq_2.gz", "ery_30-8.fq_2.gz")], 
+#         type="l", 
+#         col=rgb(0,0,1,.5), 
+#         lty=1,
+#         xlab="position in read (1-based)",
+#         ylab="unique read count",
+#         xaxp=c(1,44, 43)
+#         )
+
+# If this is due to fragment-to-fragment religation, then P1-adapter ligation
+# should have been inefficient. That should also lead to a reduction in overall
+# read number.
+# see table 4 and figure 13 in sRAD_Analysis.Rnw
+# these two individuals do NOT have an exceptionally low read count
 
 ## ---- fragments_mapped_per_ind ----
 
@@ -112,3 +225,78 @@ legend("top",
        horiz=T,
        text.width=5
 )
+
+## ---- fragments_input_reads_corr ----
+
+# locus dropout
+dropout <- apply(fragments_per_ind[,2:5], 1, function(x){sum(x==0)})
+x <- (fragments_per_ind$Retained/10^6)
+par( mfrow=c(1,1), mar=c(4,4,1,1) )
+plot(x, dropout, 
+     pch=20, col="red",
+     #    cex.axis=.8,
+     #   cex.lab=0.8,
+     xlim=c(0,5),
+     ylim=c(0,4),
+     ylab="number of locus-dropout per ind.",
+     xlab="input read number per ind. in millions"
+)
+mod <- lm(dropout ~ x)
+abline(mod, xpd=F, lwd=2)
+text(c(3,3), c(0.7, 0.5), pos= 4, 
+     #   cex=.7,
+     labels=c("slope: -0.2889", "p=0.01462")
+)
+# fragment count over 4 loci versus input read number
+frag_over_loci <- apply(fragments_per_ind[,2:5], 1, sum)
+plot(fragments_per_ind$Retained/10^6, frag_over_loci, 
+     xlim=c(0,5), 
+     #     cex.lab=.8,
+     #     cex.axis=.8,
+     ylim=c(0, max(frag_over_loci)+5),
+     type="n",
+     xlab="total reads input (millions)",
+     ylab="sum of mapped fragments (4 loci)"
+)
+text(fragments_per_ind$Retained/10^6, frag_over_loci, 
+     labels=fragments_per_ind[,1], cex=.8)
+mod <- lm(frag_over_loci ~ x)
+abline(mod, xpd=F, lwd=2)
+
+
+## ---- fragNum_per_locus_tab ----
+
+m <- apply(fragments_per_ind[,2:5], 2, mean)
+s <- apply(fragments_per_ind[,2:5], 2, sd)
+tab <- rbind(m, s/m)
+row.names(tab) <- c("mean", "CV")
+
+if (require(xtable)) { cat("")
+} else {
+        cat("xtable package not found\n")
+        cat("installing xtable package now ...\n")
+        install.packages("xtable")
+        library(xtable)
+}
+
+tab <- xtable( t(tab),
+        caption="Mean and coefficient of variation of fragment counts for the 4 loci shown in figure \\ref{fragments-mapped-per-ind}.",
+        label="mean_sd_fragNum_per_locus",
+        display=c("s", "f", "f"),
+        digits=c(0, 1, 1)
+        ) 
+print(tab, type="latex", caption.placement="top", booktabs=T)
+
+# kable(
+#         t(tab),
+#         format = "latex",
+#         digits = 1,
+#         col.names = c("mean", "CV"),
+#         align = c("r", "c", "c"),
+#         caption="Mean and coefficient of variation of fragment counts for the 4 loci shown in figure \ref{fragments-mapped-per-ind}.",
+#         escape=T,
+#         booktabs=T
+#         )
+
+        
+
