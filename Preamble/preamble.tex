@@ -5,7 +5,7 @@
 % Set {innerside margin / outerside margin / topmargin / bottom margin}  and
 % other page dimensions
 \ifsetCustomMargin
-  \RequirePackage[left=37mm,right=30mm,top=35mm,bottom=30mm]{geometry}
+  \RequirePackage[left=37mm,right=30mm,top=25mm,bottom=20mm]{geometry}
   \setFancyHdr % To apply fancy header after geometry package is loaded
 \fi
 
@@ -55,6 +55,13 @@
 
 \usepackage{relsize}
 \renewcommand\RSsmallest{4pt}
+
+%------ the following package can be used for Word Review function mimicking comments ----------%
+\usepackage[textsize=tiny]{todonotes} % specify ``disable'' to turn off all notes
+\usepackage{setspace}
+\newcommand{\note}[2][] {\todo[caption={#2}, #1] {\begin{spacing}{0.8}#2\end{spacing}}}
+
+\usepackage{pdflscape}
 
 
 % ************************* Algorithms and Pseudocode **************************

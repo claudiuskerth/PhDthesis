@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,times,print,index, custombib]{PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
 \usepackage{import}
@@ -230,8 +230,9 @@ Figure \ref{fragments-mapped-per-ind} indicates that none of the 4 loci is a goo
 \label{frag_input_corr_fig}
 \end{figure}
 
-The \gls{fragment} count is generally not very high (see table \ref{mean_sd_fragNum_per_locus}), indicating that low unique template amount for sequencing prevented any individual from having many fragments mapped. I started the standard SbfI RAD library preparation with about 130 ng of DNA from each grasshopper. Assuming that the genome is 12 Gbp long (see section \ref{ch:Genome_size}), this would only correspond to 9,884 copies of the genome (equation \ref{eq:genome_copies}).
+The \gls{fragment} count is generally not very high (see table \ref{mean_sd_fragNum_per_locus}), indicating that low unique template amount for sequencing prevented any individual from having many fragments mapped. I started the standard SbfI RAD library preparation with about 130 ng of DNA from each grasshopper. Assuming that the genome is 12 Gbp long (see section \ref{ch:Genome_size}), this would only correspond to round 10,000 copies of the genome (equation \ref{eq:genome_copies}).
 
+%% ---- this is a table, the LaTeX code for which is produced in the accompanying R file: ref-map-doc.R
 <<fragNum_per_locus_tab, echo=FALSE, results='asis', cache=TRUE>>=
 @
 
@@ -249,7 +250,7 @@ The \gls{fragment} count is generally not very high (see table \ref{mean_sd_frag
 \end{align}
 \normalsize
 
-The problem of low \gls{fragment} count is unlikely to be alleviated much by creating more sequence reads from this library (figure \ref{PCRduplicates}).
+The problem of low \gls{fragment} count is unlikely to be alleviated much by creating more sequence reads from this library (figure \ref{PCRduplicates}). Instead, the template amount from each individual for the selective PCR during the library preparation needs to be increased. One obvious way would be to increase the total DNA input from each individual, but that reduces the number of individuals that can be pooled during the library preparation since the capacity of spin columns and the agarose gel (for size selection) is then reached with fewer individuals. Another option could be to postpone the gel fragment size selection until after a selective PCR, thus increasing the template amount for the PCR (see \citealt{Parchman2012} and table \ref{compProt}).
 
 \begin{figure}
 \begin{center}
@@ -259,13 +260,13 @@ The problem of low \gls{fragment} count is unlikely to be alleviated much by cre
 \end{center}
 \end{figure}
 
-Instead, the template amount from each individual for the selective PCR during the library preparation needs to be increased. One obvious way would be to increase the total DNA input from each individual, but that reduces the number of individuals that can be pooled during the library preparation since the capacity of spin columns and the agarose gel (for size selection) is then reached with fewer individuals. Another option could be to postpone the gel fragment size selection until after a selective PCR, thus increasing the template amount for the PCR.
 
-I used qPCR to estimate the template amount that went into my selective PCR's! See \texttt{../sRAD/qPCR} and my RAD\_double\_dig\_protocol
+I estimated the template amount that went into the selective PCR of the SbfI$+$XhoI double-digest RAD library with \textit{q}PCR (see section \ref{ch:qPCR}). This indicates a very low template amount of on average 1.26 ($\pm$ 0.37) template molecules per locus and individual.
+
 
 \begin{itemize}
-\item template amount estimation with qPCR
 \item check RAD protocols
+\item how unique are the unigenes in the \textit{Schistocerca} transcriptome reference? Did I only use reads with mapping quality $>$3?
 \item incomplete digestion or just genomic religation?
 \end{itemize}
 
@@ -329,7 +330,7 @@ So, it seems that sequences close to \gls{SbfI} sites are more GC rich than furt
 
 %% --------------------------------------------------------------------------------------------------------------------------
 \FloatBarrier
-\section{Genome size of \textit{Chorthippus parallelus}}\label{ch:Genome_size}
+\subsection{Genome size of \textit{Chorthippus parallelus}}\label{ch:Genome_size}
 %% --------------------------------------------------------------------------------------------------------------------------
 
 \textit{Chorthippus parallelus} has a chromosome complement of 2n = 16 + X. Males have one X-chromosomes, females have two. Table \ref{ta:genome_size_studies} shows four studies that provide genome size estimates for \textit{Chorthippus parallelus}. Note that all studies are measuring the DNA content of spermatids. However, none of the studies explicitly deal with the issue that half of their measurements are missing the contribution from the X chromosome. Table \ref{ta:genome_size_studies} mentions the country of origin of the grasshoppers used for genome size estimates. Note, however, that only \cite{Belda1991} provide sampling locations. For the rest it is assumed that individuals were sampled closed to the authors institutes. So two studies provide genome size estimates for \textit{C. parallelus parallelus} and two for \textit{C. parallelus erythropus}. The \textit{parallelus} subspecies seems to have a genome 2--4 giga \glspl{bp} larger than the one of subspecies \textit{erythropus}. Apart from possible systematic differences in methodology, this apparent difference in genome size could be real, since several studies have shown chromosomal differentiation between the two subspecies, in particular on the X chromosome: an active nucleolar organiser region (NOR) distally on the X in \textit{C. p. parallelus} but not in \textit{C. p. erythropus} \citep{Gosalvez1988}. This NOR on X lies in or near a distinctive distal C-band\footnote{\gls{heterochromatin} stained with Giemsa}. In addition, Pyrenean \textit{C. p. erythropus} also show an interstitial C-band on X that does not occur in pure \textit{C. p. parallelus} \citep{Bella2007}. Further chromosomal differences are listed in table 1 of \cite{Ferris1993}.
@@ -473,7 +474,7 @@ Visually inspecting all contigs with \texttt{IGV} for whether they have read pai
 \subsection{de novo assembly of PE reads}\label{ch:PE_read_assembly}
 %% ---------------------------------------------------------------------------------------------
 
-I attempted to use \href{http://www.vicbioinformatics.com/software.velvetoptimiser.shtml}{\texttt{VelvetOptimiser.pl}} to assemble the collected \gls{pe} reads into PE contigs \citep{Zerbino2008}. However, the programme fails to assemble three PE read contigs with low read coverage -- Contig1776\_downstream (see figure  \ref{LC.1628.C1.Contig1776_standRAD}), Contig4139\_upstream and LC03019A1F03.f1\_upstream -- despite my diligent attempts to provide the necessary settings \citep{Zerbino2010}.
+I attempted to use \href{http://www.vicbioinformatics.com/software.velvetoptimiser.shtml}{\texttt{VelvetOptimiser.pl}} to assemble the collected \gls{pe} reads into PE contigs \citep{Zerbino2008}. However, the programme fails to assemble three PE read contigs with low read coverage -- Contig1776\_downstream (see figure  \ref{LC.1628.C1.Contig1776_standRAD}), Contig4139\_upstream and LC03019A1F03.f1\_upstream -- despite my diligent attempts to provide the necessary settings \citep{Zerbino2010,Davey2012,Etter2011}.
 
 \texttt{SSAKE} \citep{Warren2007} is a simpler but also less heuristic and more tunable assembly programme than \texttt{Velvet}. It does not take base quality scores into account and takes only multi-fasta files as input. It searches for \emph{perfect} \gls{kmer} matches between reads. i. e. does not allow for sequencing error or \glspl{snp}.
 
@@ -510,7 +511,7 @@ done
 
 \texttt{TagCle} clipped 159 SE and 216 PE reads of a total of 1,584,732 reads (0.02\%). It did not discard any sequence.
 
-All de novo assemblers require optimisation of \gls{kmer} length, which is mainly what \texttt{VelvetOptimiser.pl} does with \texttt{Velvet}. So I wrote a script called \texttt{SSAKEoptimiser.pl} which iterates through \gls{kmer} lengths of 11 to 33 and keeps the assembly which produces the longest contig. This script exists in several parallelised versions (using different parallelisation modules) that parallelise not only over input files but also over iterations through \gls{kmer} lengths. This full parallelisation greatly speeds up execution on a multi-core machine (figure \ref{runtimes}).
+All de novo assemblers require optimisation of \gls{kmer} length \citep{Davey2012}, which is mainly what \texttt{VelvetOptimiser.pl} does with \texttt{Velvet}. So I wrote a script called \texttt{SSAKEoptimiser.pl} which iterates through \gls{kmer} lengths of 11 to 33 and keeps the assembly which produces the longest contig. This script exists in several parallelised versions (using different parallelisation modules) that parallelise not only over input files but also over iterations through \gls{kmer} lengths. This full parallelisation greatly speeds up execution on a multi-core machine (figure \ref{runtimes}).\todo{compare assembly results with and without kmer size optimisation, \texttt{assemblathon\_stats.pl}}
 
 \begin{figure}
 \centering
@@ -620,7 +621,7 @@ Figure \ref{stampy_par_34-10_vs_primer3ready_igv} shows an example of alignment 
 \label{stampy_par_34-10_vs_primer3ready_igv}
 \end{figure}
 
-\cite{Kosugi2013} have developed a few Perl scripts that deal with the problem of false positive alignments especially when doing a so-called \emph{targeted alignment}\footnote{when the reference sequence is much smaller than the source of the reads to be mapped} by removing reads that map with too high a number of mismatches. They show that filtering by mapping quality score is rather ineffective when trying to improve a targeted alignment. 
+\cite{Kosugi2013} have developed a few Perl scripts that deal with the problem of false positive alignments especially when doing a so-called \emph{targeted alignment}\footnote{when the reference sequence is much smaller than the source of the reads to be mapped} by removing reads that map with too many mismatches. They show that filtering by mapping quality score is rather ineffective when trying to improve a targeted alignment. 
 
 \texttt{Coval-refine} by default removes all reads with more than 2 \glspl{indel}, 1 indel and 1 soft-clipped end and 2 soft-clipped ends. I have set the maximum proportion of mismatches to 0.1. The single-end reads are 46 base pairs long and are allowed to have up to 5 mismatches. The 51 base pair long paired-end reads are also allowed up to 5 mismatches.
 
@@ -634,6 +635,63 @@ Figure \ref{stampy_par_34-10_vs_primer3ready_igv} shows an example of alignment 
 Figure \ref{coval-refine} shows the mapping result after \texttt{coval-refine} treatment for one individual and one reference sequence.
 
 By default, \texttt{coval-refine} counts ambiguous positions in the reference as mismatches. I changed \texttt{coval-refine-sam.pl} to take correct account of the dual ambiguity codes RWYMKS. I also made it count \glspl{indel} like two mismatches.
+
+%% ---------------------------------------------------
+\FloatBarrier
+\subsection{Estimation of template amount for selective PCR}\label{ch:qPCR}
+%% ---------------------------------------------------
+
+I estimated the amount of template that went into the selective PCR for the SbfI$+$XhoI double-digest library (see figure \ref{ddRAD_protocol_overview}) with quantitative PCR \citep{Rutledge2003}.
+
+I took an aliquot of the selective PCR product and determined its DNA concentration with picoGreen and a fluorometer\note{probably 3 replicate measurements $\rightarrow$ lab book}. I made a serial dilution of 8 times 1:10 from this PCR product and used this to produce a standard curve. I created three replicates of the standard curve and three replicates of the target, i. e. the solution before selective PCR. The \gls{Ct} threshold was automatically set by the \textit{q}PCR machine and, except for the lowest template concentration of the standard dilution, the melting temperature of the PCR products were always very close to 79$^{\circ}$C. Assuming a mean template molecule length of 550 \gls{bp} and 16,000 loci from this double-digest library (see equation \ref{eq:exp_number_ddRAD_loci}), the \textit{q}PCR results indicate that on average only 1.26 ($\pm$ 0.37) template molecules per locus and individual went into the selective PCR\footnote{see DD\_RAD\_LIB\_101111\_data.xls}.
+
+
+%% ------------------------------------------------------------------------------------------
+\FloatBarrier
+\subsection{comparison of different double-digest RAD protocols}
+%% ------------------------------------------------------------------------------------------
+\pagebreak
+
+\begin{landscape}
+
+\ctable[ 
+	caption =  {comparison of different protocols for non-standard RAD$^{a}$ (see figure \ref{ddRAD_protocol_overview})},
+	label = compProt,
+%	pos = t,
+%	sideways,
+	width = 240mm,
+	captionskip = 1ex, % bring the caption closer to the table
+	doinside=\scriptsize,
+	center,
+]
+{l>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X}
+{
+\tnote[a]{\scriptsize without a random shearing step}
+}
+{
+\FL
+\textbf{protocol}   &   \textbf{adapters}   &   \textbf{DNA isolation}   &   \textbf{digestion}   &   \textbf{ligation}   &   \textbf{gel size selection}   &   \textbf{PCR}   &   \textbf{purification}
+\ML
+\cite{Peterson2012}		& P1 and P2 adapter at stock conc. of 40$\mu$M, short adapters and long PCR primers	& NA	& digest for 3h, no heat-inact. -- instead bead puri.	& 30min ligation at RT, 2-10 fold excess of adapters to sticky ends	& before PCR, automated DNA size selection with Pippin-Prep (Sage Science)	& 20ng size-selected library per PCR reaction, 2$\mu$M end conc. of each PCR primer, only 8-12 cycles (?!) 	& AMPure beads \NN % the ``\rowcolor'' command requires the ``colortbl'' package
+\rowcolor[gray]{0.9} \cite{Andolfatto2011}		& 10$\mu$M stock conc., short adapters + long PCR primers	& Puregene (Qiagen)	& 10ng DNA per sample, with 3.3U of 4bp cutter MseI (i. e. no double-digerst), 3h at 37$^{\circ}$C followed by heat-inact.	& 5nmole adapters, only 1 U of T4 DNA ligase in a volume of 50$\mu$l, 1h at 16$^{\circ}$C 	& before PCR, ladder mixed into library, 2\% gel	& only 15 cycles, Phusion	& AMPure beads \NN
+\cite{Parchman2012}		& 1$\mu$M stock conc. for P1 (EcoRI) adapter, 
+					10$\mu$M stock conc. for P2 (MseI) adapter, 
+					annealing in pure water (?!), 
+					short adapters + long PCR primers	& NA	& 6- and 4bp cutter, 10U EcoRI, only 1U MseI, digestion in T4 buffer, 
+														NaCl added to $\sim$50mM end conc.,
+														volume 9$\mu$l, 8h, heat-inact.		& 1pmole EcoRI adapter, 10pmole MseI adapter, 
+																						67 NEB units T4 ligase, 6h at 16$^{\circ}$C, 
+																						ligation in only 11.4$\mu$l 				& after PCR, 2.5\% gel, low electric field gel runs,
+																															EtBr gels, many lanes					&  \vspace{-8pt}{\color{red}individual PCR before pooling samples and before gel size selection},
+																													   											30 cycles (?!), only 0.08$\mu$M end conc. of each primer in PCR (?!),
+																																								BioRad Iproof High Fidelity DNA polymerase						& QiaQuick spin columns \NN
+\rowcolor[gray]{0.9} this study & long adapters short PCR primers (fig. \ref{adapter_outline}) & silica spin columns (Qiagen)	& 132 ng per sample, 10 U/sample SbfI-HF, 20 U/sample XhoI	, NEBuffer 4, 3 h at 37$^{\circ}$C followed by heat-inact. &	$\sim$22 fold excess of adapters to sticky ends, 400 NEB U/sample ligase, 2 h at RT, then over night at 4$^{\circ}$C followed by heat-inact. &	before PCR, 1\% agarose gel with EtBr, whole pooled library in one lane, 13 V/cm &	20-24 cycles, Phusion Mastermix, 1.0$\mu$M of each thiol-protected primer & Qiagen MinElute spin columns \NN
+\LL
+}
+
+\end{landscape}
+
+
 
 %% ---------------------------------------------------
 \section{Estimating divergence time of the two subspecies}
