@@ -167,6 +167,79 @@ mtext("b) paired-end reads", side=3, adj=0, line=1)
 # see table 4 and figure 13 in sRAD_Analysis.Rnw
 # these two individuals do NOT have an exceptionally low read count
 
+## ---- relative SbfI frequencies ----
+
+PE <- read.table("PE_SbfI_position.out",
+                 row.names=1,
+                 sep=",",
+                 colClasses=c("character", rep("integer", 782))
+)
+
+names(PE) <- 1:782
+PE <- t(PE)
+PE.c <- apply(PE, 2, tabulate, nbins=44)
+
+read.c <- read.delim("read_count", comment.char="#")
+#head(read.c)
+#head( read.c[order(read.c$file),] )
+read.c.sorted <- read.c[order(read.c$file),]
+#head(read.c.sorted)
+#read.c.sorted$file == dimnames(PE.c)[[2]][order(dimnames(PE.c)[[2]])]
+PE.c.sorted <- PE.c[, order(dimnames(PE.c)[[2]])]
+#read.c.sorted$file == dimnames(PE.c.sorted)[[2]]
+# PE.c[, order(dimnames(PE.c)[[2]])][1:5,1:5]
+# PE.c[,grep("ery_30-1\\.|ery_30-10\\.", dimnames(PE.c)[[2]], perl=T)]
+# m <- matrix(1:10, 5,2)
+# m
+# m/c(2,5)
+# t(t(m)/c(2,5))
+# PE.c.sorted[1:5,1:2]
+# read.c.sorted$read_count[1:2]
+# t(t(PE.c.sorted[1:5,1:2])/read.c.sorted$read_count[1:2])
+PE.c.sorted.rel_freq <- t(t(PE.c.sorted)/read.c.sorted$read_count)
+
+par(mfrow=c(1,1), mar=c(4,4,3,1), bg=gray(0.8))
+# class(dimnames(SE.c))
+# grep("ery_30-17|ery_30-8", dimnames(SE.c)[[2]])
+matplot(PE.c.sorted.rel_freq[,-(grep("ery_30-17|ery_30-8|par_34-3", dimnames(PE.c.sorted.rel_freq)[[2]]))], 
+        type="l", 
+        col=rgb(0,0,1,0.2), 
+        lty=1, 
+        ylim=c(0,5e-05),
+        xlab="position in read (1-based)",
+        ylab="unique read frequency",
+        xaxp=c(1,44, 43),
+        main="individual frequency distributions of SbfI sites in PE reads"
+)
+matlines(PE.c.sorted.rel_freq[,(grep("ery_30-17|ery_30-8|par_34-3", dimnames(PE.c.sorted.rel_freq)[[2]]))], 
+         type="l", 
+         col=c("red", "green", "yellow"), 
+         lty=1
+)
+legend("topright",
+       lty=rep(1,3),
+       lwd=rep(2,3),
+       col=c("red", "green", "yellow"),
+       legend=c("ery_30-17", "ery_30-8", "par_34-3")
+)
+
+# t(SE.c)[,38:39]
+
+# SE.39 <- apply(SE, 2, count, n=39)
+# SE.39
+# barplot(sort(SE.39))
+# hist(SE.39)
+# SE.SbfI.unique.count <- apply(SE, 2, function(x){ sum(!is.na(x)) })
+# SE.39.prop <- SE.39/SE.SbfI.unique.count
+# barplot(sort(SE.39.prop))
+# names(SE.39.prop)
+# class(SE.39.prop)
+# SE.39.prop.m <- as.matrix(SE.39.prop, ncol=1, nrow=36)
+# apply(SE.39.prop.m, 2, sort)
+# sort(t(SE.39.prop))
+# boxplot(SE)
+# 
+
 ## ---- fragments_mapped_per_ind ----
 
 fragments_per_ind <- read.delim("fragments_mapped_per_ind",
@@ -263,7 +336,6 @@ text(fragments_per_ind$Retained/10^6, frag_over_loci,
 mod <- lm(frag_over_loci ~ x)
 abline(mod, xpd=F, lwd=2)
 
-
 ## ---- fragNum_per_locus_tab ----
 
 m <- apply(fragments_per_ind[,2:5], 2, mean)
@@ -299,4 +371,351 @@ print(tab, type="latex", caption.placement="top", booktabs=T)
 #         )
 
         
+
+## ---- ddRAD SbfI frequency dist ----
+
+rm(list=ls())
+
+## read in SbfI site positions in uniqued (by individual) 
+## SE reads (see position.pl)
+## I deleted the output from the "NotSoTrueTags" files for ery_30-17.
+
+ncol <- max(
+        count.fields("ddRAD_SE_SbfI_position.out", sep=",")
+)
+# ncol
+ddRAD_SE_SbfI_pos <- read.csv("ddRAD_SE_SbfI_position.out",
+                              sep=",",
+                              row.names=1,
+                              header=FALSE,
+                              fill=TRUE,
+                              col.names=paste0("V", seq_len(ncol)),
+                              colClasses = c("character", rep("integer", ncol-1)),
+)
+# str(ddRAD_SE_SbfI_pos)
+# row.names(ddRAD_SE_SbfI_pos)
+
+## read in SbfI site positions in uniqued (by individual) 
+## PE reads (see position.pl)
+ncol <- max(
+        count.fields("ddRAD_PE_SbfI_position.out", sep=",")
+)
+## ncol
+ddRAD_PE_SbfI_pos <- read.csv("ddRAD_PE_SbfI_position.out",
+                              sep=",",
+                              row.names=1,
+                              header=FALSE,
+                              fill=TRUE,
+                              col.names=paste0("V", seq_len(ncol)),
+                              colClasses = c("character", rep("integer", ncol-1)),
+)
+
+# Instead of using my new 'count' function, I could have used the 'tabulate'
+# function. Note it is important to specify the number of bins (nbins) to get
+# a count of 1 to 'nbins' even if no number as high as 'nbins' is found.
+SE.c <- apply(ddRAD_SE_SbfI_pos, 1, tabulate, nbins=96)
+# SE.c[,1:5]
+row.names(SE.c) <- 1:96
+
+## now, let's plot all SbfI frequency distributions of all indviduals
+
+## absolute counts
+
+# par(mfrow=c(2,1), mar=c(4,4,3,1))
+
+# matplot(SE.c, 
+#         type="l", 
+#         col=rgb(1,0,0,.5), 
+#         lty=1, 
+#         ylim=c(0,60),
+#         xlab="position in read (1-based)",
+#         ylab="unique read count",
+#         xaxp=c(1,96, 95)
+# )
+# mtext("a) single-end reads", side=3, adj=0, line=1)
+
+## now let's do the same for the PE reads
+
+# PE.c <- apply(PE, 2, count, n=1:44)
+PE.c <- apply(ddRAD_PE_SbfI_pos, 1, tabulate, nbins=100)
+
+# matplot(PE.c, 
+#         type="l", 
+#         col=rgb(0,0,1,.5), 
+#         lty=1,
+#         xlab="position in read (1-based)",
+#         ylab="unique read count",
+#         xaxp=c(1,100, 99)
+# )
+# mtext("b) paired-end reads", side=3, adj=0, line=1)
+
+#
+## realtive counts 
+#
+read.c <- read.delim("record_count", comment.char="#", header=F, sep=" ")
+# head(read.c)
+names(read.c) <- c("sample", "count")
+# head( read.c[order(read.c$sample),] )
+read.c.sorted <- read.c[order(read.c$sample),]
+#head(read.c.sorted)
+#read.c.sorted$sample == dimnames(SE.c)[[2]][order(dimnames(SE.c)[[2]])]
+SE.c.sorted <- SE.c[, order(dimnames(SE.c)[[2]])]
+# read.c.sorted$sample == dimnames(SE.c.sorted)[[2]]
+# diving a matrix by a vector in R is row-wise
+# m <- matrix(1:10, 5,2)
+# m
+# m/c(2,5)
+# so I have to turn columns into rows here in order to divide the first column
+# by the first element in the vector, the second column by the second element in the vector,
+# and so on
+# t(t(m)/c(2,5))
+# now I can divide the SbfI count for each individual by the number of reads for 
+# that individual, thus getting relative counts
+SE.c.sorted.rel_freq <- t(t(SE.c.sorted)/read.c.sorted$count)
+
+## now get relative frequencies for PE reads
+## note, sample names now end with "fq_2" instead of "fq_1"
+## I changed all sample names to end with "fq_1"
+PE.c.sorted <- PE.c[, order(dimnames(PE.c)[[2]])]
+# read.c.sorted$sample == dimnames(PE.c.sorted)[[2]]
+# data.frame(read.c.sorted$sample, dimnames(PE.c.sorted)[[2]])
+# dimnames(PE.c.sorted)[[2]]
+PE.c.sorted.rel_freq <- t(t(PE.c.sorted)/read.c.sorted$count)
+
+## matplots of relative SbfI frequencies
+
+par(mfrow=c(2,1), mar=c(4,4,3,1))
+
+matplot(SE.c.sorted.rel_freq, 
+        type="l", 
+        col=rgb(1,0,0,.5), 
+        lty=1, 
+        #         ylim=c(0, 6e-5),
+        xlab="position in read (1-based)",
+        ylab="unique read frequency",
+        xaxp=c(1,96, 19)
+)
+mtext("a) single-end reads", side=3, adj=0, line=1)
+
+## now let's do the same for the PE reads
+
+matplot(PE.c.sorted.rel_freq, 
+        type="l", 
+        col=rgb(0,0,1,.5), 
+        lty=1,
+        xlab="position in read (1-based)",
+        ylab="unique read frequency",
+        xaxp=c(1,100, 33)
+)
+mtext("b) paired-end reads", side=3, adj=0, line=1)
+
+## ---- ddRAD XhoI frequency dist ----
+
+rm(list=ls())
+
+## read in XhoI site positions in uniqued (by individual) 
+## SE reads (see position.pl)
+## I deleted the output from the "NotSoTrueTags" files for ery_30-17.
+
+ncol <- max(
+        count.fields("ddRAD_SE_XhoI_position.out", sep=",")
+)
+# ncol
+ddRAD_SE_XhoI_pos <- read.csv("ddRAD_SE_XhoI_position.out",
+                              sep=",",
+                              row.names=1,
+                              header=FALSE,
+                              fill=TRUE,
+                              col.names=paste0("V", seq_len(ncol)),
+                              colClasses = c("character", rep("integer", ncol-1)),
+)
+
+
+## read in XhoI site positions in uniqued (by individual) 
+## PE reads (see position.pl)
+ncol <- max(
+        count.fields("ddRAD_PE_XhoI_position.out", sep=",")
+)
+## ncol
+ddRAD_PE_XhoI_pos <- read.csv("ddRAD_PE_XhoI_position.out",
+                              sep=",",
+                              row.names=1,
+                              header=FALSE,
+                              fill=TRUE,
+                              col.names=paste0("V", seq_len(ncol)),
+                              colClasses = c("character", rep("integer", ncol-1)),
+)
+
+# Instead of using my new 'count' function, I could have used the 'tabulate'
+# function. Note it is important to specify the number of bins (nbins) to get
+# a count of 1 to 'nbins' even if no number as high as 'nbins' is found.
+SE.c <- apply(ddRAD_SE_XhoI_pos, 1, tabulate, nbins=96)
+# SE.c[,1:5]
+row.names(SE.c) <- 1:96
+
+## now, let's plot all XhoI frequency distributions of all indviduals
+
+## absolute counts
+
+# par(mfrow=c(2,1), mar=c(4,4,3,1))
+
+# matplot(SE.c, 
+#         type="l", 
+#         col=rgb(1,0,0,.5), 
+#         lty=1, 
+#         ylim=c(0,60),
+#         xlab="position in read (1-based)",
+#         ylab="unique read count",
+#         xaxp=c(1,96, 95)
+# )
+# mtext("a) single-end reads", side=3, adj=0, line=1)
+
+## now let's do the same for the PE reads
+
+# PE.c <- apply(PE, 2, count, n=1:44)
+PE.c <- apply(ddRAD_PE_XhoI_pos, 1, tabulate, nbins=100)
+
+# matplot(PE.c, 
+#         type="l", 
+#         col=rgb(0,0,1,.5), 
+#         lty=1,
+#         xlab="position in read (1-based)",
+#         ylab="unique read count",
+#         xaxp=c(1,100, 99)
+# )
+# mtext("b) paired-end reads", side=3, adj=0, line=1)
+
+#
+## realtive counts 
+#
+read.c <- read.delim("record_count", comment.char="#", header=F, sep=" ")
+# head(read.c)
+names(read.c) <- c("sample", "count")
+# head( read.c[order(read.c$sample),] )
+read.c.sorted <- read.c[order(read.c$sample),]
+#head(read.c.sorted)
+#read.c.sorted$sample == dimnames(SE.c)[[2]][order(dimnames(SE.c)[[2]])]
+SE.c.sorted <- SE.c[, order(dimnames(SE.c)[[2]])]
+# read.c.sorted$sample == dimnames(SE.c.sorted)[[2]]
+# diving a matrix by a vector in R is row-wise
+# m <- matrix(1:10, 5,2)
+# m
+# m/c(2,5)
+# so I have to turn columns into rows here in order to divide the first column
+# by the first element in the vector, the second column by the second element in the vector,
+# and so on
+# t(t(m)/c(2,5))
+# now I can divide the XhoI count for each individual by the number of reads for 
+# that individual, thus getting relative counts
+SE.c.sorted.rel_freq <- t(t(SE.c.sorted)/read.c.sorted$count)
+
+## now get relative frequencies for PE reads
+## note, sample names now end with "fq_2" instead of "fq_1"
+## I changed all sample names to end with "fq_1"
+PE.c.sorted <- PE.c[, order(dimnames(PE.c)[[2]])]
+# read.c.sorted$sample == dimnames(PE.c.sorted)[[2]]
+# data.frame(read.c.sorted$sample, dimnames(PE.c.sorted)[[2]])
+# dimnames(PE.c.sorted)[[2]]
+PE.c.sorted.rel_freq <- t(t(PE.c.sorted)/read.c.sorted$count)
+
+## matplots of relative XhoI frequencies
+
+par(mfrow=c(2,1), mar=c(4,4,3,1))
+
+matplot(SE.c.sorted.rel_freq, 
+        type="l", 
+        col=rgb(1,0,0,.5), 
+        lty=1, 
+        #         ylim=c(0, 6e-5),
+        xlab="position in read (1-based)",
+        ylab="unique read frequency",
+        xaxp=c(1,96, 19)
+)
+mtext("a) single-end reads", side=3, adj=0, line=1)
+
+## now let's do the same for the PE reads
+
+matplot(PE.c.sorted.rel_freq, 
+        type="l", 
+        col=rgb(0,0,1,.5), 
+        lty=1,
+        xlab="position in read (1-based)",
+        ylab="unique read frequency",
+        xaxp=c(1,100, 33)
+)
+mtext("b) paired-end reads", side=3, adj=0, line=1)
+
+## ---- cluster size by XhoI position ----
+
+rm(list=ls())
+
+ncol <- max(
+        count.fields("ddRAD_SE_XhoI_position.out", sep=",")
+)
+## ncol
+ddRAD_SE_XhoI_pos <- read.csv("ddRAD_SE_XhoI_position.out",
+                              sep=",",
+                              row.names=1,
+                              header=FALSE,
+                              fill=TRUE,
+                              col.names=paste0("V", seq_len(ncol)),
+                              colClasses = c("character", rep("integer", ncol-1)),
+)
+
+# Instead of using my new 'count' function, I can use the 'tabulate'
+# function. Note it is important to specify the number of bins (nbins) to get
+# a count of 1 to 'nbins' even if no number as high as 'nbins' is found.
+SE.c <- apply(ddRAD_SE_XhoI_pos, 1, tabulate, nbins=96)
+# SE.c[91:96,1:5]
+# str(SE.c)
+SE.c <- SE.c[7:91,]
+SE.c.total <- rowSums(SE.c)
+# length(7:91)
+# length(SE.c.total)
+
+## plot total XhoI site frequency spectrum
+par(mar=c(5,4,1,4))
+
+plot(7:91, SE.c.total,
+     type="b",
+     pch=20,
+     col=rgb(1,0,0, 0.5),
+     xaxp=c(7, 91, 4),
+     xlab="position in read (1-based)",
+     ylab="",
+     yaxt="n",
+     bty ="n"
+)
+axis(2, col="red")
+mtext("unique read count", side=2, col="red", line=3)
+
+
+ncol <- max(
+        count.fields("all_ind_XhoI_in_SE_cl_size_by_pos.csv", sep=",")
+)
+# ncol
+cl <- read.csv("all_ind_XhoI_in_SE_cl_size_by_pos.csv",
+               sep=",",
+               row.names=1,
+               header=FALSE,
+               fill=TRUE,
+               col.names=paste0("V", seq_len(ncol))
+)
+# cl
+# class(cl)
+
+## add cluster sizes for uniqued reads grouped by XhoI position (see cluster.pl)
+
+# add new plot to current plot without cleaing the frame
+par(new=TRUE)
+
+matpoints(7:91,
+          cl,
+          pch=20,
+          col=rgb(0,1,0, 0.5),
+          xaxt="n", # don't plot x-axis
+          yaxt="n" # don't plot y-axis
+)
+axis(4, col="green")
+mtext("cluster size", side=4, line=3, col="green")
 

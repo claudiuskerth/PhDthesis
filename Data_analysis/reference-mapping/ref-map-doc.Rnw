@@ -678,11 +678,11 @@ $ samtools view -S ery_30-12.sam.gz | awk 'and($2, 12)==0'
 Normally, when Stampy identifies several equally good mapping locations for a read or read pair, it reports one of these at random (and assigns the choice a low mapping quality, of 3 or less).
 }
 \end{quote}
-\textbf{So anything with a mapping quality below 4 is ambiguous not just mapping quality 0!}
+\textbf{So anything with a mapping quality below 4 is ambiguous not just mapping quality 0!} The mapping quality score \emph{Q} is the Phred transformation of the estimate of the probability \emph{p} that the reported mapping position does not correspond to the read's true point of origin: $Q = -10 \log_{10} p$. The way \emph{p} is estimated is different for each mapping programme, but in any case a mapping quality score \emph{Q} of 3 roughly corresponds to a mis-mapping probability \emph{p} of 0.5, i. e. the read has an estimated 50\% chance to have derived from a location other than the one reported.
 
 In the 5th column of the SAM file \texttt{stampy} reports the mapping quality for the read \textbf{pair}. The SM tag reports the mapping quality of the read considered as single read.
 
-I used command \ref{filter_good_reads} with modification of filtering for mapping quality above 3 to extract all mapped reads (regardless of whether their mate got mapped).
+\roger{I used command \ref{filter_good_reads} with modification of filtering for mapping quality above 3 to extract all mapped reads (regardless of whether their mate got mapped).}
 I used the command \ref{reduced_reference} to extract from the indexed reference sequence file all contigs which got hit by either individual.
 
 \begin{figure}
@@ -698,7 +698,7 @@ The lower individual in figure \ref{LC.1628.C1.Contig1776_standRAD} has only one
 
 I contacted Gerton Lunter, the author of \texttt{stampy}, about this. It turns out that \texttt{stampy} does not set the "proper pair" flag if the insert size is more than 3 standard deviations (not 5 as stated in the README file) away from the mean of the inferred insert size distribution. Since in these mapping trials, only a few reads map as a pair, it is probably best to turn off \texttt{stampy}'s inference of the insert size distribution and instead specify a very broad one. Then unusually large or small insert sizes will not prevent the setting of the "proper pair" flag. Suspicious insert sizes can easily be filtered out with \texttt{awk} or \texttt{perl} and read pairs with false orientation won't have the "proper pair" flag.
 
-I have rerun the newest version of \texttt{stampy} on the standard RAD reads of the two individuals with the switch \texttt{--noautosense} to turn off inference of insert size distribution and \texttt{--insertsd=400} to specify a very wide insert size distribution. The output files are in \\{\scriptsize{ \texttt{/data/claudius/Read\_mapping/Schistocerca/mapping\_standard\_RAD\_reads/with\_stampy-1.0.23/large\_insertsd} }}.
+\roger{I have rerun the newest version of \texttt{stampy} on the standard RAD reads of the two individuals with the switch \texttt{--noautosense} to turn off inference of insert size distribution and \texttt{--insertsd=400} to specify a very wide insert size distribution.} The output files are in \\{\scriptsize{ \texttt{/data/claudius/Read\_mapping/Schistocerca/mapping\_standard\_RAD\_reads/with\_stampy-1.0.23/large\_insertsd} }}.
 
 I used command \ref{convert_sam_to_bam} with the modification "-F12" and "-q4" to create sorted bam files from the output of \texttt{stampy}. When I used "--processpart" with \texttt{stampy} I merged the sorted bam files with the "samtools merge" command into one bam file for each individual.
 
