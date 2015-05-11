@@ -352,7 +352,7 @@ if (require(xtable)) { cat("")
 }
 
 tab <- xtable( t(tab),
-        caption="Mean and coefficient of variation of fragment counts for the 4 loci shown in figure \\ref{fragments-mapped-per-ind}.",
+        caption="Mean and coefficient of variation of fragment counts per individual for the 4 loci shown in figure \\ref{fragments-mapped-per-ind}.",
         label="mean_sd_fragNum_per_locus",
         display=c("s", "f", "f"),
         digits=c(0, 1, 1)
