@@ -73,6 +73,7 @@ thesis.txt*
 *.pdf
 *.pdf_tex
 *.loc
+*.Rhistory
 #*.png
 #*.jpg
 *cache*

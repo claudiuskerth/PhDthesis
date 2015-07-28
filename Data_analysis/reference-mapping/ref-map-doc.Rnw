@@ -1176,11 +1176,11 @@ They have also developed their own variant caller, which seems to perform as wel
 \label{coval-refine}
 \end{figure}
 
-\roger{\texttt{Coval-refine} by default removes all reads with more than 2 indels, 1 indel and 1 soft-clipped end and 2 soft-clipped ends. I have set the maximum proportion of mismatches to 0.1. The single-end reads are 46 base pairs long and are allowed to have up to 5 mismatches. The 51 base pair long paired-end reads are also allowed up to 5 mismatches. Each indel contributes 1 to the mismatch count.} 
+\roger{\texttt{Coval-refine} by default removes all reads with more than 2 indels, 1 indel and 1 soft-clipped end and 2 soft-clipped ends. I changed \texttt{Coval-refine} so that indels count like two mismatches. I have set the maximum proportion of mismatches to 0.1. The single-end reads are 46 base pairs long and are allowed to have up to 5 mismatches. The 51 base pair long paired-end reads are also allowed up to 5 mismatches. Each indel contributes 1 to the mismatch count.} 
 I have turned on sequencing error correction mode with a minimum minor allele  frequency of a putative SNP of 0.1. See \texttt{coval.sh} in the \texttt{mapping\_against\_primer3ready\_seqs} directory. 
 \roger{Figure \ref{coval-refine} shows the mapping result after \texttt{coval-refine} treatment for one individual and one reference sequence.}
 
-\roger{By default, \texttt{coval-refine} counts ambiguous positions in the reference as mismatches. I changed \texttt{coval-refine-sam.pl} to take correct account of the dual ambiguity codes RWYMKS.} I created a git repository in "/usr/local/share/Coval/coval-1.4.1" to track my changes to the \texttt{Coval} programmes. See commit messages for the changes I introduced.
+\roger{By default, \texttt{coval-refine} counts ambiguous positions in the reference as mismatches. I changed \texttt{coval-refine-sam.pl} to take correct account of the dual ambiguity codes RWYMKS.} \textbf{I created a git repository in "/usr/local/share/Coval/coval-1.4.1" to track my changes to the \texttt{Coval} programmes. See commit messages for the changes I introduced.}
 
 \texttt{IGV} allows to load many .bam files into a single track by specifying a .bam.list file containing the path names to the files to load. It can then colour reads by individual ID or by sample/population. This information is taken from the RG:ID and RG:SM tags in the bam files, respectively. I wrote a perl script called \texttt{add\_RG\_tag.pl} that takes a list of sam/bam files and inserts RG tags into their header as well as each SAM record if they are not already present. This allows me now to load the mapped and coval-refined reads of all 36 individuals into \texttt{IGV} and colour reads by individual or by population.
 

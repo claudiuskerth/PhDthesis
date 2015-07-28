@@ -355,7 +355,8 @@ tab <- xtable( t(tab),
         caption="Mean and coefficient of variation of fragment counts per individual for the 4 loci shown in figure \\ref{fragments-mapped-per-ind}.",
         label="mean_sd_fragNum_per_locus",
         display=c("s", "f", "f"),
-        digits=c(0, 1, 1)
+        digits=c(0, 1, 1),
+        align=c("l", "r", "r")
         ) 
 print(tab, type="latex", caption.placement="top", booktabs=T)
 
@@ -718,4 +719,29 @@ matpoints(7:91,
 )
 axis(4, col="green")
 mtext("cluster size", side=4, line=3, col="green")
+
+## ---- cluster size by SbfI position ----
+
+ncol <- max(
+        count.fields("all_ind_pre_SbfI_cl_size_by_pos.cl", sep=",")
+)
+# ncol
+cl <- read.csv("all_ind_pre_SbfI_cl_size_by_pos.cl",
+               sep=",",
+               row.names=1,
+               header=FALSE,
+               fill=TRUE,
+               col.names=paste0("V", seq_len(ncol))
+)
+# cl
+# class(cl)
+
+par(mfrow=c(1,1), bg="white")
+matplot(7:39,
+        cl,
+        pch=20,
+        col=gray(0.5, 0.5),
+        xlab="position in read (1-based)",
+        ylab="cluster size"
+)
 
