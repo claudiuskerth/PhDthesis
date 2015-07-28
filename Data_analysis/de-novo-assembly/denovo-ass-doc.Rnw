@@ -1,0 +1,89 @@
+% Remember to save this document with a .Rnw file ending,
+% before you use the engine Knitr to compile it.
+
+% ---------------------
+% PREAMBLE
+% ---------------------
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{url}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+\usepackage{breakurl}
+
+%%%%%% -- PACKAGES WHICH ARE NOT IN THE TEMPLATE -- %%%%%%%%%%%%%%%%
+\usepackage{comment}
+\usepackage{fancyvrb}% Verbatim is a more flexible verbatim environment from the package 'fancyvrb'
+\fvset{fontsize=\footnotesize, fontfamily=courier} % set font size and family for text in Verbatim environments
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{tabulary}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[format=hang, font=small, labelfont=md]{caption} % package can be used to format captions of all floats in the same way. It overrides any hangcaption/normalcaption commands though.
+\usepackage{subcaption}
+\graphicspath{ {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Data_analysis/de-novo-assembly/figures} }
+%% ---- 
+\usepackage{float}
+\floatstyle{ruled}
+\newfloat{command}{htp}{cmd}
+%% ----
+\usepackage{epigraph} % allows nice quotes with author underneath
+\setlength{\epigraphwidth}{.9\textwidth} % set width of quotations to 90% of text width
+\renewcommand{\epigraphflush}{center} % centre quotations on the page
+\setlength{\epigraphrule}{0pt} % remove the rule under the quote and before the author/source
+\renewcommand{\textflush}{flushepinormal} % set to normal justified text
+\usepackage{amsmath}
+\newcommand{\roger}[1]{ \textcolor[named]{ForestGreen}{#1} }
+
+% -----------------------------------------------------------------------------------
+
+% -----------------------
+% DOCUMENT
+% ------------------------
+\begin{document}
+
+% ----------- -- KNITR SETUP -- -------------------------
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figures', fig.align='center', fig.show='hold')
+options(replace.assign=TRUE,width=90)
+# set up working directory for all code chunks, obviates the need to
+# setwd() in each chunk
+opts_knit$set(root.dir='~/Data_analysis/de-novo-assembly/data')
+# read in external R code file
+read_chunk('data/de-novo-assembly.R')
+# include preamble from main doc for isolated compilation
+# doesn't currently work because relative paths are used there
+# set_parent('../thesis.Rnw')
+@
+% ----------------------------------------------------------------
+
+\title{De novo assembly of RADseq data}
+
+
+\author{Claudius Kerth}
+
+\maketitle
+
+\abstract{Here I document different approaches to the de novo assembly of RADseq data.}
+
+%----------------------------
+% Bibliography
+%----------------------------
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+
+\end{document}
