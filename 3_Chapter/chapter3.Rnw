@@ -36,6 +36,9 @@ read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
 
 \listof{cmd}{List of commands}
 
+%\todototoc
+\listoftodos
+
 \printglossaries
 
 \chapter{Testing incomplete digestion}
@@ -76,8 +79,8 @@ In terms of machinery and personnel, there never seems to be enough to get thing
 }{interview with Frank Zappa, 1985}
 
 % ------------------------------------------------------------------------------------------------
-<<set working directory, echo=FALSE, cache=TRUE>>=
-@
+%<<set working directory, echo=FALSE, cache=TRUE>>=
+%@
 % ------------------------------------------------------------------------------------------------
 
 % --------------------------------
@@ -104,8 +107,8 @@ In terms of machinery and personnel, there never seems to be enough to get thing
 %\paragraph{Various population genetic analyses require many markers from many individuals}
 %%% -----------------------------------------------------------------------------------------------------------------------------
 
-Many population genetic analyses require many genetic markers from a large number of individuals for precise and reliable inferences of population genetic parameters \citep{Pool2010,Luikart2003}. Genome-wide association studies, for instance, have the power, despite correction for multiple testing, to detect marker--trait associations in a genome-wide scan for associations with millions of markers \citep{Risch1996}. \todo{more empirical examples of studies using many markers, first from model organisms (mice), then later with RAD in non-model organisms} \\
-\cite{Evans2014}, \cite{Catchen2013}, \cite{Merz2013} \\
+Many population genetic analyses require many genetic markers from a large number of individuals for precise and reliable inferences of population genetic parameters \citep{Pool2010,Luikart2003}. Genome-wide association studies, for instance, have the power, despite correction for multiple testing, to detect marker--trait associations in a genome-wide scan for associations with millions of markers \citep{Risch1996}. \todo{add more empirical examples} \comment{more empirical examples of studies using many markers, first from model organisms (mice), then later with RAD in non-model organisms} \addcit{\cite{Evans2014}, \cite{Catchen2013}, \cite{Merz2013}} 
+\\
 \cite{Altshuler2000} were the first to use reduced-representation sequencing libraries from genomic restriction fragments for SNP discovery (now widely called \gls{rad}). After the introduction of massively parallel sequencing technologies, these were further developed for population allele frequency and genotype estimation \citep{Baird2008,VanTassell2008,Andolfatto2011,Elshire2011,Davey2011}.  By sequencing only the ends of restriction fragments, \gls{rad} creates sequencing libraries with reduced complexity as compared to whole-genome shotgun sequencing, thus subsampling the genome at homologous locations to identify and type SNPs evenly throughout the genome and increasing \gls{read} coverage for a given sequenced site. It is therefore a cost--effective alternative to whole genome shotgun sequencing of random loci. It is also superior to microsatellites, AFPL or EST markers since it can be used with study organisms without genome sequence information and allows genome-wide discovery of co--dominant genetic markers and their genotyping in one go \citep{Davey2011}. If template molecules for sequencing are labelled with different \glspl{barcode} from ligated adapter oligonucleotides, then individual or population samples can be pooled during sequence library preparation and sequenced together in the same parallel sequencing run. restriction enzyme--based genotyping by sequencing (GBS) technique \\
 the regions of the genome that flank the recognition sites of restriction enzymes \\
 reduced rep- resentation libraries (RRL) have been used to subsample genomes in a repeatable manner
@@ -136,7 +139,7 @@ reduced rep- resentation libraries (RRL) have been used to subsample genomes in 
 %%% -----------------------------------------------------------------------------------------------------------------------------
 %\paragraph{Various technical problems with RAD}
 %%% -----------------------------------------------------------------------------------------------------------------------------
-RAD markers, however, pose several challenges to unbiased estimation of population genetic parameters \citep{Ilut2014,Gautier2012,Davey2012,Luca2011,Arnold2013}. Among these are null--alleles from polymorphisms in the restriction recognition sequence. \todo{expand} \cite{Mastretta-Yanes2015}
+RAD markers, however, pose several challenges to unbiased estimation of population genetic parameters \citep{Ilut2014,Gautier2012,Davey2012,Luca2011,Arnold2013}. Among these are null--alleles from polymorphisms in the restriction recognition sequence. \todo{expand} \addcit{\cite{Mastretta-Yanes2015}} \comment{show that my intended analyses pose common problems in population and quantitative genetics which require many markers for many individuals} \comment{explain that analyses that require genotype calls need much better quality data than analyses that only require estimation of population allele frequency} \comment{Zac Gompert's Bayesian approach to genotype calling}
 %
 %genotype calls necessary for some analyses: 
 %
@@ -212,7 +215,7 @@ Since this \emph{standard} version of \gls{rad} according to \cite{Baird2008} ge
 
 A standard RAD library with the restriction enzyme \gls{SbfI} was prepared according to the protocol of Paul Etter, University of Oregon \citep{Baird2008}. The RAD library contained DNA from 36 grasshoppers sampled from the two distal populations ("Aunat" and "Greixer") of a transect through the \textit{Chorthippus parallelus / erythropus} hybrid zone in the Pyrenees between France and Spain \citep{Hewitt1987}. The RAD library was sequenced on an Illumina GAIIx and the resulting 46 \gls{bp}  long reads\footnote{after removing the barcode sequence} assembled with the programme suite \texttt{stacks} \citep{Catchen2011}.
 
-Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distribution of loci -- reconstructed by \texttt{stacks} version 0.998 -- over the number of individuals that have a genotype called for that locus. \texttt{Stacks} was run with a minimum allele coverage of 3 per individual and a maximum number of mismatches between alleles of 2 for merging alleles into loci within individuals as well as assembling a catalog of loci for the whole sample of 36 grasshoppers (further details can be looked up on the \href{http://creskolab.uoregon.edu/stacks/param_tut.php}{\texttt{stacks}} home page). About 50\% of the 379,720 unfiltered reconstructed loci have a genotype call in only one or two of the 36 individuals. About 170,000 RAD markers were expected from this library (see section \ref{ch:RAD_marker_number}) assuming a genome size of 12 giga \glspl{bp} (see section \ref{ch:Genome_size}).
+Figure \ref{Big_Data:freq_dist_of_genotype_calls} shows the frequency distribution of loci -- reconstructed by \texttt{stacks} version 0.998 \todo{explain how \texttt{stacks} clusters reads and how it calls genotypes} -- over the number of individuals that have a genotype called for that locus. \texttt{Stacks} was run with a minimum allele coverage of 3 per individual and a maximum number of mismatches between alleles of 2 for merging alleles into loci within individuals as well as assembling a catalog of loci for the whole sample of 36 grasshoppers (further details can be looked up on the \href{http://creskolab.uoregon.edu/stacks/param_tut.php}{\texttt{stacks}} home page). About 50\% of the 379,720 unfiltered reconstructed loci have a genotype call in only one or two of the 36 individuals. About 170,000 RAD markers were expected from this library (see section \ref{ch:RAD_marker_number}) assuming a genome size of 12 giga \glspl{bp} (see section \ref{ch:Genome_size}).
 
 %\begin{figure}
 %\centering
@@ -262,7 +265,7 @@ In the standard SbfI RAD data set, there are 5,014 \gls{se} reads and 25,268 \gl
 \end{figure}
 %
 Could this pattern be an indication that SbfI restriction during the library preparation was incomplete? If so, could there be a systematic variation between individuals in the completeness of restriction at individual SbfI sites that could lead to many loci only being detected in a few individuals as shown in figure \ref{freq_dist_of_genotype_calls}?
-In the following I will investigate the potential role of incomplete restriction enzyme digestion \todo{not just incomplete digestion, also religation and low starting DNA amount} during the sequencing library preparation on the distribution of read coverage over \glspl{RAD tag} and on the resulting detection probability of RAD tags as shown in figure \ref{freq_dist_of_genotype_calls}.  
+In the following I will investigate the potential role of incomplete restriction enzyme digestion \comment{not just incomplete digestion, also religation and low starting DNA amount} during the sequencing library preparation on the distribution of read coverage over \glspl{RAD tag} and on the resulting detection probability of RAD tags as shown in figure \ref{freq_dist_of_genotype_calls}.  
 
 
 %% ---------------------------------------------------
@@ -280,9 +283,9 @@ Still, for PCR primer design, \emph{pairs} of PE \glspl{contig} need to be creat
 
 I decided to use the transcriptome of the desert locust \textit{Schistocerca gregaria} (\textit{Cyrtacanthacridinae}) as a reference sequence \citep{Badisco2011} . The transcriptome of another grasshopper -- \textit{Locusta migratoria} (\textit{Oedipodinae}) -- was also available \citep{Kang2004}, but \cite{Liu2008a} have shown that the subfamily \textit{Cyrtacanthacridinae} is more closely related to \textit{Gomphocerinae} -- the subfamily that \textit{Chorthippus parallelus} belongs to -- than the subfamily \textit{Oedipodinae}.
 
-I have mapped all standard SbfI RAD reads\footnote{informal name "Big Data"} of all 36 individuals against the \textit{Schistocerca} transcriptome with \texttt{stampy} \citep{Lunter2011} (see \vref{ch:read_mapping}). From the mapping output files I first extracted all read pairs where at least one read from a pair mapped and then merged them into one big file. I then ran my custom script \texttt{find\_linked\_RADtags.pl} on this file. This script collected from all individuals all \gls{pe} reads that belong to the same \gls{RAD tag} of a \gls{linked RAD tag site} that was detected in as little as one individual. For each detected \gls{linked RAD tag site} this script collected the \gls{pe} reads upstream and downstream of the SbfI restriction site in separate files (for further description see section \ref{ch:find_linked_RADtags}). It thus collected PE reads from 77 \textit{Schistocerca} reference contigs with \glspl{linked RAD tag site}.
+I have mapped all standard SbfI RAD reads\footnote{informal name "Big Data"} of all 36 individuals against the \textit{Schistocerca} transcriptome with \texttt{stampy} \citep{Lunter2011} (see \vref{ch:read_mapping}). From the mapping output files I first extracted all read pairs where at least one read from a pair mapped and then merged them into one big file. I then ran my custom script \texttt{find\_linked\_RADtags.pl} on this file. This script collected from all individuals all \gls{pe} reads that belong to the same \gls{RAD tag} of a \gls{linked RAD tag site} that was detected in as little as one individual. For each detected \gls{linked RAD tag site} this script collected the \gls{pe} reads upstream and downstream of the SbfI restriction site in separate files (for further description see section \ref{ch:find_linked_RADtags}). It thus collected PE reads from 77 \textit{Schistocerca} reference contigs with \glspl{linked RAD tag site} \addcit{\cite{Willing2011}}.
 
-I then used the programme \texttt{SSAKE} \citep{Warren2007} together with my wrapper script \texttt{SSAKEoptimiser.pl} for the de novo assembly of \gls{pe} reads into contigs (see section \ref{ch:PE_read_assembly}). \texttt{SSAKEoptimiser.pl} finds the optimal \gls{kmer} length for each individual assembly, optimising for the length of the longest contig assembled. There are 64 \textit{Schistocerca} reference contigs with a \gls{RAD tag} site for which at least one upstream and one downstream \texttt{SSAKE} contig could be assembled.
+I then used the programme \texttt{SSAKE} \citep{Warren2007} together with my wrapper script \texttt{SSAKEoptimiser.pl}\todo{add link to my github repository for the scripts that I am using, \href{https://guides.github.com/activities/citable-code/}{see here}}~ for the de novo assembly of \gls{pe} reads into contigs (see section \ref{ch:PE_read_assembly}). \texttt{SSAKEoptimiser.pl} finds the optimal \gls{kmer} length for each individual assembly, optimising for the length of the longest contig assembled. There are 64 \textit{Schistocerca} reference contigs with a \gls{RAD tag} site for which at least one upstream and one downstream \texttt{SSAKE} contig could be assembled.
 
 The \texttt{SSAKEoptimiser} output for each assembly of PE reads generally contains several \glspl{contig} of similar length and with similar read counts. It is therefore not straightforward to pick those \texttt{SSAKE} contigs upstream and downstream of the restriction site that genuinely belong together, i. e. come from the same locus. Using a heuristic that uses contig number, contig length and \texttt{blast} hits against the putative \textit{Schistocerca} reference contig, I could assemble and confidently pick 20 \emph{pairs} of PE read contigs for PCR primer design (further details on page \pageref{ch:picking_right_contig}). 
 
@@ -305,7 +308,7 @@ One of these 5 reference sequences has only reads mapped from \textit{C. p. para
 \label{fragments-mapped-per-ind}
 \end{figure}
 
-Figure \ref{fragments-mapped-per-ind} shows the distribution of these counts over all 36 individuals for the four PE contig pair reference sequences. It suggests that none of the 4 loci would be a good candidate to test possible variation in restriction enzyme digestion with PCR. That is because the distribution of coverage at the 4 loci is rather even across the 36 individuals. Even though between individual variation in the completeness of digestion cannot be ruled out by this data yet, a different pattern would be expected if it was common. That is, more individuals would have no fragments mapping while others would have many. Given this data, a systematic variation in the completeness of restriction enzyme digestion between individuals is now less likely to be the reason for the dominance of singleton loci in the \texttt{stacks} assembly (see figure \ref{freq_dist_of_genotype_calls}). Instead, the variation in coverage among individuals in figure \ref{fragments-mapped-per-ind} can be largely explained by variation in the number of input reads (figure \ref{frag_input_corr_fig}).
+Figure \ref{fragments-mapped-per-ind} shows the distribution of these counts over all 36 individuals for the four PE contig pair reference sequences. It suggests that none of the 4 loci would be a good candidate to test possible variation in restriction enzyme digestion with PCR. That is because the distribution of coverage at the 4 loci is rather even across the 36 individuals. Even though between individual variation in the completeness of digestion cannot be ruled out by this data yet, a different pattern would be expected if it was common. That is, more individuals would have no fragments mapping while others would have many. Given this data, a systematic variation in the completeness of restriction enzyme digestion between individuals is now less likely to be the reason for the dominance of singleton loci in the \texttt{stacks} assembly (see figure \ref{freq_dist_of_genotype_calls}). Instead, the variation in coverage among individuals in figure \ref{fragments-mapped-per-ind} can be largely explained by variation in the number of input reads (figure \ref{frag_input_corr_fig}).\todo{add pipeline diagram, use tikz package}
 %
 \begin{figure}
 <<fragments_input_reads_corr, out.width='.49\\linewidth', echo=FALSE, cache=TRUE>>=
@@ -335,7 +338,7 @@ For the SbfI$+$XhoI double-digest RAD library I estimated the template amount th
 \end{align}
 \normalsize
 
-The problem of low \gls{fragment} count is unlikely to be alleviated much by creating more sequence reads from the same RAD library (figure \ref{PCRduplicates}). Instead, the template amount from each individual for the selective PCR during the library preparation needs to be increased. One obvious way would be to increase the total DNA input from each individual, but that reduces the number of individuals that can be pooled during the library preparation since the capacity of spin columns and the agarose gel (for size selection) is then reached with fewer individuals. Another option could be to postpone the gel fragment size selection until after a selective PCR, thus reducing the loss of template amount before the PCR (see \citealt{Parchman2012} and table \ref{compProt}).
+The problem of low \gls{fragment} count is unlikely to be alleviated much by creating more sequence reads from the same RAD library (figure \ref{PCRduplicates}). Instead, the template amount from each individual for the selective PCR during the library preparation needs to be increased. One obvious way would be to increase the total DNA input from each individual, but that reduces the number of individuals that can be pooled during the library preparation since the capacity of spin columns and the agarose gel (for size selection) is then reached with fewer individuals. Another option could be to postpone the gel fragment size selection until after a selective PCR, thus reducing the loss of template amount before the PCR (see \citealt{Parchman2012} and the table on page \pageref{compProt})\todo{write a new protocol that allows taking 5 to 10 times as much starting DNA as used in previous protocols}.
 %
 \begin{figure}
 \centering
@@ -344,7 +347,7 @@ The problem of low \gls{fragment} count is unlikely to be alleviated much by cre
 \label{PCRduplicates}
 \end{figure}
 
-If the dominance of singleton loci in the \texttt{stacks} assembly was not caused by a systematic variation in the completeness of digestion between individuals but simply by random dropout due to low template amount, could this in turn again be caused by incomplete restriction enzyme digestion of genomic DNA as indicated by the full \gls{SbfI} recognition sequences found in the RAD sequence data (figure \ref{SbfI_frequency_dist_per_ind})? Or can genomic religation of restriction fragments\footnote{instead of ligation to Illumina adapters} account for the observed restriction enzyme recognition sequences in the \gls{rad} data? \todo{Should I explain here already why it is important the investigate this question? I. e. incomplete digestion much worse than genomic religation.} The rest of this chapter will be investigating this question.
+If the dominance of singleton loci in the \texttt{stacks} assembly was not caused by a systematic variation in the completeness of digestion between individuals but simply by random dropout due to low template amount, could this in turn again be caused by incomplete restriction enzyme digestion of genomic DNA as indicated by the full \gls{SbfI} recognition sequences found in the RAD sequence data (figure \ref{SbfI_frequency_dist_per_ind})? Or can genomic religation of restriction fragments\footnote{instead of ligation to Illumina adapters} account for the observed restriction enzyme recognition sequences in the \gls{rad} data? \comment{Should I explain here already why it is important the investigate this question? I. e. incomplete digestion much worse than genomic religation.} The rest of this chapter will be investigating this question.
 
 
 %% --------------------------------------------------
@@ -398,16 +401,28 @@ Random genomic restriction fragment religation should create chimeras. If mapped
 
 I therefore tried to estimate the proportion of \gls{concordant}ly mapping read pairs from a random sample of read pairs where, for the vast majority of read pairs, the two reads in a pair should come from the same genomic location as in the case of incomplete digestion. Any reduction in the proportion of \gls{concordant}ly mapping read pairs among the SbfI site containing read pairs with respect to this expectation should be caused by random genomic religation of SbfI restriction fragments. 
 
-As a quasi random sample, I have taken the 200,001st to 300,000th read pair from each individual.
-After mapping against the \textit{Locusta} genome reference sequences, I first extracted all read pairs where both reads mapped, \gls{concordant}ly or not and disregarding mapping quality. The total number of these read pairs is 846,583. Among these read pairs there are 440,015 that map \gls{concordant}ly (further details from page \pageref{read_pair_mapping_analysis} onwards). So 52\% of mapping read pairs mapped concordantly. That means that a random read pair -- where both reads generally come from the same genomic location in \textit{C. parallelus} as with incomplete digestion -- is about as likely to map \gls{discordant}ly as \gls{concordant}ly against the \textit{Locusta} genome reference.
+\begin{figure}[htb]
+<<read pair mapping analysis, out.width='\\textwidth', echo=FALSE, message=FALSE, warning=FALSE>>=
+@
+\caption{Density plot from 10,000 samples from the posterior credibility distribution of the differences in $\theta$ between randomly selected reads and SbfI site containing reads. $\theta$ stands for the probability of a read pair to map concordantly.}
+\label{fig:read_pair_mapping_analysis}
+\end{figure}
 
-Using the same command lines as above for quasi random read pairs, I counted among a total of 2,184 mapping read pairs 333 which mapped concordantly, or 15.5\%. I take that as a \emph{highly significant} \todo{should I include a p value here?} deviation from the proportion among random read pairs (52\%) indicating that the majority of SbfI sites in this data set are caused by genomic religation instead of incomplete digestion, even though other factors like genomic repetitive sequences or PCR duplicates may have contributed to this deviation. 
+As a quasi random sample, I have taken the 200,001st to 300,000th read pair from each individual.
+After mapping against the \textit{Locusta} genome reference sequences, I first extracted all read pairs where both reads mapped, \gls{concordant}ly or not and disregarding mapping quality. The total number of these read pairs is 846,583. Among these read pairs there are 440,015 that map \gls{concordant}ly (further details from page \pageref{read_pair_mapping_analysis} onwards). So 52\% of mapping read pairs mapped concordantly\todo{That's not that bad. Could I maybe use the \textit{Locusta migratoria} genome as a reference to map all my reads?}. That means that a random read pair -- where both reads generally come from the same genomic location in \textit{C. parallelus} as with incomplete digestion -- is about as likely to map \gls{discordant}ly as \gls{concordant}ly against the \textit{Locusta} genome reference.
+
+Using the same command lines as above for read pairs containing SbfI sites, I counted among a total of 2,184 mapping read pairs 333 which mapped concordantly, or 15.5\%. 
+
+Figure \ref{fig:read_pair_mapping_analysis} shows the posterior credibility distribution of the difference in $\theta$ -- the probability that a read maps concordantly -- between the randomly selected read pairs and the SbfI site containing read pairs. The difference in the probability to map concordantly between a randomly selected read pair and a read pair containing an SbfI site is 0.367 (95\% HDI: 0.352, 0.382). This is a strong difference that says that 37\% \emph{more} reads map concordantly among the randomly selected read pairs than among the SbfI site containing read pairs.
+
+This result is consistent with random genomic religation, which recreates SbfI sites and disrupts concordant mapping of read pairs. If the SbfI sites observed in some reads would only be caused by incomplete digestion, this large difference would not be expected. On the other hand, the fact that 15\% of SbfI site containing reads do map concordantly indicates that genomic religation cannot account for all the observed SbfI sites in the reads.\todo[nolist]{other factors like genomic repetitive sequences or PCR duplicates may have contributed to this deviation.}
+
 
 %% --------------------------------------------------
 \subsection{Incomplete digestion or genomic religation in the double-digest RAD library}
 %% --------------------------------------------------
 
-There are also reads from the SbfI$+$XhoI double-digest library that contain full restriction enzyme recognition sequences. I have counted the SbfI and XhoI site positions in \texttt{uniq}-ued \todo{Is there a better way to expess this?} ~\gls{se} and \gls{pe} reads from each individual. The figures \ref{ddRAD_SbfI_frequency_dist} and \ref{ddRAD_XhoI_frequency_dist} show the relative site frequency distributions across SE and PE reads for SbfI and XhoI, respectively (further details in section \ref{site_frequency_distributions}). 
+There are also reads from the SbfI$+$XhoI double-digest library that contain full restriction enzyme recognition sequences. I have counted the SbfI and XhoI site positions in \texttt{uniq}-ued \todo{rephrase this} ~\gls{se} and \gls{pe} reads from each individual. The figures \ref{ddRAD_SbfI_frequency_dist} and \ref{ddRAD_XhoI_frequency_dist} show the relative site frequency distributions across SE and PE reads for SbfI and XhoI, respectively (further details in section \ref{site_frequency_distributions}). 
 %
 \begin{figure}
 <<ddRAD SbfI frequency dist, out.width='\\linewidth', echo=FALSE >>=
@@ -473,7 +488,7 @@ I have also digitally digested the SE reads with XhoI using \texttt{digidig.pl} 
 
 In order to estimate the expected proportion of \gls{concordant}ly mapping read pairs for reads where both read subsequences are derived from the same location in the \textit{C. parallelus} genome (as with incomplete digestion), I modified \texttt{digidig.pl} to also allow \emph{random digital digestion}. It picks a random cut position while making sure that each new read in the resulting read pair is at least 30 bp long. 
 
-As a quasi random sample of reads I took the 200,001st -- 300,000th SE reads \todo{Should I mention that these reads were base call quality cleaned and trueTags filtered?} from each individual. I then digitally digested these random reads randomly with \texttt{digidig.pl} creating new read pairs with variable read lengths. I then mapped these read pairs against the \textit{Locusta} genome reference with \texttt{bowtie2} with the same settings as before (see page \pageref{read_pair_mapping_analysis}). I used the same set of command lines as above for the SbfI and XhoI digitally digested SE reads. I thus counted 689,319 \gls{concordant}ly mapping read pairs among a total of 1,041,305 mapping read pairs, or 66.2\%.
+As a quasi random sample of reads I took the 200,001st -- 300,000th SE reads \todo{mention that these reads were base call quality cleaned and trueTags filtered?} from each individual. I then digitally digested these random reads randomly with \texttt{digidig.pl} creating new read pairs with variable read lengths. I then mapped these read pairs against the \textit{Locusta} genome reference with \texttt{bowtie2} with the same settings as before (see page \pageref{read_pair_mapping_analysis})\todo{check wether internal references are correct}. I used the same set of command lines as above for the SbfI and XhoI digitally digested SE reads. I thus counted 689,319 \gls{concordant}ly mapping read pairs among a total of 1,041,305 mapping read pairs, or 66.2\%.
 
 %% ---------------------------------------------
 \subsection{Summary}
@@ -501,47 +516,26 @@ XhoI in ddRAD & 42.2 & 66.2 \\
 These results are consistent with the results from the analysis of clusters of cut site containing reads. 
 
 So incomplete digestion seems to have affected XhoI sites much more than SbfI sites in both types of RAD libraries. 
-In order to detect an XhoI site that was not cut within SE reads of the double-digest library, it (i) needs to be within less than 90 base pairs of the SbfI site and (ii) have a second XhoI site within the next few hundred base pairs that \emph{was} cut, so that a P2 adapter could be ligated. Given these highly restrictive conditions, it seems likely that incomplete digestion of XhoI sites has reduced the template amount for the SbfI$+$XhoI double-digest RAD library.
+In order to detect an XhoI site that was not cut within SE reads of the double-digest library, it (i) needs to be within less than 90 base pairs of the SbfI site and (ii) have a second XhoI site within the next few hundred base pairs that \emph{was} cut, so that a P2 adapter could be ligated. Given these highly restrictive conditions, it seems likely that incomplete digestion of XhoI sites has significantly reduced the template amount for the SbfI$+$XhoI double-digest RAD library.
 
-Incomplete digestion is a much more severe problem with the library preparation than genomic religation. When assembling \glspl{RAD tag} only from SE reads as in standard RAD, genomic religation should only interfere with clustering when the second restriction site is within a read length of the first. Other chimeras should not be a problem for clustering. By contrast, incomplete digestion does not so much interfere with \gls{RAD tag} assembly -- two SbfI sites within a read length of each other should be rare anyway -- but it indicates that an unknown (and probably unknowable) fraction of restriction sites were not cut. That is because an uncut site can only be detected if there was a restriction site close by that \emph{did} get cut. So, the indication that the SbfI restriction sites in the reads of the two RAD libraries are probably mostly due to genomic religation is a good sign, although it indicates an inefficient ligation of Illumina adapters, which also reduces template PCR template amount. The general lack of signs for genomic religation in the SE reads containing an XhoI site, on the other hand, is reason for concern, since it suggests incomplete digestion. \todo{mention methylation sensitivity}
+Incomplete digestion is a much more severe problem with the library preparation than genomic religation. When assembling \glspl{RAD tag} only from SE reads as in standard RAD, genomic religation should only interfere with clustering when the second restriction site is within a read length of the first. Other chimeras should not be a problem for clustering. By contrast, incomplete digestion does not so much interfere with \gls{RAD tag} assembly -- two SbfI sites within a read length of each other should be rare anyway -- but it indicates that an unknown (and probably unknowable) fraction of restriction sites were not cut. That is because an uncut site can only be detected if there was a restriction site close by that \emph{did} get cut. So, the indication that the SbfI restriction sites in the reads of the two RAD libraries are probably mostly due to genomic religation is a good sign, although it indicates an inefficient ligation of Illumina adapters, which also reduces PCR template amount. The general lack of signs for genomic religation in the SE reads containing an XhoI site, on the other hand, is reason for concern, since it suggests incomplete digestion. \todo{mention methylation sensitivity}
 
 Given the rarity of signs for incomplete digestion of SbfI restriction sites, it seems unlikely that it alone could have reduced the template amount enough to cause the extreme skew in the distribution of putative \gls{RAD tag} loci over genotype calls (i. e. individuals) as observed in figure \ref{Big_Data:freq_dist_of_genotype_calls}.
 
 \section{Discussion}
 
 \begin{itemize}
-\item \cite{Ilut2014}
-\item challenge of large repetitive genome
-\item most analyses just take the called loci unquestioned, assumption that this is an unbiased sample of loci
-\item repeatability if only a few 1000 of $>$100,000 loci are studied
-\item this data is just an example of problems that can occur with RAD
-\item template amount dependent on the genome size
-\item mention methylation as possible reason for incomplete digestion
+\item \todo[inline,nolist]{read \cite{Ilut2014}}
+\item \todo[inline,nolist]{explain challenge of large repetitive genome}
+\item \todo[inline,nolist]{most analyses just take the called loci unquestioned, assumption that this is an unbiased sample of loci, provide examples}
+\item \todo[inline,nolist]{what about repeatability, if only a few 1000 of $>$100,000 loci are studied}
+\item \todo[inline,nolist]{this data is just an example of problems that can occur with RAD}
+\item \todo[inline,nolist]{mention that template amount dependent on the genome size}
+\item \todo[inline,nolist]{mention methylation as possible reason for incomplete digestion}
+\item \todo[inline,nolist]{recommendations for future studies}
+\item \todo[inline,nolist]{write new ddRAD protocol incorporating the Parchman and Peterson protocols}
 \end{itemize}
 
-% --------------------------
-\section{Still todo}
-% --------------------------
-
-\begin{itemize}
-\item check internal references
-\item introduction 
-\begin{itemize}
-\item show that my intended analyses pose common problems in population and quantitative genetics
-which require many markers for many individuals
-\item explain that analyses that require genotype calls need much better quality data than analyses that only require estimation of population allele frequency
-\item Zac Gompert's Bayesian approach to genotype calling
-\item maybe explain how \texttt{stacks} clusters reads and how it calls genotypes
-\end{itemize}
-\item discussion
-\begin{itemize}
-\item comparison with other studies
-\item recommendations for future studies
-\end{itemize}
-\item add link to my github repository for the scripts that I am using
-\item comparison of kmer size optimised and un-optimised SSAKE assembly
-\item description of quality filtering and pre-processing raw data
-\end{itemize}
 
 %% ---------------------------------------------------
 \section{Methods}
@@ -621,7 +615,7 @@ parallel -j 10 'zcat {} | gc' ::: *fq_1.gz | mean
 \subsection{Genome size of \textit{Chorthippus parallelus}}\label{ch:Genome_size}
 %% --------------------------------------------------------------------------------------------------------------------------
 
-\textit{Chorthippus parallelus} has a chromosome complement of 2n = 16 + X. Males have one X-chromosomes, females have two. Table \ref{ta:genome_size_studies} shows four studies that provide genome size estimates for \textit{Chorthippus parallelus}. Note that all studies are measuring the DNA content of spermatids. However, none of the studies explicitly deal with the issue that half of their measurements are missing the contribution from the X chromosome. Table \ref{ta:genome_size_studies} mentions the country of origin of the grasshoppers used for genome size estimates. Note, however, that only \cite{Belda1991} provide sampling locations. For the rest it is assumed that individuals were sampled closed to the authors institutes. So two studies provide genome size estimates for \textit{C. parallelus parallelus} and two for \textit{C. parallelus erythropus}. The \textit{parallelus} subspecies seems to have a genome 2--4 giga \glspl{bp} larger than the one of subspecies \textit{erythropus}. Apart from possible systematic differences in methodology, this apparent difference in genome size could be real, since several studies have shown chromosomal differentiation between the two subspecies, in particular on the X chromosome: an active nucleolar organiser region (NOR) distally on the X in \textit{C. p. parallelus} but not in \textit{C. p. erythropus} \citep{Gosalvez1988}. This NOR on X lies in or near a distinctive distal C-band\footnote{\gls{heterochromatin} stained with Giemsa}. In addition, Pyrenean \textit{C. p. erythropus} also show an interstitial C-band on X that does not occur in pure \textit{C. p. parallelus} \citep{Bella2007}. Further chromosomal differences are listed in table 1 of \cite{Ferris1993}.
+\textit{Chorthippus parallelus} has a chromosome complement of 2n = 16 + X. Males have one X-chromosomes, females have two. Table \ref{ta:genome_size_studies} shows four studies that provide genome size estimates for \textit{Chorthippus parallelus}. Note that all studies are measuring the DNA content of spermatids. However, none of the studies explicitly deal with the issue that half of their measurements are missing the contribution from the X chromosome. Table \ref{ta:genome_size_studies} mentions the country of origin of the grasshoppers used for genome size estimates. Note, however, that only \cite{Belda1991} provide sampling locations. For the rest it is assumed that individuals were sampled close to the authors institutes. So two studies provide genome size estimates for \textit{C. parallelus parallelus} and two for \textit{C. parallelus erythropus}. The \textit{parallelus} subspecies seems to have a genome 2--4 giga \glspl{bp} larger than the one of subspecies \textit{erythropus}. Apart from possible systematic differences in methodology, this apparent difference in genome size could be real, since several studies have shown chromosomal differentiation between the two subspecies, in particular on the X chromosome: an active nucleolar organiser region (NOR) distally on the X in \textit{C. p. parallelus} but not in \textit{C. p. erythropus} \citep{Gosalvez1988}. This NOR on X lies in or near a distinctive distal C-band\footnote{\gls{heterochromatin} stained with Giemsa}. In addition, Pyrenean \textit{C. p. erythropus} also show an interstitial C-band on X that does not occur in pure \textit{C. p. parallelus} \citep{Bella2007}. Further chromosomal differences are listed in table 1 of \cite{Ferris1993}.
 
 \ctable[
 width=1.1\textwidth,
@@ -652,7 +646,7 @@ label=ta:genome_size_studies
 \bottomrule
 }
 
-\cite{Gosalvez1988} showed that all the heterochromatin present in both subspecies is particularly rich in GC DNA base pairs.
+\cite{Gosalvez1988} showed that all the heterochromatin present in both subspecies is particularly rich in GC DNA base pairs\todo{This would suggest using restriction enzymes for RAD with recognition sequences rich in AT in order to preferentially target transcribed regions of the genome.}.
 
 
 %\begin{table}
@@ -695,7 +689,7 @@ Assuming a genome size of 12 giga base pairs, the expected number of RAD tag loc
 \normalsize
 
 The number (and identity) of markers in a double-digest RAD library depends very much on the size selection of restriction fragments. I selected fragments roughly between 300 and 800 \gls{bp} length. The P1 adapter is 63 bp long (excluding 4 bp overhang), the P2 adapter is 61 bp long (excluding 4 bp overhang). The \gls{SbfI} remainder after the cut is 6 \gls{bp} long and the \gls{XhoI} remainder is 5 \gls{bp} long. If \gls{XhoI} cuts a fragment at a distance less than about $300 - 63 - 61 -6 -5 = 165$ \gls{bp} away from the SbfI cut site, then this fragment would not be size selected because it would be shorter than the lower bound of size selection (in this example). The \gls{se} sequences (excluding the SbfI recognition sequence parts) have a mean GC content of 49.5\% (see command \ref{cmd:GC_2}). 
-The following formula requires the GC content of sequences of length 168 \gls{bp} adjacent to SbfI sites. I will use the average of \gls{se} and \gls{pe} GC contents -- 48\% (see~chapter \ref{ch:gc}) -- for calculating the probability of an XhoI cut within the first 168bp after the SbfI restriction site. In the next 500 \gls{bp} then needs to be at least one \gls{XhoI} site to make the SbfI fragment a marker.
+The following formula requires the GC content of sequences of length 168 \gls{bp} adjacent to SbfI sites. I will use the average of \gls{se} and \gls{pe} GC contents -- 48\% (see~chapter \ref{ch:gc}) -- for calculating the probability of no XhoI cut within the first 168bp after the SbfI restriction site. In the next 500 \gls{bp} then needs to be at least one \gls{XhoI} site to make the SbfI fragment a marker.
 The expected number of RAD markers per genome with an SbfI-XhoI double-digest and a selected size range of 300--800bp is:
 
 
@@ -719,10 +713,16 @@ The expected number of RAD markers per genome with an SbfI-XhoI double-digest an
 
 I have created an Excel file called \texttt{ComplexityReduction.xls} that implements equation \ref{eq:exp_number_ddRAD_loci} and that allows easy modification of variables.
 
+%% ---------------------------------------------------
+\FloatBarrier
+\subsection{Quality filtering and pre--processing raw data}
+\label{ch:Qfilt}
+%% ---------------------------------------------------
+\todo{add section about quality filtering and pre-processing raw data}
 
 %% ---------------------------------------------------
 \FloatBarrier
-\subsection{Assembling pairs of PE read contigs}\todo{Are we assembling contigs from reads or are we assembling reads into contigs?}
+\subsection{Assembling pairs of PE read contigs}\comment{Are we assembling contigs from reads or are we assembling reads into contigs?}
 \label{ch:read_mapping}
 %% ---------------------------------------------------
 
@@ -742,14 +742,14 @@ samtools view -uhS - | samtools sort - `basename $i .fq_1.sam.gz`) & done
 \end{cmd}
 %
 After this filtering, I merged all individual mapping output files into one big file with \texttt{samtools merge}.
-Note, that I did not filter for \glspl{mqs}, so that reads with ambiguous mapping position\footnote{with quality score $<3$, see \texttt{stampy} README section 11.5} were also retained. When \texttt{stampy} identifies several equally good mapping locations for a read or read pair, it reports one of these at random. Also note that the \textit{Schistocerca} \glspl{EST} were assembled with the programme \href{http://www.phrap.org/phredphrap/general.html}{\texttt{phrap}} and the authors do not report any attempt to merge different transcripts from the same gene into so-called unigenes. It can therefore happen that reads that are derived from the same position in the genome map to different parts of the \textit{Schistocerca} reference.\todo{\cite{Cahais2012}}
+Note, that I did not filter for \glspl{mqs}, so that reads with ambiguous mapping position\footnote{with quality score $<3$, see \texttt{stampy} README section 11.5} were also retained. When \texttt{stampy} identifies several equally good mapping locations for a read or read pair, it reports one of these at random. Also note that the \textit{Schistocerca} \glspl{EST} were assembled with the programme \href{http://www.phrap.org/phredphrap/general.html}{\texttt{phrap}} and the authors do not report any attempt to merge different transcripts from the same gene into so-called unigenes. It can therefore happen that reads that are derived from the same position in the genome map to different parts of the \textit{Schistocerca} reference.\addcit{\cite{Cahais2012}}
 
 %
 %
 %
 
 \paragraph{Detecting linked rad tag sites}\label{ch:find_linked_RADtags}
-The programme \href{http://www.broadinstitute.org/software/igv/home}{\texttt{IGV}} among others can be used to visualise the alignment of many reads against a set of reference sequences. However, visually inspecting all \textit{Schistocerca} reference contigs for whether they have read pairs mapped to both sides of one SbfI restriction site is very tedious and time consuming. That is why I wrote the script called \texttt{find\_linked\_RADtags.pl} which reports reference contigs where at least two read pairs map to opposite sites of an SbfI restriction site (or any cut site leaving a 4 bp overhang). This script also detects the contig shown in figure \ref{LC.1628.C1.Contig1776_standRAD}. With this script the detection of a reference contig requires one \gls{concordant}ly mapped read pair (also called \gls{proper pair}) on both sides of an SbfI restriction site. So SE as well as PE reads need to map on both sides of the restriction site. This is stringent and will obviously miss contigs with genuine SbfI RAD tag sites, but it is necessary to remove many false positive detections. The purpose of the script is not to detect as many contigs as possible, but only to detect several contigs with genuine SbfI RAD tag sites.
+The programme \href{http://www.broadinstitute.org/software/igv/home}{\texttt{IGV}} among others can be used to visualise the alignment of many reads against a set of reference sequences. However, visually inspecting all \textit{Schistocerca} reference contigs for whether they have read pairs mapped to both sides of one SbfI restriction site is very tedious and time consuming. That is why I wrote the script called \texttt{find\_linked\_RADtags.pl} which reports reference contigs where at least two read pairs map to opposite sites of an SbfI restriction site (or any cut site leaving a 4 bp overhang). This script also detects the contig shown in figure \ref{LC.1628.C1.Contig1776_standRAD}. With this script the detection of a reference contig requires one \gls{concordant}ly mapped read pair (also called \gls{proper pair}) on both sides of an SbfI restriction site. So SE as well as PE reads need to map on both sides of the restriction site. This is stringent and will obviously miss contigs with genuine SbfI RAD tag sites, but it is necessary to remove many false positive detections. The purpose of the script is not to detect as many contigs as possible, but only to detect several contigs with genuine SbfI RAD tag sites.\roger{Roger is commenting here.}
 %
 \begin{figure}
 \centering
@@ -787,7 +787,7 @@ sed 's/^@/>/' > `basename $i .fq`.fa; done
 \item[\texttt{-o 1}] \textmd{Minimum number of reads needed to call a base during an extension}
 \end{description}
 %
-\dots~on the "Contig1776\_downstream" reads from one individual for PE assembly (just two overlapping reads, see fig. \ref{LC.1628.C1.Contig1776_standRAD}), it is able to assemble a full length contig of 81 bp.
+\dots~on the "Contig1776\_downstream" reads from one individual for PE assembly (just two overlapping reads, see fig. \ref{LC.1628.C1.Contig1776_standRAD}), it is able to assemble a full length contig of 81 bp\todo{add comparison of kmer size optimised and un-optimised SSAKE assembly}.
 
 %
 %
@@ -928,7 +928,7 @@ Having extracted these SE reads for each RAD tag, I created multiple sequence al
 %
 
 \paragraph{Targeted alignment and clean up of mapping result}
-I used the programme \texttt{stampy} to align all standard SbfI RAD reads from all 36 individuals against this new set of reference sequences.\todo{Do I need to mention that these reads had passed quality filters, like all reads I am analysing?}
+I used the programme \texttt{stampy} to align all standard SbfI RAD reads from all 36 individuals against this new set of reference sequences.\comment{Do I need to mention that these reads had passed quality filters, like all reads I am analysing?}~
 Figure \ref{stampy_par_34-10_vs_primer3ready_igv} shows an example of an alignment of this \texttt{stampy} mapping. There are many low quality mappings which are very likely wrong (e. g. SE reads mapped to PE contig without SbfI site). However, here I have been using reads derived from a much larger source than is represented in the small reference of 20 pairs of PE contigs. Therefore, \texttt{stampy} finds unambiguous mapping locations\footnote{indicated by a mapping quality >3} for reads that have an \gls{edit distance} of 17 to the reference sequence. \texttt{stampy} does not have an option for maximum allowed distance to the reference.
 %
 \begin{figure}
@@ -959,7 +959,7 @@ Figure \ref{stampy_par_34-10_vs_primer3ready_igv} shows an example of an alignme
 
 I estimated the amount of template that went into the selective PCR for the SbfI$+$XhoI double-digest library (see figure \ref{ddRAD_protocol_overview}) with quantitative PCR \citep{Rutledge2003}.
 
-I took an aliquot of the selective PCR product and determined its DNA concentration with picoGreen and a fluorometer\todo{probably 3 replicate measurements $\rightarrow$ lab book}. I made a serial dilution of 8 times 1:10 from this PCR product and used this to produce a standard curve. I created three replicates of the standard curve and three replicates of the target, i. e. the solution before selective PCR. The \gls{Ct} threshold was automatically set by the \textit{q}PCR machine and, except for the lowest template concentration of the standard dilution, the melting temperature of the PCR products were always very close to 79$^{\circ}$C. Assuming a mean template molecule length of 550 \gls{bp} and 16,000 loci from this double-digest library (see equation \ref{eq:exp_number_ddRAD_loci}), the \textit{q}PCR results indicate that on average only 1.26 ($\pm$ 0.37) template molecules per locus and individual went into the selective PCR\footnote{see DD\_RAD\_LIB\_101111\_data.xls}.
+I took an aliquot of the selective PCR product and determined its DNA concentration with picoGreen and a fluorometer\comment{probably 3 replicate measurements $\rightarrow$ lab book}. I made a serial dilution of 8 times 1:10 from this PCR product and used this to produce a standard curve. I created three replicates of the standard curve and three replicates of the target, i. e. the solution before selective PCR. The \gls{Ct} threshold was automatically set by the \textit{q}PCR machine and, except for the lowest template concentration of the standard dilution, the melting temperature of the PCR products were always very close to 79$^{\circ}$C. Assuming a mean template molecule length of 550 \gls{bp} and 16,000 loci from this double-digest library (see equation \ref{eq:exp_number_ddRAD_loci}), the \textit{q}PCR results indicate that on average only 1.26 ($\pm$ 0.37) template molecules per locus and individual went into the selective PCR\footnote{see DD\_RAD\_LIB\_101111\_data.xls}.
 
 
 %% ------------------------------------------------------------------------------------------
@@ -967,7 +967,7 @@ I took an aliquot of the selective PCR product and determined its DNA concentrat
 \subsection{comparison of different double-digest RAD protocols}
 %% ------------------------------------------------------------------------------------------
 
-Please see the table on the following page.
+Please see the table on the following page.\label{compProt}
 
 \pagebreak
 
@@ -975,7 +975,7 @@ Please see the table on the following page.
 
 \ctable[ 
 	caption =  {comparison of different protocols for non-standard RAD$^{a}$ (see figure \ref{ddRAD_protocol_overview})},
-	label = compProt,
+	%label = compProt,
 %	pos = t,
 %	sideways,
 	width = 240mm,
@@ -1195,7 +1195,7 @@ tail -n 400000 > `basename $i .gz`.random)& done
 \label{cmd:extract_random_read_pairs}
 \end{cmd}
 %
-For the SbfI$+$XhoI double-digest RAD data set I have used a very similar command, but extracted only the SE reads. All reads had passed my quality filtering steps\todo{I need to add description of quality filtering the raw read data}.
+For the SbfI$+$XhoI double-digest RAD data set I have used a very similar command, but extracted only the SE reads. All reads had passed my quality filtering steps\comment{I need to add description of quality filtering the raw read data}.
 
 %
 %
@@ -1251,7 +1251,7 @@ wc -l
 \label{cmd:count_genuine_proper_pairs}
 \end{cmd}
 %
-My script \texttt{Isize.pl} calculates the insert/fragment size, also known as \emph{template length}, from the reported mapping positions of the read pair and the \href{http://samtools.github.io/hts-specs/SAMv1.pdf}{CIGAR} string of the reverse mapping read in the pair. It does this by adding up the matching bases reported in the CIGAR string of the reverse mapping read in order to add this to its reported mapping position\footnote{this results in the reference coordinate of the position right of the rightmost mapping base with respect to the reference sequence} and then subtracts from the result the reported mapping position of its forward mapping mate.\todo{Would it be worthwhile to include a drawing here?} Thus soft-clipped bases are not included in the calculated insert size.
+My script \texttt{Isize.pl} calculates the insert/fragment size, also known as \emph{template length}, from the reported mapping positions of the read pair and the \href{http://samtools.github.io/hts-specs/SAMv1.pdf}{CIGAR} string of the reverse mapping read in the pair. It does this by adding up the matching bases reported in the CIGAR string of the reverse mapping read in order to add this to its reported mapping position\footnote{this results in the reference coordinate of the position right of the rightmost mapping base with respect to the reference sequence} and then subtracts from the result the reported mapping position of its forward mapping mate.\todo{include a drawing here, use tikz package}~Thus soft-clipped bases are not included in the calculated insert size.
 %
 \renewcommand{\epigraphflush}{center}
 \setlength{\epigraphwidth}{.9\textwidth}

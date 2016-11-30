@@ -11,6 +11,20 @@ rm(list=ls())
 
 geno_calls <- read.delim("export_depth_cov_09042015.tsv", header=T)
 
+# # PyRAD, table 1:
+# # my average taxon coverage:
+# mean(geno_calls$geno_calls)
+# # my % full taxon coverage
+# sum(geno_calls$geno_calls == 36)/length(geno_calls$geno_calls) * 100
+# # --> these numbers are very similar to the high locus-dropout simulated data set and empircal data set 
+# # in the PyRAD paper, table 1
+# # number of putative loci:
+# length(geno_calls$geno_calls)
+# # % singleton loci (i. e. that are only found in one individual):
+# sum(geno_calls$geno_calls == 1)/length(geno_calls$geno_calls) * 100
+
+
+
 x <- table(geno_calls$geno_calls)
 y <- x/sum(x)
 
@@ -245,6 +259,8 @@ legend("topright",
 fragments_per_ind <- read.delim("fragments_mapped_per_ind",
                             header=T)
 
+#str(fragments_per_ind)
+
 par(mfrow=c(1,1), mar=c(4,3,1,3))
 
 mp <- barplot(t(fragments_per_ind[2:5]),
@@ -301,31 +317,67 @@ legend("top",
 
 ## ---- fragments_input_reads_corr ----
 
-# locus dropout
+#head(fragments_per_ind)
+# locus dropout for the 4 contigs by individual
 dropout <- apply(fragments_per_ind[,2:5], 1, function(x){sum(x==0)})
-x <- (fragments_per_ind$Retained/10^6)
+reads <- (fragments_per_ind$Retained/10^6) # number of fragments retained after quality fltering and used for analysis
+
 par( mfrow=c(1,1), mar=c(4,4,1,1) )
-plot(x, dropout, 
-     pch=20, col="red",
-     #    cex.axis=.8,
-     #   cex.lab=0.8,
-     xlim=c(0,5),
-     ylim=c(0,4),
-     ylab="number of locus-dropout per ind.",
-     xlab="input read number per ind. in millions"
+boxplot(reads ~ dropout, 
+     #pch=20, col="red",
+     cex.axis=1.2,
+     cex.lab=1.2,
+     xlim=c(0,4),
+     ylim=c(0,5),
+     xlab="number of locus-dropout per ind.",
+     ylab="input read number per ind. in millions"
 )
-mod <- lm(dropout ~ x)
-abline(mod, xpd=F, lwd=2)
-text(c(3,3), c(0.7, 0.5), pos= 4, 
-     #   cex=.7,
-     labels=c("slope: -0.2889", "p=0.01462")
+# simple linear regression
+# A GLM would probably be better, but I cannot do that yet.
+mod <- lm(reads ~ dropout)
+#summary(mod)
+R_sq = summary(mod)$r.squared # roughly 16% of the variation in the data can be explained by the linear model
+#mod$coeff
+# In order to add the regression line to the boxplot,
+# I must adjust the intercept to account for the coordinates
+# of the boxplot: 0 dropout is at coordinate 1 and so on:
+# y = b*x + a
+# a = b*1 + ?
+# a - b = ?
+intercept = mod$coeff["(Intercept)"] - mod$coeff["dropout"]
+slope = mod$coeff["dropout"]
+abline(intercept, slope, xpd=F, lwd=2)
+
+# add means
+mean_reads_per_dropout = aggregate(
+        x=list(million_reads=reads), 
+        by=list(dropout=dropout), 
+        mean)
+#mean_reads_per_dropout
+points(1:3, mean_reads_per_dropout$million_reads, pch=20)
+
+# add slope, R^squared and the p-value
+annot = paste("slope:", round(slope, 3), "(p-value:", "0.0146)")
+text(1.5, 4.5, pos=4, cex=1.0,
+     #labels=paste(c("slope:", "R^2:", "p-value:"), 
+     #            round(c(slope, R_sq, 0.01462), 3)
+     labels=annot
 )
+#round(R_sq, 3)
+text(1.5, 4, pos=4, expression(paste(R^2, ": ", 0.163)), cex=1.0)
+
+n = aggregate(x=list(count=rep(1, length(dropout))), 
+          by=list(dropout=dropout), 
+          FUN=sum)
+# class(n)
+text(1:3, rep(0, 3), paste(rep("n = ", 3), n[,2]), pos=3)
+
 # fragment count over 4 loci versus input read number
 frag_over_loci <- apply(fragments_per_ind[,2:5], 1, sum)
 plot(fragments_per_ind$Retained/10^6, frag_over_loci, 
      xlim=c(0,5), 
-     #     cex.lab=.8,
-     #     cex.axis=.8,
+     cex.lab=1.2,
+     cex.axis=1.2,
      ylim=c(0, max(frag_over_loci)+5),
      type="n",
      xlab="total reads input (millions)",
@@ -333,7 +385,7 @@ plot(fragments_per_ind$Retained/10^6, frag_over_loci,
 )
 text(fragments_per_ind$Retained/10^6, frag_over_loci, 
      labels=fragments_per_ind[,1], cex=.8)
-mod <- lm(frag_over_loci ~ x)
+mod <- lm(frag_over_loci ~ reads)
 abline(mod, xpd=F, lwd=2)
 
 ## ---- fragNum_per_locus_tab ----
@@ -745,3 +797,77 @@ matplot(7:39,
         ylab="cluster size"
 )
 
+## ---- read pair mapping analysis ----
+
+# source functions from John Kruschke's DBDA book
+source("~/Dropbox/Kruschke_Dog_Book/DBDA2Eprograms/DBDA2E-utilities.R")
+source("~/Dropbox/Kruschke_Dog_Book/DBDA2Eprograms/BernBeta.R")
+
+# prior prob. that a read pair maps concordantly
+# described by a uniform beta(theta | a=1, b=1) distribution
+priorAB = c(1,1) # this is more vague than actually true, 
+# but I want to let the data speak exclusively
+
+# data from random read pairs
+N = 846583 # total mapping read pairs
+z = 440015 # number of read pairs mapping concordantly
+posteriorAB_1 = c(z+1, (N-z)+1)
+
+# data from SbfI site containing read pairs
+N = 2184 # total mapping read pairs
+z = 333 # number of read pairs mapping concordantly
+posteriorAB_2 = c(z+1, (N-z)+1)
+
+a1 = posteriorAB_1[1]
+b1 = posteriorAB_1[2]
+a2 = posteriorAB_2[1]
+b2 = posteriorAB_2[2]
+
+# take random sample from posterior distribution of theta for random read pairs
+ThetaRandReadPairs = rbeta(10000, a1, b1)
+# take random sample from posterior distribution of theta for SbfI containing read pairs
+ThetaSbfIContReadPairs = rbeta(10000, a2, b2)
+# now take the difference in the sampled theta values from the two posterior distributions
+postDiffInTheta = abs(ThetaRandReadPairs - ThetaSbfIContReadPairs)
+# plot this sample from the the posterior distribution of theta differences
+plot(density(postDiffInTheta), xlim=c(0.3, 0.4),
+     xlab=bquote("difference in " * theta),
+     main=bquote("posterior distribution of the difference in " * theta),
+     zero.line=T
+)
+# get info from 'density' function
+densityOut = density(postDiffInTheta, n=2^10)
+# turn density into prob. mass
+probMass = densityOut$y / sum(densityOut$y)
+# get HDI info
+HDIinfo = HDIofGrid(probMassVec = probMass, credMass = 0.95) # 'HDIofGrid is function in DBDA2E-utilities.R
+# get HDI limits
+n = length(HDIinfo$indices)
+HDI_lower = densityOut$x[HDIinfo$indices[1]]
+HDI_upper = densityOut$x[HDIinfo$indices[n]]
+# shade HDI area
+points(densityOut$x[HDIinfo$indices], densityOut$y[HDIinfo$indices], type="h", col="skyblue")
+# the following code is taken and only slightly adapted from John Kruschke's 'BernGrid.R'
+# Mark vertical lines at ends of HDI (sub-)intervals:
+for ( limit in c(HDI_lower, HDI_upper) ) {
+        lines( c(limit, limit) , 
+               c(-0.5,HDIinfo$height*sum(densityOut$y)) , # 'height' is prob. mass, turned back into density
+               type="l" , 
+               lty=2 , 
+               lwd=1.5 
+        )
+        text( limit , HDIinfo$height*sum(densityOut$y) , 
+              bquote(.(round(limit,3))) ,
+              adj=c(0.5,-0.1) , cex=1.2 )
+}
+# place HDI text label
+text( mean(c(HDI_upper, HDI_lower)) , HDIinfo$height*sum(densityOut$y) ,
+      bquote( .(100*signif(HDIinfo$mass,3)) * "% HDI" ) ,
+      #adj=c(1.1,-1.5) , 
+      #cex=1.5 
+)
+# add label for mode of dist
+modeTheta = densityOut$x[ which.max( densityOut$y ) ]
+text(.32, 40, 
+     labels=bquote("mode = " * .(signif(modeTheta, 3)))
+     )

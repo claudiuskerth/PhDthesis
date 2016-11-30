@@ -2,6 +2,31 @@
 % suppress page number list in glossary:
 %\usepackage[nonumberlist]{glossaries}
 
+%
+% -- put the following code into a .latexmkrc file in the directory from where you run Latexmk --
+%
+%# add glossary generation to LATEXMK routine
+%# ==========================================
+%# taken from:
+%# http://tex.stackexchange.com/questions/1226/how-to-make-latexmk-use-makeglossaries
+%
+%add_cus_dep('glo', 'gls', 0, 'run_makeglossaries');
+%add_cus_dep('acn', 'acr', 0, 'run_makeglossaries');
+%
+%sub run_makeglossaries {
+%  if ( $silent ) {
+%    system "makeglossaries -q $_[0]";
+%  }
+%  else {
+%    system "makeglossaries $_[0]";
+%  };
+%}
+%
+%push @generated_exts, 'glo', 'gls', 'glg';
+%push @generated_exts, 'acn', 'acr', 'alg';
+%$clean_ext .= ' %R.ist %R.xdy';
+
+
 \makeglossaries
 
 \renewcommand*{\glstextformat}[1]{\textsf{#1}}
@@ -29,6 +54,11 @@
 \newglossaryentry{mqs}{name={mapping quality score}, description={The mapping quality score \emph{Q} is the Phred transformation of the estimate of the probability \emph{p} that the reported mapping position does not correspond to the read's true point of origin: $Q = -10 \log_{10} p$. The way \emph{p} is estimated is different for each mapping programme, but in any case a mapping quality score \emph{Q} of 3 roughly corresponds to a mis-mapping probability \emph{p} of 0.5, i. e. the read has an estimated 50\% chance to have derived from a location other than the one reported}}
 \newglossaryentry{discordant}{name=discordant, description={A read pair is called discordant if it aligns without the expected relative mate orientation (here: forward--reverse or reverse--forward) or outside the expected range of distances between mates. Note that \texttt{bowtie2} only calls discordant read pair mappings if both reads map \emph{uniquely}. Here, I am NOT adopting this requirement}}
 \newglossaryentry{concordant}{name=concordant, description={A read pair is called concordant if it aligns with the expected relative mate orientation (here: forward--reverse or reverse--forward) and within the expected range of distances between mates. This is also called a \gls{proper pair}. The complement of \gls{discordant}}}
+\newglossaryentry{Levenshtein distance}{name=Levenshtein distance, description={The Levenshtein distance is equal to the minimum number of operations (edits) required to transform one string into another. The allowed operations are single character insertions, deletions and substitutions. This is also known as edit distance.}}
+\newglossaryentry{all pairs}{name={all pairs}, description={all the pairs of sequences below a given Levenshtein distance are identified during the graph construction phase}}
+\newglossaryentry{transitive clusters}{name=transitive clusters, description={Two read clusters are merged if the distance of any pair of reads between the clusters is below threshold. After merging, the newly created cluster can contain read pairs with distance above the clustering threshold}}
+\newglossaryentry{graph}{name=graph, description={A network of connected sequences. Two sequences are directly connected if they match with distance below a threshold. The distance is a measure of the strength of connection, aka "edge weight". Graphs can be stored as a list of pairs of sequences, with an optional edge weight. All graphs here should be "undirected cyclic graphs"}}
+\newglossaryentry{Nmer}{name=\emph{N}mer, description={synonymous to kmer, unit, word; a subsequence of size \emph{N} that is overlapping or contiguous with the next subsequence of size \emph{N} and stored in a dictionnary (aka hash) for fast lookup}}
 
 %----------------
 % Acronyms
@@ -38,6 +68,7 @@
 \newacronym{pe}{PE}{paired-end}
 \newacronym{se}{SE}{single-end}
 \newacronym{bp}{bp}{base pair}
-\newacronym{indel}{indel}{sequence insertion or deletion polymorphism}
+\newacronym{indel}{indel}{small sequence insertion or deletion polymorphism}
 \newacronym{SAM}{SAM}{Sequence Alignment/Map format}
 \newacronym{EST}{EST}{expressed sequence tag}
+\newacronym{ddRAD}{ddRAD}{double digest RAD}

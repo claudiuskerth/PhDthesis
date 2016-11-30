@@ -14,7 +14,7 @@
 % ******************************* PhD Thesis Template **************************
 % Please have a look at the README.md file for info on how to use the template
 
-\documentclass[a4paper,12pt,times,authoryear,oneside,openright,online,index]{Classes/PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,authoryear,oneside,openright,online,index,abstract]{Classes/PhDThesisPSnPDF}
 % I copied PhDThesisPSnPDF.cls to /usr/local/texlive/2012/texmf/tex/latex
 % execute $ sudo texhash
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
@@ -117,7 +117,7 @@
 % To use choose `chapter' option in the document class
 
 \ifdefineChapter
- \includeonly{Chapter3/chapter3}
+ \includeonly{3_Chapter/chapter3}
 \fi
 
 % ******************************** Front Matter ********************************
@@ -157,9 +157,9 @@ options(replace.assign=TRUE,width=90)
 % \printnomencl[space] space can be set as 2em between symbol and description
 %\printnomencl[3em]
 
-\printnomencl
+%\printnomencl
 
-\printglossaries
+%\printglossaries
 
 % ******************************** Main Matter *********************************
 \mainmatter
@@ -172,8 +172,8 @@ options(replace.assign=TRUE,width=90)
 %\include{Chapter6/chapter6}
 %\include{Chapter7/chapter7}
 
-<<chapter3, child='Chapter3/chapter3.Rnw'>>=
-@
+%<<chapter3, child='3_Chapter/chapter3.Rnw'>>=
+%@
 
 
 
