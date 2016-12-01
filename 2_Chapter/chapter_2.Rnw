@@ -1,0 +1,132 @@
+\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
+%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
+
+\usepackage{import}
+
+\input{../Preamble/preamble}
+
+%******************************** Glossary *********************************************
+\input{../Glossary/glossary}
+
+%%%%%% -- KNITR SETUP -- %%%%%%%%%%
+<<setup_ch3, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options for this child doc
+opts_chunk$set(
+	fig.align='center', 
+	fig.show='hold'
+	)
+options(replace.assign=TRUE,width=90)
+# set up working directory for all code chunks, obviates the need to
+# setwd() in each chunk
+opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
+# read in external R code file
+read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
+# include preamble from main doc for isolated compilation
+# doesn't currently work because relative paths are used there
+# set_parent('../thesis.Rnw')
+@
+%************************************************************************************************
+
+
+\begin{document}
+
+\tableofcontents
+
+\listoffigures
+
+\listof{cmd}{List of commands}
+
+%\todototoc
+\listoftodos
+
+\printglossaries
+
+
+% **************************** Define Graphics Path **************************
+%% Note, every path needs to end with a "/" !!!
+\ifpdf
+    \graphicspath{
+    {./Figs/Raster/}
+    {./Figs/PDF/}
+    {./Figs/}
+    {../Data_analysis/reference-mapping/figure/}
+    }
+\else
+    \graphicspath{ 
+    {./Figs/Vector/}
+    {./Figs/}
+%    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/}
+    }
+\fi
+
+%
+%
+%
+\chapter{Investigation into the demographic history of the hybrid zone}
+%
+%
+%
+
+
+\abstract{
+In this chapter I want to use all RAD data from all different libraries that I created to investigate the evolutionary history of the hybrid zone.
+
+I will first need to assemble the RAD reads of the different libraries. For that, I want to look into and test a few different programmes, pipelines and analysis protocols that have recently been published. I have created a list of 14 priority papers in my literature library in JabRef under the category \textsf{sRAD} $\rightarrow$ \textsf{RAD de novo assembly}.
+
+I will need to estimate allele frequencies from the RAD data for the two populations I got data for and use it in an ABC analysis. Parameters of interest would be:
+
+\begin{itemize}
+\item time of separation
+\item recent migration rate / rate of gene flow 
+\item recent bottlenecks
+\item signals of selection
+\end{itemize}
+
+I will need to create a list of papers to read about the technical details of ABC analysis. For the implementation, I will need the assistance of Ludovic.
+
+Finally, since I am trying to extend the scarce knowledge about the history of the hybrid zone, I will need to write a little literature review about what is known so far. Most of these papers should be there as printed copies in the hybrid zone paper box. 
+
+%\newcommand{\Todo}[1]{\todo[size=\normalsize,nolist,inline]{#1}} % don't know why \renewcommand doesn't work
+\newcommand{\Todo}[2][orange]{\todo[size=\normalsize,nolist,inline,color=#1]{#2}} % don't know why \renewcommand doesn't work
+
+\begin{itemize}
+\item RAD de novo assembly:
+	\begin{itemize}
+	\item \Todo[green]{create list of papers to read}
+	\item \Todo[green]{read through list of papers and select programmes to test}
+	\item \Todo{test selected programmes and pipelines}
+	\item \Todo{Get an estimate of the sequencing error rate from the standard RAD data.}
+	\item \Todo{run \texttt{RepeatMasker} on Radome}
+	\item \Todo{screen Radome for \textit{Wolbachia} sequences, maybe by doing a proper PE read assembly again with a proper blast annotation}
+	\item \Todo{assemble different libraries}
+	\item \Todo{estimate allele frequencies of SNP's and indels in a Bayesian framework}
+	\end{itemize}
+\item ABC:
+	\begin{itemize}
+	\item \Todo{explore \texttt{ms}}
+	\item \Todo{create list of papers to read}
+	\item \Todo{test selected programmes and pipelines}
+	\item \Todo{account for biases in the data: null alleles}	
+	\item \Todo{design ABC analysis: parameters}
+	\item \Todo{familiarise yourself with Ludovic's ABC pipeline on Iceberg}
+	\item \Todo{do ABC analysis}
+	\item \Todo{analyse posterior distributions of parameters}
+	\end{itemize}
+\item Literature review of hybrid zone history:
+	\begin{itemize}
+	\item \Todo{create list of papers to read}
+	\item \Todo{read and digest papers while writing the review}
+	\end{itemize}
+\end{itemize}
+}
+
+%----------------------------
+% Bibliography
+%----------------------------
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+
+\end{document}
+

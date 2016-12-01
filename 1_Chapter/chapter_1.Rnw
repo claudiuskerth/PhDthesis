@@ -1,0 +1,91 @@
+\documentclass[a4paper,12pt,times,print,index,oneside,custommargin]{PhDThesisPSnPDF}
+%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
+
+\usepackage{import}
+
+\input{../Preamble/preamble}
+
+%******************************** Glossary *********************************************
+\input{../Glossary/glossary}
+
+%%%%%% -- KNITR SETUP -- %%%%%%%%%%
+<<setup_ch3, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options for this child doc
+opts_chunk$set(
+	fig.align='center', 
+	fig.show='hold'
+	)
+options(replace.assign=TRUE,width=90)
+# set up working directory for all code chunks, obviates the need to
+# setwd() in each chunk
+opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
+# read in external R code file
+read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
+# include preamble from main doc for isolated compilation
+# doesn't currently work because relative paths are used there
+# set_parent('../thesis.Rnw')
+@
+%************************************************************************************************
+
+
+\begin{document}
+
+\tableofcontents
+
+\listoffigures
+
+\listof{cmd}{List of commands}
+
+%\todototoc
+\listoftodos
+
+\printglossaries
+
+
+% **************************** Define Graphics Path **************************
+%% Note, every path needs to end with a "/" !!!
+\ifpdf
+    \graphicspath{
+    {./Figs/Raster/}
+    {./Figs/PDF/}
+    {./Figs/}
+    {../Data_analysis/reference-mapping/figure/}
+    }
+\else
+    \graphicspath{ 
+    {./Figs/Vector/}
+    {./Figs/}
+%    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/}
+    }
+\fi
+
+%
+%
+%
+\chapter{General Introduction}
+%
+%
+%
+
+
+\abstract{
+Here I shall write a review about:
+\begin{itemize}
+\item the history of the hybrid
+\item RAD technology
+\item population genomics with low coverage sequencing and without genotype calling
+\item an analytical discussion of the related findings to date
+\item description of the aims of the research
+\end{itemize}
+}
+
+%----------------------------
+% Bibliography
+%----------------------------
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+
+\end{document}
+

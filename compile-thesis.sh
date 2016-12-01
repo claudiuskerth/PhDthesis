@@ -25,10 +25,20 @@ if [ $1 = $clean ]; then
 	rm -rf *.out*
 	rm -rf *.nlo
 	rm -rf *.nls
+	rm -rf *.acn
+	rm -rf *.acr
+	rm -rf *.acl
+	rm -rf *.alg
+	rm -rf *.glg
+	rm -rf *.gls
+	rm -rf *.ist
+	rm -rf *.loc
+	rm -rf *.tdo
 	rm -rf $filename.pdf
 	rm -rf $filename.ps
 	rm -rf $filename.dvi
 	rm -rf *#* 
+	find . -name "*aux" -print | xargs rm -f {}
 	echo "Cleaning complete!"
 	exit
 else

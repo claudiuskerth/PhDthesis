@@ -14,7 +14,7 @@
 % ******************************* PhD Thesis Template **************************
 % Please have a look at the README.md file for info on how to use the template
 
-\documentclass[a4paper,12pt,times,authoryear,oneside,openright,online,index,abstract]{Classes/PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,authoryear,twoside,print,index]{Classes/PhDThesisPSnPDF}
 % I copied PhDThesisPSnPDF.cls to /usr/local/texlive/2012/texmf/tex/latex
 % execute $ sudo texhash
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
@@ -117,8 +117,11 @@
 % To use choose `chapter' option in the document class
 
 \ifdefineChapter
- \includeonly{3_Chapter/chapter3}
+%	\includeonly{3_Chapter/chapter3}
 \fi
+
+%******************************** Glossary *********************************************
+\input{Glossary/glossary}
 
 % ******************************** Front Matter ********************************
 
@@ -159,7 +162,8 @@ options(replace.assign=TRUE,width=90)
 
 %\printnomencl
 
-%\printglossaries
+\printglossaries
+
 
 % ******************************** Main Matter *********************************
 \mainmatter
@@ -172,8 +176,10 @@ options(replace.assign=TRUE,width=90)
 %\include{Chapter6/chapter6}
 %\include{Chapter7/chapter7}
 
-%<<chapter3, child='3_Chapter/chapter3.Rnw'>>=
+%<<chapter2, child='2_Chapter/chapter2.Rnw'>>=
 %@
+<<chapter3, child='3_Chapter/chapter3.Rnw'>>=
+@
 
 
 
@@ -193,7 +199,7 @@ options(replace.assign=TRUE,width=90)
 %\bibliographystyle{plainnat} % use this to have URLs listed in References
 \bibliographystyle{elsarticle-harv} % use this to have URLs listed in References
 \cleardoublepage
-\bibliography{References/Literature} % Path to your References.bib file
+\bibliography{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/References/Literature} % Path to your References.bib file
 
 
 % If you would like to use BibLaTeX for your references, pass `custombib' as
@@ -205,6 +211,7 @@ options(replace.assign=TRUE,width=90)
 
 
 \end{spacing}
+
 
 % ********************************** Appendices ********************************
 

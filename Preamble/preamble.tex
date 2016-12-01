@@ -22,13 +22,18 @@
 
 % *****************************************************************************
 % **************************** Custom Packages ********************************
+\usepackage{import}
+
+%\usepackage{comment}
 
 \usepackage{epigraph}
 
 %% ---- package for formatting code with line numbers
 \usepackage{fancyvrb} %% for verbatim text
 
-% **** Custom Floats ****
+\usepackage{ulem} % more underlining and other font effects
+
+% ************************** Custom Floats **********************************
 \usepackage{float}
 \floatstyle{ruled}
 \newfloat{cmd}{htb}{loc}[chapter]
@@ -37,10 +42,6 @@
 
 %% ---- provides "\rowcolors" command
 \usepackage[dvipsnames,table]{xcolor}
-
-\usepackage{colortbl}
-
-\usepackage{ctable}
 
 \usepackage{subcaption}
 
@@ -59,13 +60,30 @@
 %------ the following package can be used for Word Review function mimicking comments ----------%
 \usepackage[textsize=tiny, textwidth=3cm, color=Dandelion, colorinlistoftodos]{todonotes} % specify ``disable'' to turn off all notes
 \newcommand{\addcit}[1]{\todo[color=yellow!90,nolist]{#1}}
-\newcommand{\comment}[1]{\todo[color=green!40,noline,nolist]{#1}}
+\newcommand{\comment}[1]{\todo[color=green!40,noline,nolist]{#1}} % the "comment" package also defines a command "\comment", so cannot use both
 \newcommand{\longcomment}[1]{\todo[color=green!40,inline,nolist]{#1}}
 \newcommand{\roger}[1]{\todo[color=blue!40]{Roger:\newline{}#1}}
+
+%\ifsetDraft
+%	\usepackage[textsize=tiny, textwidth=3cm, color=Dandelion, colorinlistoftodos]{todonotes} % specify ``disable'' to turn off all notes
+%	\newcommand{\addcit}[1]{\todo[color=yellow!90,nolist]{#1}}
+%	\newcommand{\comment}[1]{\todo[color=green!40,noline,nolist]{#1}}
+%	\newcommand{\longcomment}[1]{\todo[color=green!40,inline,nolist]{#1}}
+%	\newcommand{\roger}[1]{\todo[color=blue!40]{Roger:\newline{}#1}}
+%\else
+%	\newcommand{\addcit}[1]{}
+%	\newcommand{\comment}[1]{}
+%	\newcommand{\longcomment}[1]{}
+%	\newcommand{\roger}[1]{}
+%	\newcommand{\listoftodos}{}
+%	\newcommand{\todo}{}
+%\fi
+
 %\usepackage{setspace}
 %\newcommand{\note}[2][] {\todo[caption={#2}, #1] {\begin{spacing}{0.8}#2\end{spacing}}}
 
 \usepackage{pdflscape}
+\usepackage{lscape} % offers landscape environment, \begin{landscape}
 
 % ---- for verbatim in captions. Usage: \cprotect\caption{...} ----
 \usepackage{cprotect} 
@@ -91,12 +109,14 @@
 colorlinks=true,% 
 citecolor=black,% 
 linkcolor=black,
-urlcolor=blue% 
+urlcolor=black% 
 }
 
 
 
 % *************************** Graphics and figures *****************************
+
+%\usepackage{subfigure}
 
 %\usepackage{rotating}
 %\usepackage{wrapfig}
@@ -115,6 +135,8 @@ urlcolor=blue%
 % ********************************** Tables ************************************
 \usepackage{booktabs} % For professional looking tables
 \usepackage{multirow}
+\usepackage{ctable}
+\usepackage{colortbl}
 
 %\usepackage{multicol}
 %\usepackage{longtable}
@@ -209,6 +231,9 @@ urlcolor=blue%
 %\renewcommand{\listfigurename}{My List of Figures}
 %\renewcommand{\listtablename}{My List of Tables}
 
+\newcommand{\marginal}[1]{
+	\leavevmode\marginpar{\tiny\raggedright#1\par}}
+
 
 % ********************** TOC depth and numbering depth *************************
 
@@ -264,9 +289,12 @@ urlcolor=blue%
 % Example todo: \mynote{Hey! I have a note}
 
 %%******************************** Glossary ***************************************************
+\usepackage[toc,acronym]{glossaries}
+
+% suppress page number list in glossary:
+%\usepackage[nonumberlist]{glossaries}
 %\input{Glossary/glossary}
 %\usepackage[toc]{glossaries}
-%\makeglossaries
 %\renewcommand*{\glstextformat}[1]{\textsf{#1}}
 %
 %\newglossaryentry{fragment}{name=fragment, description={not a PCR duplicate}}
