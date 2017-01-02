@@ -428,7 +428,7 @@ This result is consistent with random genomic religation, which recreates SbfI s
 
 
 %% --------------------------------------------------
-\subsection{Incomplete digestion or genomic religation in the double-digest RAD library}
+\subsection{Incomplete digestion or genomic religation in the double--digest RAD library}
 %% --------------------------------------------------
 
 There are also reads from the SbfI$+$XhoI double-digest library that contain full restriction enzyme recognition sequences. I have counted the SbfI and XhoI site positions in \texttt{uniq}-ued \todo{rephrase this} ~\gls{se} and \gls{pe} reads from each individual. The figures \ref{ddRAD_SbfI_frequency_dist} and \ref{ddRAD_XhoI_frequency_dist} show the relative site frequency distributions across SE and PE reads for SbfI and XhoI, respectively (further details in section \ref{site_frequency_distributions}). 

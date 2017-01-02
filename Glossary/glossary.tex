@@ -58,6 +58,9 @@
 \newglossaryentry{transitive clusters}{name=transitive clusters, description={Two read clusters are merged if the distance of any pair of reads between the clusters is below threshold. After merging, the newly created cluster can contain read pairs with distance above the clustering threshold}}
 \newglossaryentry{graph}{name=graph, description={A network of connected sequences. Two sequences are directly connected if they match with distance below a threshold. The distance is a measure of the strength of connection, aka "edge weight". Graphs can be stored as a list of pairs of sequences, with an optional edge weight. All graphs here should be "undirected cyclic graphs"}}
 \newglossaryentry{Nmer}{name=\emph{N}mer, description={synonymous to kmer, unit, word; a subsequence of size \emph{N} that is overlapping or contiguous with the next subsequence of size \emph{N} and stored in a dictionnary (aka hash) for fast lookup}}
+\newglossaryentry{population allele frequency}{name=population allele frequency, description={The population allele frequency is the (unknown) frequency of the allele in the entire population}}
+\newglossaryentry{sample allele frequency}{name=sample allele frequency, description={The sample allele frequency is the frequency of the allele among the individuals in a specific sample}}
+\newglossaryentry{connected component}{name=connected component, description={All nodes (here sequence reads) after all--pairs search (and before clustering!) that are directly connected by an edge or indirectly connected via several nodes belong to the same connected component} }
 
 %----------------
 % Acronyms
@@ -67,7 +70,14 @@
 \newacronym{pe}{PE}{paired-end}
 \newacronym{se}{SE}{single-end}
 \newacronym{bp}{bp}{base pair}
+\newacronym{Mbp}{Mbp}{mega base pairs}
+\newacronym{Gbp}{Gbp}{giga base pairs}
 \newacronym{indel}{indel}{small sequence insertion or deletion polymorphism}
 \newacronym{SAM}{SAM}{Sequence Alignment/Map format}
 \newacronym{EST}{EST}{expressed sequence tag}
 \newacronym{ddRAD}{ddRAD}{double digest RAD}
+\newacronym{ML}{ML}{maximum likelihood}
+\newacronym{SFS}{SFS}{site frequency spectrum}
+\newacronym{HWE}{HWE}{Hardy Weinberg equilibrium}
+\newacronym{CI}{CI}{confidence interval}
+\newacronym{EM}{EM}{Expectation Maximisation}
