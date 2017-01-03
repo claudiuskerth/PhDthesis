@@ -195,6 +195,8 @@ legend("topright",
 # ---- folded-sfs-boot-exh-ery ----
 ery.sfs.boot.exh = read.table("ERY.FOLDED.sfs.boot.exh", header=F)
 par.sfs.boot.exh = read.table("PAR.FOLDED.sfs.boot.exh", header=F)
+ery.sfs = scan("ERY.FOLDED.sfs")
+ery.sfs = ery.sfs[-1]
 # calculate 95% bootstrap CI:
 names(ery.sfs.boot.exh) = as.character(0:18)
 ery.sfs.boot.exh.CI95 = as.data.frame(t( apply(ery.sfs.boot.exh, 2, quantile, probs=c(0.25, 0.5, 0.975)) ))
@@ -242,6 +244,8 @@ text(11, 6900,
      )
 # ---- folded-sfs-boot-exh-par ----
 # PAR
+par.sfs = scan("PAR.FOLDED.sfs")
+par.sfs = par.sfs[-1]
 plot(1:18, 
      par.sfs.boot.exh.CI95[2:19,2], 
      ylim=c(0, max(par.sfs.boot.exh.CI95[2:19,])),

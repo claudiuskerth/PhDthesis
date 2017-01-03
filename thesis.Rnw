@@ -132,7 +132,7 @@
 <<setup_main, include=FALSE, cache=FALSE>>=
 library(knitr)
 # set global chunk options
-opts_chunk$set(fig.path='Figs/Knitr/', fig.align='center', fig.show='hold')
+opts_chunk$set(fig.path='Figs/Knitr/', fig.align='center', fig.show='hold', warning=FALSE)
 options(replace.assign=TRUE,width=90)
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,15 +147,15 @@ options(replace.assign=TRUE,width=90)
 \include{Dedication/dedication}
 \include{Declaration/declaration}
 \include{Acknowledgement/acknowledgement}
-\include{Abstract/abstract}
+%\include{Abstract/abstract}
 
 % *********************** Adding TOC and List of Figures ***********************
 
 \tableofcontents
 
-\listoffigures
+%\listoffigures
 
-\listoftables
+%\listoftables
 
 % \printnomencl[space] space can be set as 2em between symbol and description
 %\printnomencl[3em]
@@ -176,10 +176,11 @@ options(replace.assign=TRUE,width=90)
 %\include{Chapter6/chapter6}
 %\include{Chapter7/chapter7}
 
-%<<chapter2, child='2_Chapter/chapter2.Rnw'>>=
-%@
 <<chapter3, child='3_Chapter/chapter3.Rnw'>>=
 @
+<<chapter2, child='2_Chapter/chapter_2.Rnw'>>=
+@
+
 
 
 

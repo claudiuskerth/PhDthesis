@@ -1,12 +1,12 @@
-\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
+%\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
-\usepackage{import}
+%\usepackage{import}
 
-\input{../Preamble/preamble}
+%\input{../Preamble/preamble}
 
 %******************************** Glossary *********************************************
-\input{../Glossary/glossary}
+%\input{../Glossary/glossary}
 
 %%%%%% -- KNITR SETUP -- %%%%%%%%%%
 <<setup_ch2, include=FALSE, cache=FALSE>>=
@@ -29,7 +29,7 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
 %************************************************************************************************
 
 
-\begin{document}
+%\begin{document}
 
 %\tableofcontents
 %
@@ -40,7 +40,7 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
 %%\todototoc
 %\listoftodos
 
-\printglossaries
+%\printglossaries
 
 
 % **************************** Define Graphics Path **************************
@@ -69,71 +69,71 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
 %
 
 %
-\begin{comment}
+%\begin{comment}
 %
 
-\abstract{
-In this chapter I want to use all RAD data from all different libraries that I created to investigate the evolutionary history of the hybrid zone.
-
-I will first need to assemble the RAD reads of the different libraries. For that, I want to look into and test a few different programmes, pipelines and analysis protocols that have recently been published. I have created a list of 14 priority papers in my literature library in JabRef under the category \textsf{sRAD} $\rightarrow$ \textsf{RAD de novo assembly}.
-
-I will need to estimate allele frequencies from the RAD data for the two populations I got data for and use it in an ABC analysis. Parameters of interest would be:
-
-\begin{itemize}
-\item time of separation
-\item recent migration rate / rate of gene flow 
-\item recent bottlenecks
-\item signals of selection
-\end{itemize}
-
-FST: \cite{Keinan2007}, \cite{Weir2005}, \cite{McVicker2009}\\
-
-Bias: \cite{Han2014}, \cite{Andrews2016}, \cite{Gautier2012}, \cite{Luca2011}, \cite{Nielsen2011}, \cite{Crawford2012a}, \cite{Johnson2008}, \cite{Albrechtsen2010}\\
-
-2D--SFS: \cite{Gutenkunst2009}
-
-Ascertainment of SNP's in different populations. Par should have undergone recent expansion, which would have led to an increase in low frequency variants that are invariant in ERY. Fst would be close the allele frequency in PAR, i. e. low. That means ascertaining SNP's in PAR should produce a lower genome-wide Fst estimate than when ascertaining SNP's in ERY.
-
-I will need to create a list of papers to read about the technical details of ABC analysis. For the implementation, I will need the assistance of Ludovic.
-
-Finally, since I am trying to extend the scarce knowledge about the history of the hybrid zone, I will need to write a little literature review about what is known so far. Most of these papers should be there as printed copies in the hybrid zone paper box. 
-
-%\newcommand{\Todo}[1]{\todo[size=\normalsize,nolist,inline]{#1}} % don't know why \renewcommand doesn't work
-\newcommand{\Todo}[2][orange]{\todo[size=\normalsize,nolist,inline,color=#1]{#2}} % don't know why \renewcommand doesn't work
-
-\begin{itemize}
-\item RAD de novo assembly:
-	\begin{itemize}
-	\item \Todo[green]{create list of papers to read}
-	\item \Todo[green]{read through list of papers and select programmes to test}
-	\item \Todo{test selected programmes and pipelines}
-	\item \Todo{Get an estimate of the sequencing error rate from the standard RAD data.}
-	\item \Todo{run \texttt{RepeatMasker} on Radome}
-	\item \Todo{screen Radome for \textit{Wolbachia} sequences, maybe by doing a proper PE read assembly again with a proper blast annotation}
-	\item \Todo{assemble different libraries}
-	\item \Todo{estimate allele frequencies of SNP's and indels in a Bayesian framework}
-	\end{itemize}
-\item ABC:
-	\begin{itemize}
-	\item \Todo{explore \texttt{ms}}
-	\item \Todo{create list of papers to read}
-	\item \Todo{test selected programmes and pipelines}
-	\item \Todo{account for biases in the data: null alleles}	
-	\item \Todo{design ABC analysis: parameters}
-	\item \Todo{familiarise yourself with Ludovic's ABC pipeline on Iceberg}
-	\item \Todo{do ABC analysis}
-	\item \Todo{analyse posterior distributions of parameters}
-	\end{itemize}
-\item Literature review of hybrid zone history:
-	\begin{itemize}
-	\item \Todo{create list of papers to read}
-	\item \Todo{read and digest papers while writing the review}
-	\end{itemize}
-\end{itemize}
-}
+%\abstract{
+%In this chapter I want to use all RAD data from all different libraries that I created to investigate the evolutionary history of the hybrid zone.
+%
+%I will first need to assemble the RAD reads of the different libraries. For that, I want to look into and test a few different programmes, pipelines and analysis protocols that have recently been published. I have created a list of 14 priority papers in my literature library in JabRef under the category \textsf{sRAD} $\rightarrow$ \textsf{RAD de novo assembly}.
+%
+%I will need to estimate allele frequencies from the RAD data for the two populations I got data for and use it in an ABC analysis. Parameters of interest would be:
+%
+%\begin{itemize}
+%\item time of separation
+%\item recent migration rate / rate of gene flow 
+%\item recent bottlenecks
+%\item signals of selection
+%\end{itemize}
+%
+%FST: \cite{Keinan2007}, \cite{Weir2005}, \cite{McVicker2009}\\
+%
+%Bias: \cite{Han2014}, \cite{Andrews2016}, \cite{Gautier2012}, \cite{Luca2011}, \cite{Nielsen2011}, \cite{Crawford2012a}, \cite{Johnson2008}, \cite{Albrechtsen2010}\\
+%
+%2D--SFS: \cite{Gutenkunst2009}
+%
+%Ascertainment of SNP's in different populations. Par should have undergone recent expansion, which would have led to an increase in low frequency variants that are invariant in ERY. Fst would be close the allele frequency in PAR, i. e. low. That means ascertaining SNP's in PAR should produce a lower genome-wide Fst estimate than when ascertaining SNP's in ERY.
+%
+%I will need to create a list of papers to read about the technical details of ABC analysis. For the implementation, I will need the assistance of Ludovic.
+%
+%Finally, since I am trying to extend the scarce knowledge about the history of the hybrid zone, I will need to write a little literature review about what is known so far. Most of these papers should be there as printed copies in the hybrid zone paper box. 
+%
+%%\newcommand{\Todo}[1]{\todo[size=\normalsize,nolist,inline]{#1}} % don't know why \renewcommand doesn't work
+%\newcommand{\Todo}[2][orange]{\todo[size=\normalsize,nolist,inline,color=#1]{#2}} % don't know why \renewcommand doesn't work
+%
+%\begin{itemize}
+%\item RAD de novo assembly:
+%	\begin{itemize}
+%	\item \Todo[green]{create list of papers to read}
+%	\item \Todo[green]{read through list of papers and select programmes to test}
+%	\item \Todo{test selected programmes and pipelines}
+%	\item \Todo{Get an estimate of the sequencing error rate from the standard RAD data.}
+%	\item \Todo{run \texttt{RepeatMasker} on Radome}
+%	\item \Todo{screen Radome for \textit{Wolbachia} sequences, maybe by doing a proper PE read assembly again with a proper blast annotation}
+%	\item \Todo{assemble different libraries}
+%	\item \Todo{estimate allele frequencies of SNP's and indels in a Bayesian framework}
+%	\end{itemize}
+%\item ABC:
+%	\begin{itemize}
+%	\item \Todo{explore \texttt{ms}}
+%	\item \Todo{create list of papers to read}
+%	\item \Todo{test selected programmes and pipelines}
+%	\item \Todo{account for biases in the data: null alleles}	
+%	\item \Todo{design ABC analysis: parameters}
+%	\item \Todo{familiarise yourself with Ludovic's ABC pipeline on Iceberg}
+%	\item \Todo{do ABC analysis}
+%	\item \Todo{analyse posterior distributions of parameters}
+%	\end{itemize}
+%\item Literature review of hybrid zone history:
+%	\begin{itemize}
+%	\item \Todo{create list of papers to read}
+%	\item \Todo{read and digest papers while writing the review}
+%	\end{itemize}
+%\end{itemize}
+%}
 
 %
-\end{comment}
+%\end{comment}
 %
 
 
@@ -190,7 +190,7 @@ The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}
 %
 I mapped all quality filtered reads against the Big Data reference with the programme \href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}{\texttt{bowtie2}} \citep{Langmead2012}. I ran \texttt{bowtie2} in end--to--end mode, i. e. without soft--clipping of query sequences. Further, I specified "very--sensitive" search mode with a seed length of 20. I allowed gaps to be up to 10 bp long, but I disallowed gaps within 4 bp of either end of the read. In addition I specified a high penalty of 10 for alignments against ambiguous characters in the reference. In each reference contig, \gls{se} RAD tag and \gls{pe} contig were separated by 10 N's. This high penalty therefore makes successful read alignments across the gap between \gls{se} RAD tag and \gls{pe} read contig very unlikely. Further, I specified a minimum fragment length of 60 for \gls{proper pair} read alignments, thus allowing some overlap between reads in a pair. 
 
-Note that previous analysis of the same read data had revealed a high proportion of PCR duplicates. Although standard RAD data from paired--end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so for convenience. The following analyses are all based on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype. The following analyses should therefore be repeated excluding reads from PCR duplicates. Although variance and uncertainty in parameter estimates will then increase as a result of lower coverage, I do not expect the global estimates to change much, i. e. those which are based on data from $>$1 million nucleotide sites.
+Note that previous analysis of the same read data had revealed a high proportion of PCR duplicates. Although standard RAD data from paired--end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so for convenience. The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype. The following analyses should therefore be repeated excluding reads from PCR duplicates. Although variance and uncertainty in parameter estimates will then increase as a result of lower coverage, I do not expect the global estimates to change much, i. e. those which are based on data from $>$1 million nucleotide sites.
 
 %
 %
@@ -282,7 +282,7 @@ Figure \ref{Fig:fst-by-ascert-class} shows the dependence of average $F_{ST}$ on
 %
 \begin{figure}[htb]
 \centering
-<< fst-by-ascertainment-class, out.width='.9\\linewidth', out.height='.4\\textheight', echo=FALSE, cache=TRUE>>=
+<< fst-by-ascertainment-class, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>= %out.height='.4\\textheight', 
 @
 \caption{$F_{ST}$ by ascertainment class. The global average $F_{ST}$ when using all sites, i. e. without SNP ascertainment, is shown as a grey line.}
 \label{Fig:fst-by-ascert-class}
@@ -339,9 +339,9 @@ I therefore expect \texttt{ANGSD} to reduce the effects of allele--drop--out on 
 %
 \begin{figure}[htbp]
 \centering
-<< folded-sfs-boot-exh-ery, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+<< folded-sfs-boot-exh-ery, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
-<< folded-sfs-boot-exh-par, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+<< folded-sfs-boot-exh-par, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
 \caption{Estimation of the variance of the global folded \gls{SFS} by bootstrap resampling of nucleotide sites.}
 \label{Fig:folded-sfs-boot-exh}
@@ -352,7 +352,7 @@ Figure \ref{Fig:folded-sfs-boot-exh} shows that despite the large amount of site
 %
 \begin{figure}[htb]
 \centering
-<< S-and-Pi, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+<< S-and-Pi, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
 \caption{Global estimates of the proportion of segregating sites and average number of pairwise differences per nucleotide site derived from ML estimates of the global folded \gls{SFS}. The distributions are based on 200 bootstrap resamples of sites.}
 \label{Fig:S-and-Pi}
@@ -368,23 +368,25 @@ The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to th
 %
 \begin{figure}[htb]
 \centering
-<< Tajimas-D, out.width='.9\\linewidth', out.height='.4\\textheight', echo=FALSE, cache=TRUE, warning=FALSE>>=
+<< Tajimas-D, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>= %out.height='.4\\textheight', 
 @
-\caption{ML estimate of global Tajima's D and distribution of Tajima's D from 200 bootstraps of the global folded \gls{SFS}.}
+<< Tajimas-D-by-contig, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+@
+\caption{Top: ML estimate of global Tajima's D and distribution of Tajima's D from 200 bootstraps of the global folded \gls{SFS}. Bottom: Distribution of Tajima's D estimates for each contig.}
 \label{Fig:Tajimas-D}
 \end{figure}
 %
 \\
-The Tajima's D estimates also differ significantly between the two subspecies (fig. \ref{Fig:Tajimas-D}). While the value for \textit{erythropus} is slightly positive (\Sexpr{signif(ery.TajimasD.global, 3)}), the value for \textit{parallelus} is clearly negative (\Sexpr{signif(par.TajimasD.global, 3)}). The latter would be consistent with a recent increase in population size. However -- as already explained above for the apparent right--skew of the global folded \gls{SFS} of \textit{parallelus} -- this difference in Tajima's D might also be caused at least in part by the greater enrichment of sites that are not affected by allele--drop--out in \textit{parallelus} versus \textit{erythropus} due to lower coverage and applying the same filtering thresholds. Again, investigating the effect of varying filtering thresholds for the \textit{parallelus} sample on the Tajima's D estimate could already show whether the difference in Tajima's D is indeed caused by differences in sequence coverage between the two subspecies. Interestingly, despite a slightly positive global Tajima's D, the distribution of Tajima's D per contig has a strong peak below zero in \textit{erythropus} (fig. \ref{Fig:Tajimas-D-by-contig}). 
-%
-\begin{figure}[htb]
-\centering
-<< Tajimas-D-by-contig, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
-@
-\caption{Distribution of Tajima's D estimates for each contig.}
-\label{Fig:Tajimas-D-by-contig}
-\end{figure}
-%
+The Tajima's D estimates also differ significantly between the two subspecies (fig. \ref{Fig:Tajimas-D}). While the value for \textit{erythropus} is slightly positive (\Sexpr{signif(ery.TajimasD.global, 3)}), the value for \textit{parallelus} is clearly negative (\Sexpr{signif(par.TajimasD.global, 3)}). The latter would be consistent with a recent increase in population size. However -- as already explained above for the apparent right--skew of the global folded \gls{SFS} of \textit{parallelus} -- this difference in Tajima's D might also be caused at least in part by the greater enrichment of sites that are not affected by allele--drop--out in \textit{parallelus} versus \textit{erythropus} due to lower coverage and applying the same filtering thresholds. Again, investigating the effect of varying filtering thresholds for the \textit{parallelus} sample on the Tajima's D estimate could already show whether the difference in Tajima's D is indeed caused by differences in sequence coverage between the two subspecies. Interestingly, despite a slightly positive global Tajima's D, the distribution of Tajima's D per contig has a strong peak below zero in \textit{erythropus} (fig. \ref{Fig:Tajimas-D}). 
+%%
+%\begin{figure}[htb]
+%\centering
+%<< Tajimas-D-by-contig, out.width='.65\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+%@
+%\caption{Distribution of Tajima's D estimates for each contig.}
+%\label{Fig:Tajimas-D-by-contig}
+%\end{figure}
+%%
 
 
 
@@ -392,8 +394,8 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 % Bibliography
 %----------------------------
 
-\bibliographystyle{elsarticle-harv}
-\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
-
-\end{document}
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+%
+%\end{document}
 
