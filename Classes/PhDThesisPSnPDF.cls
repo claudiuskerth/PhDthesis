@@ -1125,7 +1125,7 @@ wish to left align your text}
 % Normal abstract in the thesis
 	\cleardoublepage
 	\setsinglecolumn
-	\chapter*{\centering \Large Abstract}
+	\chapter*{\vspace{-50pt} \centering \Large Abstract}
 	\thispagestyle{empty}
 \fi
 }
