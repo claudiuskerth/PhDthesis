@@ -1,12 +1,12 @@
-%\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
-%\usepackage{import}
+\usepackage{import}
 %
-%\input{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Preamble/preamble}
+\input{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Preamble/preamble}
 %
 %%******************************** Glossary *********************************************
-%\input{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Glossary/glossary}
+\input{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Glossary/glossary}
 
 %%%%%% -- KNITR SETUP -- %%%%%%%%%%
 <<setup_ch3, include=FALSE, cache=FALSE>>=
@@ -28,18 +28,18 @@ read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\begin{document}
+\begin{document}
 %
-%\tableofcontents
+\tableofcontents
 %
 %\listoffigures
 
 %\listof{cmd}{List of commands}
 
 %\todototoc
-%\listoftodos
+\listoftodos
 
-%\printglossaries
+\printglossaries
 
 
 
@@ -1495,7 +1495,7 @@ For the read pairs from digital digestion I used the same three commands (\ref{c
 % Bibliography
 %----------------------------
 
-%\bibliographystyle{elsarticle-harv}
-%\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+\bibliographystyle{elsarticle-harv}
+\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
 %
-%\end{document}
+\end{document}

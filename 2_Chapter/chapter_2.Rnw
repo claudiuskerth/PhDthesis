@@ -1,12 +1,12 @@
-%\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
-%\usepackage{import}
+\usepackage{import}
 
-%\input{../Preamble/preamble}
+\input{../Preamble/preamble}
 
 %******************************** Glossary *********************************************
-%\input{../Glossary/glossary}
+\input{../Glossary/glossary}
 
 %%%%%% -- KNITR SETUP -- %%%%%%%%%%
 <<setup_ch2, include=FALSE, cache=FALSE>>=
@@ -29,18 +29,18 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
 %************************************************************************************************
 
 
-%\begin{document}
+\begin{document}
 
-%\tableofcontents
+\tableofcontents
 %
 %\listoffigures
 %
 %\listof{cmd}{List of commands}
 %
 %%\todototoc
-%\listoftodos
+\listoftodos
 
-%\printglossaries
+\printglossaries
 
 
 % **************************** Define Graphics Path **************************
@@ -56,7 +56,7 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
     \graphicspath{ 
     {./Figs/Vector/}
     {./Figs/}
-%    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/2_Chapter/Figs/Raster/}
     }
 \fi
 
@@ -67,6 +67,13 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
 %
 %
 %
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.9\linewidth]{grasshopper}
+\caption{\textit{Chorthippus parallelus parallelus}. Male individual from Finland.}
+\label{Fig:grasshopper}
+\end{figure}
+
 
 %
 %\begin{comment}
@@ -161,8 +168,19 @@ The following study is an attempt to infer some details of the demographic histo
 %
 \subsection{Sampling and library preparation}
 
-Eighteen individuals each of the two distal populations of a transect through the eastern part of the Pyrenees Mountains (Col de la Quillane) were sampled by Amy Llewellyn and Roger Butlin in 2006 and preserved in ethanol until DNA extraction in 2009. A \gls{rad} library was prepared according to the protocol of \cite{Baird2008}. It was then sequenced on 4 lanes of an Illumina GAIIx with 51 base pair paired--end sequencing which yielded a total number of 52,872,783 reads.
+Individuals from each of the two distal populations of a transect through the eastern part of the Pyrenees Mountains (Col de la Quillane) were sampled by Jamie Hutchison and Roger Butlin in 2008 and preserved in ethanol until DNA extraction in 2009. A \gls{rad} library was prepared according to the protocol of \cite{Baird2008}. It was then sequenced on 4 lanes of an Illumina GAIIx with 51 base pair paired--end sequencing which yielded a total number of 52,872,783 reads.
 % -- Greixer in Spain and Aunat in France -- 
+%
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.9\linewidth]{map-1}
+\caption{Map of sampling locations. \textsc{jh34-AU}: \textit{parallelus}; \textsc{jh30-GR}: \textit{erythropus}. \textsc{sterility centre}: marks the centre of the cline of sterility as determined by \cite{Shuker2005}. 
+{\scriptsize The base map was created from two \gls{DEM} tiles  of the \href{http://www.cgiar-csi.org/data/srtm-90m-digital-elevation-database-v4-1}{SRTM 90m Digital Elevation Database v4.1} provided by CGIAR--CSI \citep{Jarvis2008}. Raster manipulations (projection, merging, clipping to polygon outline, color relief, hill shade and slope shade)  were carried out with utilities from the \href{www.gdal.org}{Geospatial Data Abstraction Library (GDAL)}. Raster overlays and map design was performed with \href{https://tilemill-project.github.io/tilemill/}{\texttt{TileMill}}, which renders maps using \href{http://mapnik.org/}{\texttt{mapnik}}. Final map image manipulations were performed with \href{https://inkscape.org/en/}{InkScape}.}
+}
+\label{Fig:sampling-sites-map}
+\end{figure}
+%
+
 %
 %
 \subsection{Read filtering}
@@ -240,7 +258,7 @@ In order to investigate the dependence of $F_{ST}$ on SNP ascertainment in one o
 %
 %
 I have calculated ML estimates of the \emph{folded} global \gls{SFS}, i. e. including all sites across contigs, for \textit{erythropus} and \textit{parallelus} separately with \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}. 
-I required 9 individuals to have read data in order to include a site into the estimation. Since I noticed a considerable amount of variability in the ML estimates of SFS from repeated runs of the programme \texttt{realSFS}, I turned off its accelerated \gls{EM} algorithm, extended the maximum number of \gls{EM} iterations to 50,000 and specified a \textit{tolerance} of 1e-06, which is the minimum difference in likelihood between two successive \gls{EM} iterations and therefore a stopping criterium. These modifications completely removed the variability in SFS estimates, but also greatly extended running time, particularly for the \gls{SFS} of \textit{parallelus}. The programme \texttt{realSFS} allows bootstrapping the \gls{SFS}, i. e. re--estimation of \gls{SFS} from nucleotide sites resampled with replacement. I derived the global estimates of the number of segregating sites and the average number of pairwise differences from the global folded \gls{SFS} according to equations 1.3 and 1.4 in \cite{Wakeley2009}. The estimates of global Tajima's D are based on these estimates and equation 2.17 in \cite{Gillespie2004}. The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimates for \textit{erythropus} are based on 1,638,468 sites. I have also estimated Tajima's D per--contig with the empirical Bayes method described in \cite{Korneliussen2014}. This uses the ML estimate of the global folded \gls{SFS} as prior for posterior sample allele frequency probabilities that are then summed across the sites in each contig to get the per--contig estimate of \gls{SFS}.
+I required 9 individuals to have read data in order to include a site into the estimation. Since I noticed a considerable amount of variability in the ML estimates of SFS from repeated runs of the programme \texttt{realSFS}, I turned off its accelerated \gls{EM} algorithm, extended the maximum number of \gls{EM} iterations to 50,000 and specified a \textit{tolerance} of 1e-06, which is the minimum difference in likelihood between two successive \gls{EM} iterations and therefore a stopping criterium. These modifications completely removed the variability in SFS estimates, but also greatly extended running time, particularly for the \gls{SFS} of \textit{parallelus}. The programme \texttt{realSFS} allows bootstrapping the \gls{SFS}, i. e. re--estimation of \gls{SFS} from nucleotide sites resampled with replacement.~\comment{The CI estimated from these bootstraps will be too narrow, since it ignores that sites in the same contig are not independent and the SFS estimated is therefore a \emph{composite likelihood} estimate.} I derived the global estimates of the number of segregating sites and the average number of pairwise differences from the global folded \gls{SFS} according to equations 1.3 and 1.4 in \cite{Wakeley2009}. The estimates of global Tajima's D are based on these estimates and equation 2.17 in \cite{Gillespie2004}.\todo{include those equations verbatim here} ~The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimates for \textit{erythropus} are based on 1,638,468 sites. I have also estimated Tajima's D per--contig with the empirical Bayes method described in \cite{Korneliussen2014}. This uses the ML estimate of the global folded \gls{SFS} as prior for posterior sample allele frequency probabilities that are then summed across the sites in each contig to get the per--contig estimate of \gls{SFS}.
 
 %
 %
@@ -276,7 +294,7 @@ I estimated posterior expectations of $F_{ST}$ from 1.6 million sites across 32,
 \label{Fig:global-fst}
 \end{figure}
 %
-The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} with a bootstrap 95\% \gls{CI} between \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)} (see fig. \ref{Fig:global-fst}). Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome, not the variance due to sampling individuals from the population. The latter could be estimated by bootstrapping individuals from each population. Also note that the null distribution of global $F_{ST}$, estimated by randomly permuting individuals into two populations, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}.
+The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} with a bootstrap 95\% \gls{CI} between \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)} (see fig. \ref{Fig:global-fst}). Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \cite{Weir1996}, p. 161), not the variance due to sampling individuals from the population. The latter could be estimated by bootstrapping individuals from each population. Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, two RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the null distribution of global $F_{ST}$, estimated by randomly permuting individuals into two populations, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}.
 
 Figure \ref{Fig:fst-by-ascert-class} shows the dependence of average $F_{ST}$ on the minor allele frequency when only sites are included that are polymorphic in the ascertainment population. Not surprisingly, SNP ascertainment in one of the two populations lowers average $F_{ST}$ estimates since it also excludes highly differentiated sites where the ascertainment sample is fixed for one allele.
 %
@@ -364,7 +382,7 @@ The number of segregating sites ($S$) and the average number of pairwise differe
 \item the colonisation of Britain by \textit{C. p. parallelus} before the flooding of the English Channel after the last Ice Age \citep{Cooper1995},
 \item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the dispersal rate of this species of 30 m/generation \citep{Nichols1994}. 
 \end{itemize}
-The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence variation that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite[table 3--3]{Llewellyn2008} found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.
+The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence variation that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.
 %
 \begin{figure}[htb]
 \centering
@@ -394,8 +412,8 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 % Bibliography
 %----------------------------
 
-%\bibliographystyle{elsarticle-harv}
-%\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+\bibliographystyle{elsarticle-harv}
+\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
 %
-%\end{document}
+\end{document}
 

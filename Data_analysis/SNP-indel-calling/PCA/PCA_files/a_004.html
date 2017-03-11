@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="pandoc">
+
+<meta name="author" content="Claudius">
+
+<meta name="date" content="2016-12-12">
+
+<title>PCA</title>
+
+<script src="a_data_004/jquery.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="a_data_004/cosmo.css" rel="stylesheet">
+<script src="a_data_004/bootstrap.js"></script>
+<script src="a_data_004/html5shiv.js"></script>
+<script src="a_data_004/respond.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet" href="a_data_004/default.css" type="text/css">
+<script src="a_data_004/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<script type="text/javascript"></script></head>
+
+<body>
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">PCA</h1>
+<h4 class="author"><em>Claudius</em></h4>
+<h4 class="date"><em>12/12/2016</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#pca-with-known-minor-allele-and-snp-calling">PCA with known minor allele and SNP calling</a></li>
+<li><a href="#pca-with-unknown-minor-allele-and-snp-calling">PCA with unknown minor allele and SNP calling</a></li>
+<li><a href="#pca-with-unknown-minor-allele-and-without-snp-calling">PCA with unknown minor allele and without SNP calling</a></li>
+<li><a href="#ery-and-par-separately">ERY and PAR separately</a></li>
+</ul>
+</div>
+
+<div id="pca-with-known-minor-allele-and-snp-calling" class="section level2">
+<h2>PCA with known minor allele and SNP calling</h2>
+<p>SNP calling has identified 73,841 variable sites.</p>
+<pre class="r"><code class="r"><span class="comment">#list.files(getwd(), ".*covar")</span>
+<span class="identifier">covar</span> <span class="operator">=</span> <span class="identifier">as.matrix</span><span class="paren">(</span><span class="identifier">read.table</span><span class="paren">(</span><span class="string">"ParEry.covar"</span>, <span class="identifier">header</span><span class="operator">=</span><span class="literal">F</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<pre class="r"><code class="r"><span class="comment"># getting filenames for labelling:</span>
+<span class="identifier">filenames</span> <span class="operator">=</span> <span class="identifier">scan</span><span class="paren">(</span><span class="string">"/data3/claudius/Big_Data/ANGSD/slim.bamfile.list"</span>, <span class="identifier">what</span><span class="operator">=</span><span class="string">"character"</span><span class="paren">)</span>
+<span class="paren">(</span><span class="identifier">Names</span> <span class="operator">=</span> <span class="identifier">gsub</span><span class="paren">(</span><span class="string">"Data/"</span>, <span class="string">""</span>, <span class="identifier">gsub</span><span class="paren">(</span><span class="string">".sorted.*"</span>, <span class="string">""</span>, <span class="identifier">filenames</span><span class="paren">)</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<pre><code>##  [1] "ery_30-10" "ery_30-11" "ery_30-12" "ery_30-13" "ery_30-14"
+##  [6] "ery_30-15" "ery_30-16" "ery_30-17" "ery_30-18" "ery_30-1" 
+## [11] "ery_30-2"  "ery_30-3"  "ery_30-4"  "ery_30-5"  "ery_30-6" 
+## [16] "ery_30-7"  "ery_30-8"  "ery_30-9"  "par_34-10" "par_34-11"
+## [21] "par_34-12" "par_34-13" "par_34-14" "par_34-15" "par_34-16"
+## [26] "par_34-17" "par_34-18" "par_34-1"  "par_34-2"  "par_34-3" 
+## [31] "par_34-4"  "par_34-5"  "par_34-6"  "par_34-7"  "par_34-8" 
+## [36] "par_34-9"</code></pre>
+<pre class="r"><code class="r"><span class="comment"># PCA using 'prcomp' function</span>
+<span class="identifier">pca</span> <span class="operator">=</span> <span class="identifier">prcomp</span><span class="paren">(</span><span class="identifier">covar</span><span class="paren">)</span>
+<span class="comment">#summary(pca)</span>
+<span class="comment">#names(pca)</span>
+<span class="comment">#pca$sdev</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/unnamed-chunk-6-1.png" title="" alt="" width="672"></p>
+<pre class="r"><code class="r"><span class="identifier">pc1_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">1</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span>
+<span class="identifier">pc2_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span></code></pre>
+<pre class="r"><code class="r"><span class="identifier">par</span><span class="paren">(</span><span class="identifier">mfrow</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">1</span><span class="paren">)</span><span class="paren">)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, <span class="identifier">xlim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="operator">-</span><span class="number">0.3</span>, <span class="number">0.3</span><span class="paren">)</span>, 
+     <span class="identifier">xlab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC1 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc1_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">ylab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC2 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc2_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="identifier">rep</span><span class="paren">(</span><span class="string">"red"</span>, <span class="number">18</span><span class="paren">)</span>, <span class="identifier">rep</span><span class="paren">(</span><span class="string">"green"</span>, <span class="number">18</span><span class="paren">)</span><span class="paren">)</span>, <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+     <span class="identifier">main</span><span class="operator">=</span><span class="string">"73,841 variable sites\n known minor allele + SNP calling"</span>
+    <span class="paren">)</span>
+<span class="identifier">legend</span><span class="paren">(</span><span class="string">"topleft"</span>, 
+       <span class="identifier">legend</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"ERY"</span>, <span class="string">"PAR"</span><span class="paren">)</span>,
+       <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+       <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"red"</span>, <span class="string">"green"</span><span class="paren">)</span>,
+       <span class="identifier">bty</span><span class="operator">=</span><span class="string">"n"</span>
+       <span class="paren">)</span>
+<span class="comment"># get indeces for outliers:</span>
+<span class="identifier">mu</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc1_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc1_sd)]</span>
+<span class="comment">#Names[which(pc1_sd &lt;= sort(pc1_sd)[2])] # two closest closest inds on PC1</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc1_sd</span> <span class="operator">&lt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc1_sd</span><span class="paren">)</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="paren">)</span> 
+<span class="identifier">mu2</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc2_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu2</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc2_sd, decreasing=TRUE)]</span>
+<span class="comment">#Names[which(pc2_sd &gt;= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">c</span><span class="paren">(</span><span class="identifier">index</span>, <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc2_sd</span> <span class="operator">&gt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc2_sd</span>, <span class="identifier">dec</span><span class="operator">=</span><span class="literal">TRUE</span><span class="paren">)</span><span class="paren">[</span><span class="number">3</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>
+<span class="comment"># label outliers:</span>
+<span class="identifier">text</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">labels</span><span class="operator">=</span><span class="identifier">Names</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">cex</span><span class="operator">=</span><span class="number">0.7</span>, <span class="identifier">adj</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">0</span>,<span class="number">0</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/knownMinor_SNPcalling-1.png" title="" alt="" width="672"></p>
+</div>
+<div id="pca-with-unknown-minor-allele-and-snp-calling" class="section level2">
+<h2>PCA with unknown minor allele and SNP calling</h2>
+<p>SNP calling has identified 68,590 variable sites.</p>
+<pre class="r"><code class="r"><span class="comment">#list.files(getwd())</span>
+<span class="identifier">covar</span> <span class="operator">=</span> <span class="identifier">as.matrix</span><span class="paren">(</span><span class="identifier">read.table</span><span class="paren">(</span><span class="string">"withSNPcall_unknownMinor/EryPar.covar"</span>, <span class="identifier">header</span><span class="operator">=</span><span class="literal">F</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<pre class="r"><code class="r"><span class="comment"># PCA using 'prcomp' function</span>
+<span class="identifier">pca</span> <span class="operator">=</span> <span class="identifier">prcomp</span><span class="paren">(</span><span class="identifier">covar</span><span class="paren">)</span>
+<span class="comment">#summary(pca)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/unnamed-chunk-8-1.png" title="" alt="" width="672"></p>
+<pre class="r"><code class="r"><span class="identifier">pc1_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">1</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span>
+<span class="identifier">pc2_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span>
+<span class="identifier">pc3_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">3</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span></code></pre>
+<pre class="r"><code class="r"><span class="identifier">par</span><span class="paren">(</span><span class="identifier">mfrow</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">1</span><span class="paren">)</span><span class="paren">)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, <span class="identifier">xlim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="operator">-</span><span class="number">0.3</span>, <span class="number">0.3</span><span class="paren">)</span>, 
+     <span class="identifier">xlab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC1 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc1_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">ylab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC2 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc2_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="identifier">rep</span><span class="paren">(</span><span class="string">"red"</span>, <span class="number">18</span><span class="paren">)</span>, <span class="identifier">rep</span><span class="paren">(</span><span class="string">"green"</span>, <span class="number">18</span><span class="paren">)</span><span class="paren">)</span>, <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+     <span class="identifier">main</span><span class="operator">=</span><span class="string">"68,590 variable sites\n unknown minor allele + SNP calling"</span>
+    <span class="paren">)</span>
+<span class="identifier">legend</span><span class="paren">(</span><span class="string">"topleft"</span>, 
+       <span class="identifier">legend</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"ERY"</span>, <span class="string">"PAR"</span><span class="paren">)</span>,
+       <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+       <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"red"</span>, <span class="string">"green"</span><span class="paren">)</span>,
+       <span class="identifier">bty</span><span class="operator">=</span><span class="string">"n"</span>
+       <span class="paren">)</span>
+<span class="comment"># get indeces for outliers:</span>
+<span class="identifier">mu</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc1_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc1_sd)]</span>
+<span class="comment">#Names[which(pc1_sd &lt;= sort(pc1_sd)[2])] # two closest closest inds on PC1</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc1_sd</span> <span class="operator">&lt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc1_sd</span><span class="paren">)</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="paren">)</span> 
+<span class="identifier">mu2</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc2_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu2</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc2_sd, decreasing=TRUE)]</span>
+<span class="comment">#Names[which(pc2_sd &gt;= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">c</span><span class="paren">(</span><span class="identifier">index</span>, <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc2_sd</span> <span class="operator">&gt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc2_sd</span>, <span class="identifier">dec</span><span class="operator">=</span><span class="literal">TRUE</span><span class="paren">)</span><span class="paren">[</span><span class="number">4</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>
+<span class="comment"># label outliers:</span>
+<span class="identifier">text</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">labels</span><span class="operator">=</span><span class="identifier">Names</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">cex</span><span class="operator">=</span><span class="number">0.7</span>, <span class="identifier">adj</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">0</span>,<span class="number">0</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/UNknownMinor_SNPcalling-1.png" title="" alt="" width="672"></p>
+<p>When taking the uncertainty in the minor allele into account, the 2nd
+ principal component picks up different variation in the covariance 
+matrix than when using the ML minor allele (above PCA). I wonder whether
+ this difference is significant.</p>
+<p>Let’s plot PC1 versus PC3 instead:</p>
+<pre class="r"><code class="r"><span class="identifier">par</span><span class="paren">(</span><span class="identifier">mfrow</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">1</span><span class="paren">)</span><span class="paren">)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">3</span><span class="paren">]</span>, <span class="identifier">xlim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="operator">-</span><span class="number">0.3</span>, <span class="number">0.3</span><span class="paren">)</span>, 
+     <span class="identifier">xlab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC1 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc1_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">ylab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC3 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc3_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="identifier">rep</span><span class="paren">(</span><span class="string">"red"</span>, <span class="number">18</span><span class="paren">)</span>, <span class="identifier">rep</span><span class="paren">(</span><span class="string">"green"</span>, <span class="number">18</span><span class="paren">)</span><span class="paren">)</span>, <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+     <span class="identifier">main</span><span class="operator">=</span><span class="string">"68,590 variable sites\n unknown minor allele + SNP calling"</span>
+    <span class="paren">)</span>
+<span class="identifier">legend</span><span class="paren">(</span><span class="string">"topleft"</span>, 
+       <span class="identifier">legend</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"ERY"</span>, <span class="string">"PAR"</span><span class="paren">)</span>,
+       <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+       <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"red"</span>, <span class="string">"green"</span><span class="paren">)</span>,
+       <span class="identifier">bty</span><span class="operator">=</span><span class="string">"n"</span>
+       <span class="paren">)</span>
+<span class="comment"># get indeces for outliers:</span>
+<span class="identifier">mu</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc1_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc1_sd)]</span>
+<span class="comment">#Names[which(pc1_sd &lt;= sort(pc1_sd)[2])] # two closest closest inds on PC1</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc1_sd</span> <span class="operator">&lt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc1_sd</span><span class="paren">)</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="paren">)</span> 
+<span class="identifier">mu2</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">3</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc3_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">3</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu2</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc2_sd, decreasing=TRUE)]</span>
+<span class="comment">#Names[which(pc2_sd &gt;= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">c</span><span class="paren">(</span><span class="identifier">index</span>, <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc3_sd</span> <span class="operator">&gt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc3_sd</span>, <span class="identifier">dec</span><span class="operator">=</span><span class="literal">TRUE</span><span class="paren">)</span><span class="paren">[</span><span class="number">4</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>
+<span class="comment"># label outliers:</span>
+<span class="identifier">text</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">3</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">labels</span><span class="operator">=</span><span class="identifier">Names</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">cex</span><span class="operator">=</span><span class="number">0.7</span>, <span class="identifier">adj</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">0</span>,<span class="number">0</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/UNknownMinor_SNPcalling-PC3-1.png" title="" alt="" width="672"></p>
+<p>So the PC3 picks up the variation that is picked up by PC2 in the other two PCA’s.</p>
+</div>
+<div id="pca-with-unknown-minor-allele-and-without-snp-calling" class="section level2">
+<h2>PCA with unknown minor allele and without SNP calling</h2>
+<p>This covariance matrix was created from 1,730,389 sites while 
+weighting each site by its probability of being variable (eq. 20 in 
+Fumagalli2013).</p>
+<pre class="r"><code class="r"><span class="comment">#list.files(getwd())</span>
+<span class="identifier">covar</span> <span class="operator">=</span> <span class="identifier">as.matrix</span><span class="paren">(</span><span class="identifier">read.table</span><span class="paren">(</span><span class="string">"noSNPcall_unknownMinor/EryPar.covar"</span>, <span class="identifier">header</span><span class="operator">=</span><span class="literal">F</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<pre class="r"><code class="r"><span class="comment"># PCA using 'prcomp' function</span>
+<span class="identifier">pca</span> <span class="operator">=</span> <span class="identifier">prcomp</span><span class="paren">(</span><span class="identifier">covar</span><span class="paren">)</span>
+<span class="comment">#summary(pca)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/unnamed-chunk-11-1.png" title="" alt="" width="672"></p>
+<pre class="r"><code class="r"><span class="identifier">pc1_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">1</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span>
+<span class="identifier">pc2_prop_var</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span><span class="operator">/</span><span class="identifier">sum</span><span class="paren">(</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">sdev</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span><span class="paren">)</span></code></pre>
+<pre class="r"><code class="r"><span class="identifier">par</span><span class="paren">(</span><span class="identifier">mfrow</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">1</span><span class="paren">)</span><span class="paren">)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, <span class="identifier">xlim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="operator">-</span><span class="number">0.3</span>, <span class="number">0.3</span><span class="paren">)</span>, 
+     <span class="identifier">xlab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC1 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc1_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">ylab</span><span class="operator">=</span><span class="identifier">paste</span><span class="paren">(</span><span class="string">"PC2 ("</span>, <span class="identifier">signif</span><span class="paren">(</span><span class="identifier">pc2_prop_var</span>, <span class="identifier">digits</span><span class="operator">=</span><span class="number">2</span><span class="paren">)</span><span class="operator">*</span><span class="number">100</span>, <span class="string">"%)"</span>, <span class="identifier">sep</span><span class="operator">=</span><span class="string">""</span><span class="paren">)</span>, 
+     <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="identifier">rep</span><span class="paren">(</span><span class="string">"red"</span>, <span class="number">18</span><span class="paren">)</span>, <span class="identifier">rep</span><span class="paren">(</span><span class="string">"green"</span>, <span class="number">18</span><span class="paren">)</span><span class="paren">)</span>, <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+     <span class="identifier">main</span><span class="operator">=</span><span class="string">"1,730,389 sites\n unknown minor allele + weighting by p(var)"</span>
+    <span class="paren">)</span>
+<span class="identifier">legend</span><span class="paren">(</span><span class="string">"topleft"</span>, 
+       <span class="identifier">legend</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"ERY"</span>, <span class="string">"PAR"</span><span class="paren">)</span>,
+       <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>,
+       <span class="identifier">col</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="string">"red"</span>, <span class="string">"green"</span><span class="paren">)</span>,
+       <span class="identifier">bty</span><span class="operator">=</span><span class="string">"n"</span>
+       <span class="paren">)</span>
+<span class="comment"># get indeces for outliers:</span>
+<span class="identifier">mu</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc1_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc1_sd)]</span>
+<span class="comment">#Names[which(pc1_sd &lt;= sort(pc1_sd)[2])] # two closest closest inds on PC1</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc1_sd</span> <span class="operator">&lt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc1_sd</span><span class="paren">)</span><span class="paren">[</span><span class="number">2</span><span class="paren">]</span><span class="paren">)</span> 
+<span class="identifier">mu2</span> <span class="operator">=</span> <span class="identifier">mean</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span>
+<span class="identifier">pc2_sd</span> <span class="operator">=</span> <span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span> <span class="operator">-</span> <span class="identifier">mu2</span><span class="paren">)</span><span class="operator">^</span><span class="number">2</span>
+<span class="comment">#Names[order(pc2_sd, decreasing=TRUE)]</span>
+<span class="comment">#Names[which(pc2_sd &gt;= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2</span>
+<span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">c</span><span class="paren">(</span><span class="identifier">index</span>, <span class="identifier">which</span><span class="paren">(</span><span class="identifier">pc2_sd</span> <span class="operator">&gt;=</span> <span class="identifier">sort</span><span class="paren">(</span><span class="identifier">pc2_sd</span>, <span class="identifier">dec</span><span class="operator">=</span><span class="literal">TRUE</span><span class="paren">)</span><span class="paren">[</span><span class="number">3</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>
+<span class="comment"># label outliers:</span>
+<span class="identifier">text</span><span class="paren">(</span><span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">pca</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">labels</span><span class="operator">=</span><span class="identifier">Names</span><span class="paren">[</span><span class="identifier">index</span><span class="paren">]</span>, <span class="identifier">cex</span><span class="operator">=</span><span class="number">0.7</span>, <span class="identifier">adj</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">0</span>,<span class="number">0</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/UNknownMinor_NOsnpCalling-1.png" title="" alt="" width="672"></p>
+<p>The PCA plot is just flipped on the PC2 axis compared to the PCA with
+ known minor allele and SNP calling. The signs of eigen vectors are 
+arbitrary. So this flipping bears no meaning. Otherwise, this PCA looks 
+identical to the first, with known minor allele and SNP calling, but 
+different PC2 compared to the second PCA, with unknown minor allele and 
+SNP calling.</p>
+</div>
+<div id="ery-and-par-separately" class="section level2">
+<h2>ERY and PAR separately</h2>
+<pre class="r"><code class="r"><span class="identifier">par</span><span class="paren">(</span><span class="identifier">mfrow</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">2</span><span class="paren">)</span><span class="paren">)</span>
+<span class="comment">#</span>
+<span class="identifier">pca_ery</span> <span class="operator">=</span> <span class="identifier">prcomp</span><span class="paren">(</span><span class="identifier">read.table</span><span class="paren">(</span><span class="string">"just_ERY/Ery.covar"</span>, <span class="identifier">header</span><span class="operator">=</span><span class="literal">F</span><span class="paren">)</span><span class="paren">)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, 
+     <span class="identifier">xlim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1.2</span><span class="operator">*</span><span class="identifier">min</span><span class="paren">(</span><span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span>, <span class="number">1.2</span><span class="operator">*</span><span class="identifier">max</span><span class="paren">(</span><span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>, 
+     <span class="identifier">ylim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1.2</span><span class="operator">*</span><span class="identifier">min</span><span class="paren">(</span><span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span>, <span class="number">1.2</span><span class="operator">*</span><span class="identifier">max</span><span class="paren">(</span><span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>, 
+     <span class="identifier">xlab</span><span class="operator">=</span><span class="string">"PC1"</span>, <span class="identifier">ylab</span><span class="operator">=</span><span class="string">"PC2"</span>, <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>, <span class="identifier">col</span><span class="operator">=</span><span class="string">"red"</span>, <span class="identifier">main</span><span class="operator">=</span><span class="string">"ERY"</span><span class="paren">)</span>
+<span class="identifier">text</span><span class="paren">(</span><span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca_ery</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, <span class="identifier">labels</span><span class="operator">=</span><span class="identifier">Names</span><span class="paren">[</span><span class="number">1</span><span class="operator">:</span><span class="number">18</span><span class="paren">]</span>, <span class="identifier">cex</span><span class="operator">=</span><span class="number">.6</span>, <span class="identifier">adj</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">1</span><span class="paren">)</span><span class="paren">)</span>
+<span class="comment">#</span>
+<span class="identifier">pca_par</span> <span class="operator">=</span> <span class="identifier">prcomp</span><span class="paren">(</span><span class="identifier">read.table</span><span class="paren">(</span><span class="string">"just_PAR/Par.covar"</span>, <span class="identifier">header</span><span class="operator">=</span><span class="literal">F</span><span class="paren">)</span><span class="paren">)</span>
+<span class="identifier">plot</span><span class="paren">(</span><span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, 
+     <span class="identifier">xlim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1.2</span><span class="operator">*</span><span class="identifier">min</span><span class="paren">(</span><span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span>, <span class="number">1.2</span><span class="operator">*</span><span class="identifier">max</span><span class="paren">(</span><span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>, 
+     <span class="identifier">ylim</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1.2</span><span class="operator">*</span><span class="identifier">min</span><span class="paren">(</span><span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span>, <span class="number">1.2</span><span class="operator">*</span><span class="identifier">max</span><span class="paren">(</span><span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span><span class="paren">)</span><span class="paren">)</span>,
+     <span class="identifier">xlab</span><span class="operator">=</span><span class="string">"PC1"</span>, <span class="identifier">ylab</span><span class="operator">=</span><span class="string">"PC2"</span>, <span class="identifier">pch</span><span class="operator">=</span><span class="number">16</span>, <span class="identifier">col</span><span class="operator">=</span><span class="string">"green"</span>, <span class="identifier">main</span><span class="operator">=</span><span class="string">"PAR"</span><span class="paren">)</span>
+<span class="identifier">text</span><span class="paren">(</span><span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">1</span><span class="paren">]</span>, <span class="identifier">pca_par</span><span class="operator">$</span><span class="identifier">rot</span><span class="paren">[</span>,<span class="number">2</span><span class="paren">]</span>, <span class="identifier">labels</span><span class="operator">=</span><span class="identifier">Names</span><span class="paren">[</span><span class="number">19</span><span class="operator">:</span><span class="number">36</span><span class="paren">]</span>, <span class="identifier">cex</span><span class="operator">=</span><span class="number">.6</span>, <span class="identifier">adj</span><span class="operator">=</span><span class="identifier">c</span><span class="paren">(</span><span class="number">1</span>,<span class="number">1</span><span class="paren">)</span><span class="paren">)</span></code></pre>
+<p><img src="a_data_004/per-pop-PCA-1.png" title="" alt="" width="672"></p>
+<p>The individuals par_34-5, par_34-14 and par_34-7 are also outliers in
+ the within population PCA. So I am fairly certain I got the labeling 
+right.</p>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+
+
+</body></html>

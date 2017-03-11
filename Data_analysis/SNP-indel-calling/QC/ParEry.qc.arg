@@ -1,0 +1,127 @@
+	-> Command: 
+angsd -P 4 -b slim.bamfile.list -ref Big_Data_ref.fa -out Results/ParEry.qc -only_proper_pairs 0 -sites ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.sites -minQ 0 -minMapQ 5 -doQsDist 1 -doDepth 1 -doCounts 1 -maxDepth 1000 -rf ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.rf 
+	-> angsd version: 0.915-5-ge6e63e5 (htslib: 1.3.2-135-g50db54b) build(Nov 16 2016 21:08:45)
+	-> Wed Nov 23 09:02:22 2016
+----------------
+multiReader.cpp:
+	-nLines	50	(Number of lines to read)
+	-beagle	(null)	(Beagle Filename (can be .gz))
+	-vcf-GL	(null)	(vcf Filename (can be .gz))
+	-vcf-GP	(null)	(vcf Filename (can be .gz))
+	-glf	(null)	(glf Filename (can be .gz))
+	-pileup	(null)	(pileup Filename (can be .gz))
+	-intName 1	(Assume First column is chr_position)
+	-isSim	1	(Simulated data assumes ancestral is A)
+	-nInd	0		(Number of individuals)
+	-minQ	0	(minimum base quality; only used in pileupreader)
+	-fai	(null)	(fai file)
+	-minQ	0	(minimum base quality; only used in pileupreader)
+----------------
+multiReader.cpp:
+---------------
+parseArgs_bambi.cpp: bam reader:
+	-bam/-b		slim.bamfile.list	(list of BAM/CRAM files)
+	-i		slim.bamfile.list	(Single BAM/CRAM file)
+	-r		(null)	Supply a single region in commandline (see examples below)
+	-rf		ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.rf	Supply multiple regions in a file (see examples below)
+	-remove_bads	1	Discard 'bad' reads, (flag >=256) 
+	-uniqueOnly	0	Discards reads that doesn't map uniquely
+	-show		0	Mimic 'samtools mpileup' also supply -ref fasta for printing reference column
+	-minMapQ	5	Discard reads with mapping quality below
+	-minQ		0	Discard bases with base quality below
+	-trim		0	Number of based to discard at both ends of the reads
+	-trim		0	Number of based to discard at 5' ends of the reads
+	-trim		0	Number of based to discard at 3' ends of the reads
+	-only_proper_pairs 0	Only use reads where the mate could be mapped
+	-C		0	adjust mapQ for excessive mismatches (as SAMtools), supply -ref
+	-baq		0	adjust qscores around indels (as SAMtools), supply -ref
+	-checkBamHeaders 1	Exit if difference in BAM headers
+	-doCheck	1	Keep going even if datafile is not suffixed with .bam/.cram
+	-downSample	0.000000	Downsample to the fraction of original data
+	-nReads		50	Number of reads to pop from each BAM/CRAMs
+	-minChunkSize	250	Minimum size of chunk sent to analyses
+
+Examples for region specification:
+		chr:		Use entire chromosome: chr
+		chr:start-	Use region from start to end of chr
+		chr:-stop	Use region from beginning of chromosome: chr to stop
+		chr:start-stop	Use region from start to stop from chromosome: chr
+		chr:site	Use single site on chromosome: chr
+--------------------
+[shared.cpp:init()]
+	-nThreads	4	Number of threads to use
+	-nQueueSize	-1	Maximum number of queud elements
+	-howOften	100	How often should the program show progress
+--------------
+abcFilter.cpp:
+	-sites		ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.sites	(File containing sites to keep (chr pos))
+	-sites		ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.sites	(File containing sites to keep (chr regStart regStop))
+	-sites		ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.sites	(File containing sites to keep (chr pos major minor))
+	-sites		ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.sites	(File containing sites to keep (chr pos major minor af ac an))
+	-minInd		0	Only use site if atleast minInd of samples has data
+	-capDepth	-1	Only use the first capDepth bases
+	-strict	1	 (experimental)
+	1) You can force major/minor by -doMajorMinor 3
+	And make sure file contains 4 columns (chr tab pos tab major tab minor)
+---------------
+abcCounts.cpp:
+	-doCounts	1	(Count the number A,C,G,T. All sites, All samples)
+	-minQfile	(null)	 file with individual quality score thresholds)
+	-setMaxDepth	-1	(If total depth is larger then site is removed from analysis.
+				 -1 indicates no filtering)
+	-setMinDepth	-1	(If total depth is smaller then site is removed from analysis.
+				 -1 indicates no filtering)
+	-setMaxDepthInd	-1	(If depth persample is larger then individual is removed from analysis (from site).
+				 -1 indicates no filtering)
+	-setMinDepthInd	-1	(If depth persample is smaller then individual is removed from analysis (from site).
+				 -1 indicates no filtering)
+	-minInd		0	(Discard site if effective sample size below value.
+				 0 indicates no filtering)
+	-setMaxDiffObs	0	(Discard sites where we observe to many different alleles.
+				 0 indicates no filtering)
+Filedumping:
+	-doDepth	1	(dump distribution of seqdepth)	.depthSample,.depthGlobal
+	  -maxDepth	1000	(bin together high depths)
+	-doQsDist	1	(dump distribution of qscores)	.qs
+	-minQ	0	(minimumQ)
+	-dumpCounts	0
+	  1: total seqdepth for site	.pos.gz
+	  2: seqdepth persample		.pos.gz,.counts.gz
+	  3: A,C,G,T sum over samples	.pos.gz,.counts.gz
+	  4: A,C,G,T sum every sample	.pos.gz,.counts.gz
+	-iCounts	0 (Internal format for dumping binary single chrs,1=simple,2=advanced)
+	-qfile	(null)	(Only for -iCounts 2)
+	-ffile	(null)	(Only for -iCounts 2)
+---------------------
+abcGL.cpp:
+	-GL=0: 
+	1: SAMtools
+	2: GATK
+	3: SOAPsnp
+	4: SYK
+	5: phys
+	6: Super simple sample an allele type GL. (1.0,0.5,0.0)
+	-trim		0		(zero means no trimming)
+	-tmpdir		angsd_tmpdir/	(used by SOAPsnp)
+	-errors		(null)		(used by SYK)
+	-minInd		0		(0 indicates no filtering)
+
+Filedumping:
+	-doGlf	0
+	1: binary glf (10 log likes)	.glf.gz
+	2: beagle likelihood file	.beagle.gz
+	3: binary 3 times likelihood	.glf.gz
+	4: text version (10 log likes)	.glf.gz
+
+------------------------
+abcHetPlas.cpp:
+	-doHetPlas=0 (Perform hetplasmid analysis)
+	-maxIter=100	(Max number of iterations)
+	-minLRT=-1.000000
+		->"Results/ParEry.qc.arg"
+		->"Results/ParEry.qc.qs"
+		->"Results/ParEry.qc.depthSample"
+		->"Results/ParEry.qc.depthGlobal"
+
+	[ALL done] cpu-time used =  450.97 sec
+	[ALL done] walltime used =  1422.00 sec

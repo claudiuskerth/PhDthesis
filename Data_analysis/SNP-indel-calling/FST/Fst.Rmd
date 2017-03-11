@@ -1,0 +1,273 @@
+---
+title: "Fst"
+author: "Claudius"
+date: "17/12/2016"
+output: 
+  html_document:
+    self_contained: no
+    theme: cosmo
+    toc: yes
+bibliography: Literature.bib
+---
+
+```{r setup options, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(dev=c("png", "pdf"))
+setwd("/data3/claudius/Big_Data/ANGSD/FST")
+```
+
+# Unfolded SAF's
+
+I have created unfolded SAF's and used an unfolded 2D-SFS to calculate posterior expectations of per-site $F_{ST}$. `realSFS` allows the calculation from two different formula's. One according to Reynolds [@Fumagalli2013] and the other accroding to Hudson/Bhatia [@Bhatia2013].
+
+```{r, cache=TRUE}
+bhatia = read.delim("EryPar.Bhatia.fst.tab", header=F)
+names(bhatia) = c("contig", "pos", "Hb.minus.Hw", "Hb") 
+head(bhatia)
+str(bhatia)
+reynolds = read.delim("EryPar.Reynolds.fst.tab", header=F)
+names(reynolds) = c("contig", "pos", "a", "a.plus.b")
+head(reynolds)
+```
+
+
+## Global average $F_{ST}$ between ERY and PAR
+
+From the per-site denominators and numerators of the two formulas, which are reported in columns 3 and 4 respectively, I want to calculate the global average $F_{ST}$ by taking the "ratio of averages" as suggested by [@Bhatia2013] (instead of the average of per-site $F_{ST}$ estimates).
+
+```{r}
+( Fst.bhatia.global = sum(bhatia[["Hb.minus.Hw"]])/sum(bhatia[["Hb"]]) )
+nrow(bhatia)
+( Fst.reynolds.global = sum(reynolds$a)/sum(reynolds[["a.plus.b"]]) )
+nrow(reynolds)
+```
+
+Both formulas provide very similar estimates. The estimates are taken over `r nrow(bhatia)` sites. Reynolds $F_{ST}$ is weighting by sample size, which I think is an undesirable property (i. e. a change in sample size, that does not change the estimate of sample allele frequencies can change the estimate of $F_{ST}$).
+
+
+## $F_{ST}$ by contig
+
+In the following, I want to collapse the data set, by keeping only the average $F_{ST}$ per contig. 
+
+### Bhatia
+
+```{r}
+Fst.by.contig = aggregate(cbind(Hb.minus.Hw, Hb) ~ contig, 
+                          data=bhatia, 
+                          sum
+                            )
+Fst.by.contig = cbind(Fst.by.contig, FST=Fst.by.contig[,2]/Fst.by.contig[,3])
+head(Fst.by.contig)
+
+( sum(Fst.by.contig$Hb.minus.Hw)/sum(Fst.by.contig$Hb) )
+```
+
+I have now average $F_{ST}$ estimates for `rnow(Fst.by.contig)` contigs.
+
+
+```{r bhatia-fst-by-contig-hist-unfolded}
+hist(Fst.by.contig$FST, xlab=expression(paste("average Bhatia's ", F[ST])), 
+     main=bquote(paste(F[ST], "'s from ", .(nrow(Fst.by.contig)), " contigs")),
+     col="grey"
+     )
+# proportion of loci with Fst greater than average Fst:
+gtAvgFst = sum(Fst.by.contig$FST > Fst.bhatia.global)/length(Fst.by.contig$FST)
+```
+
+As expected, the majority of the contigs are very little differentiated between the two populations, but `r signif(gtAvgFst*100, digits=1)`% of loci have $F_{ST}$ greater than the global average.
+
+
+#### Bootstrap 
+
+It would be nice to get an estimate of uncertainty in the estimate of the global $F_{ST}$. There are two major sources of variation that influence this estimate:
+
+1. sampling variation of individuals from populations
+2. sampling variation of loci from the genome
+
+In order to approximate the first source of variation, I could bootstrap resample individuals, but that requires many re-stimations of SAF's which will be quite compute and data intensive. I am therefore only going to approximate the second source of variation for the moment.
+
+```{r bhatia-boot-global-Fst-unfolded, cache=TRUE}
+library(dplyr) # for 'sample_n'
+library(parallel) # for 'mclapply'
+#
+boot = function(x){
+  # creates bootstrap resamples of the rows in Fst.by.contig
+  # and returns the global Fst from that
+  rs = sample_n(Fst.by.contig, size=nrow(Fst.by.contig), replace=TRUE)
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+# serial:
+#boot.resample.Fst.by.contig = replicate(10000, boot())
+# parallel:
+startTime = proc.time()
+boot.resample.Fst.by.contig = vector("double", length=10000)
+boot.resample.Fst.by.contig= simplify2array(
+  mclapply(1:length(boot.resample.Fst.by.contig),
+          FUN=boot,
+          mc.cores=20
+           )
+  )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+#
+d = density(boot.resample.Fst.by.contig)
+plot(d,
+     xlab=expression(paste("global ", F[ST])),
+     main=bquote(paste(.(length(boot.resample.Fst.by.contig)), 
+                       " bootstrap resamples of ", .(nrow(Fst.by.contig)), 
+                       " contigs"
+                       )
+                 )
+     )
+points(c(Fst.bhatia.global), c(0), pch=3, cex=1.5)
+CI95 = quantile(boot.resample.Fst.by.contig, probs=c(.025, .975))
+lines(d$x[d$x>CI95[1] & d$x<CI95[2]], 
+      d$y[d$x>CI95[1] & d$x<CI95[2]], 
+      type="h",
+      col="grey")
+legend("topright", legend=c("real sample", "95% CI"), pch=c(3,15), pt.cex=1.5, col=c("black", "grey"), bty="n")
+```
+
+
+### Reynolds
+
+```{r}
+Fst.reynolds.by.contig = aggregate(cbind(a, a.plus.b) ~ contig, 
+                          data=reynolds, 
+                          sum
+                            )
+Fst.reynolds.by.contig = cbind(Fst.reynolds.by.contig, FST=Fst.reynolds.by.contig[,2]/Fst.reynolds.by.contig[,3])
+head(Fst.reynolds.by.contig)
+( sum(Fst.reynolds.by.contig$a)/sum(Fst.reynolds.by.contig$a.plus.b) )
+```
+
+
+```{r reynolds-fst-by-contig-hist-unfolded}
+hist(Fst.reynolds.by.contig$FST, xlab=expression(paste("Reynolds ", F[ST])), 
+     main=bquote(paste(F[ST], " over ", .(nrow(Fst.reynolds.by.contig)), " contigs")),
+     col="grey"
+     )
+
+```
+
+
+```{r}
+boxplot(data.frame(Bhatia=Fst.by.contig$FST, Reynolds=Fst.reynolds.by.contig$FST), outline=FALSE, ylab=expression(F[ST]))
+```
+
+Reynolds' formula produces slightly higher $F_{ST}$ values.
+
+
+## Folded SAF's
+
+I have also estimated *folded* SAF's and a folded 2D-SFS and estimated per-site $F_{ST}$ from that.
+
+```{r, cache=TRUE}
+bhatia = read.delim("EryPar.FOLDED.Bhatia.fst.tab", header=F)
+names(bhatia) = c("contig", "pos", "Hb.minus.Hw", "Hb") 
+reynolds = read.delim("EryPar.FOLDED.Reynolds.fst.tab", header=F)
+names(reynolds) = c("contig", "pos", "a", "a.plus.b")
+```
+
+```{r}
+( Fst.bhatia.global = sum(bhatia[["Hb.minus.Hw"]])/sum(bhatia[["Hb"]]) )
+nrow(bhatia)
+( Fst.reynolds.global = sum(reynolds$a)/sum(reynolds[["a.plus.b"]]) )
+nrow(reynolds)
+```
+
+```{r}
+Fst.by.contig = aggregate(cbind(Hb.minus.Hw, Hb) ~ contig, 
+                          data=bhatia, 
+                          sum
+                            )
+Fst.by.contig = cbind(Fst.by.contig, FST=Fst.by.contig[,2]/Fst.by.contig[,3])
+head(Fst.by.contig)
+
+( sum(Fst.by.contig$Hb.minus.Hw)/sum(Fst.by.contig$Hb) )
+```
+
+```{r bhatia-fst-by-contig-hist-FOLDED}
+hist(Fst.by.contig$FST, xlab=expression(paste("average Bhatia's ", F[ST])), 
+     main=bquote(paste(F[ST], "'s from ", .(nrow(Fst.by.contig)), " contigs")),
+     col="grey"
+     )
+# proportion of loci with Fst greater than average Fst:
+gtAvgFst = sum(Fst.by.contig$FST > Fst.bhatia.global)/length(Fst.by.contig$FST)
+```
+
+```{r bhatia-boot-global-Fst-FOLDED, cache=TRUE}
+library(dplyr) # for 'sample_n'
+library(parallel) # for 'mclapply'
+#
+boot = function(x){
+  # creates bootstrap resamples of the rows in Fst.by.contig
+  # and returns the global Fst from that
+  rs = sample_n(Fst.by.contig, size=nrow(Fst.by.contig), replace=TRUE)
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+# serial:
+#boot.resample.Fst.by.contig = replicate(10000, boot())
+# parallel:
+startTime = proc.time()
+boot.resample.Fst.by.contig = vector("double", length=10000)
+boot.resample.Fst.by.contig= simplify2array(
+  mclapply(1:length(boot.resample.Fst.by.contig),
+          FUN=boot,
+          mc.cores=20
+           )
+  )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+#
+d = density(boot.resample.Fst.by.contig)
+plot(d,
+     xlab=expression(paste("global ", F[ST])),
+     main=bquote(paste(.(length(boot.resample.Fst.by.contig)), 
+                       " bootstrap resamples of ", .(nrow(Fst.by.contig)), 
+                       " contigs"
+                       )
+                 )
+     )
+points(c(Fst.bhatia.global), c(0), pch=3, cex=1.5)
+CI95 = quantile(boot.resample.Fst.by.contig, probs=c(.025, .975))
+lines(d$x[d$x>CI95[1] & d$x<CI95[2]], 
+      d$y[d$x>CI95[1] & d$x<CI95[2]], 
+      type="h",
+      col="grey")
+legend("topright", legend=c("real sample", "95% CI"), pch=c(3,15), pt.cex=1.5, col=c("black", "grey"), bty="n")
+```
+
+### Reynolds
+
+```{r}
+Fst.reynolds.by.contig = aggregate(cbind(a, a.plus.b) ~ contig, 
+                          data=reynolds, 
+                          sum
+                            )
+Fst.reynolds.by.contig = cbind(Fst.reynolds.by.contig, FST=Fst.reynolds.by.contig[,2]/Fst.reynolds.by.contig[,3])
+head(Fst.reynolds.by.contig)
+( sum(Fst.reynolds.by.contig$a)/sum(Fst.reynolds.by.contig$a.plus.b) )
+```
+
+
+```{r reynolds-fst-by-contig-hist-FOLDED}
+hist(Fst.reynolds.by.contig$FST, xlab=expression(paste("Reynolds ", F[ST])), 
+     main=bquote(paste(F[ST], " over ", .(nrow(Fst.reynolds.by.contig)), " contigs")),
+     col="grey"
+     )
+```
+
+
+# References
+
+
+
+
+
+
+
