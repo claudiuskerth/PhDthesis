@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Claudius" />
+
+<meta name="date" content="2016-11-12" />
+
+<title>Quality Control</title>
+
+<script src="QC_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="QC_files/bootstrap-3.3.1/css/cosmo.min.css" rel="stylesheet" />
+<script src="QC_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="QC_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="QC_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="QC_files/highlight/default.css"
+      type="text/css" />
+<script src="QC_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Quality Control</h1>
+<h4 class="author"><em>Claudius</em></h4>
+<h4 class="date"><em>11/12/2016</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#global-coverage">Global coverage</a></li>
+<li><a href="#average-per-site-per-individual-coverage">Average per-site, per-individual coverage</a></li>
+<li><a href="#individual-coverage-distributions">Individual coverage distributions</a></li>
+</ul>
+</div>
+
+<div id="global-coverage" class="section level2">
+<h2>Global coverage</h2>
+<p>I have run <code>samtools depth -aa -b ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.bed -Q 5 Data/*sorted.slim.bam | bgzip &gt; ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.depths.gz</code>.</p>
+<pre class="r"><code># read.table can also read zipped files
+depth.table = read.table(&quot;ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.depths.gz&quot;, header=F)
+head(depth.table)</code></pre>
+<pre><code>##              V1 V2 V3 V4 V5 V6 V7 V8 V9 V10 V11 V12 V13 V14 V15 V16 V17
+## 1 Contig_368164  8  6  5  1  1  2  2  1   7   4   0   2   2   4   2   4
+## 2 Contig_368164  9  6  5  1  1  2  2  1   7   4   0   2   2   4   2   4
+## 3 Contig_368164 10  6  5  1  1  2  2  1   7   4   0   2   2   4   2   4
+## 4 Contig_368164 11  6  5  1  1  2  2  1   7   4   0   2   2   4   2   4
+## 5 Contig_368164 12  6  5  1  1  2  2  1   7   4   0   2   2   4   2   4
+## 6 Contig_368164 13  6  5  1  1  2  2  1   7   4   0   2   2   4   2   4
+##   V18 V19 V20 V21 V22 V23 V24 V25 V26 V27 V28 V29 V30 V31 V32 V33 V34 V35
+## 1   4   4   5   2   0   4   1   2   3   4   1   4   0   1   3   3   2   2
+## 2   4   4   5   2   0   4   1   2   3   4   1   4   0   1   3   3   2   2
+## 3   4   4   5   2   0   4   1   2   3   4   1   4   0   1   3   3   2   2
+## 4   4   4   5   2   0   4   1   2   3   4   1   4   0   1   3   3   2   2
+## 5   4   4   5   2   0   4   1   2   3   4   1   4   0   1   3   3   2   2
+## 6   4   4   5   2   0   4   1   2   3   4   1   4   0   1   3   3   2   2
+##   V36 V37 V38
+## 1   2   3   1
+## 2   2   3   1
+## 3   2   3   1
+## 4   2   3   1
+## 5   2   3   1
+## 6   2   3   1</code></pre>
+<pre class="r"><code># the first two columns are contig id and position, respectively.
+# The remaining 36 columns are per individual depths.</code></pre>
+<pre class="r"><code># get contingency table of the across individual per site depths
+global.depth = rowSums(depth.table[,3:38])
+# count the number of positions with total sample coverage &gt; 1000:
+sum(global.depth&gt;1000)</code></pre>
+<pre><code>## [1] 12693</code></pre>
+<pre class="r"><code># 12693</code></pre>
+<pre class="r"><code># tabulate returns a count is for coverage 1 till max coverage:
+global.depth.dist = tabulate(global.depth)
+# bin all counts &gt;=1000:
+ge.1000 = sum(global.depth.dist[1000:length(global.depth.dist)])
+global.depth.dist.capped = global.depth.dist[1:1000]
+global.depth.dist.capped[1000] = ge.1000
+names(global.depth.dist.capped) = as.character(1:1000)
+barplot(global.depth.dist.capped, xlab=&quot;across sample coverage&quot;, ylab=&quot;count&quot;, main=&quot;Global coverage distribution&quot;)</code></pre>
+<p><img src="QC_files/figure-html/unnamed-chunk-3-1.png" title="" alt="" width="672" /></p>
+<p>There are apparently more than 12k sites with more than 1000x coaverage. My excess coverage filtering only looked at the SE read coverage on each contig and removed contigs where the coverage from reads of one individual exceeded the 99th percentile of the coverage distribution from that same individual. The average coverage 99th percentile across the 36 individuals is ~100. So after this filtering a site can have coverage &gt;1000. I think, however, that I should not analyse contigs that have total coverage above 1000x. I think I should do another across sample excess coverage filtering based on the across sample coverage disribution and remove contigs with coverage &gt;99th percentile of that distribution.</p>
+<p>The 99th percentile of the global depth distribution is:</p>
+<pre class="r"><code>quantile(global.depth, probs=c(0.99))</code></pre>
+<pre><code>## 99% 
+## 914</code></pre>
+<p>I have removed all contigs with global coverage greater than the 99th percentile of the global coverage distribution. So let’s have a look at the new global coverage distribution.</p>
+<pre class="r"><code>depth.table = read.table(&quot;ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz&quot;, header=F)
+names(depth.table)[1:2] = c(&quot;contig_ID&quot;, &quot;position&quot;)
+filenames = scan(&quot;../slim.bamfile.list&quot;, what=&quot;character&quot;)
+names(depth.table)[3:ncol(depth.table)] = gsub(&quot;Data/&quot;, &quot;&quot;, gsub(&quot;.sorted.*&quot;, &quot;&quot;, filenames))
+names(depth.table)
+save(depth.table, file=&quot;depth.table.RData&quot;)</code></pre>
+<pre class="r"><code>load(&quot;depth.table.RData&quot;)
+# get contingency table of the across individual per site depths
+global.depth = rowSums(depth.table[,3:38])
+# tabulate returns a count is for each depth from 1 till max coverage:
+global.depth.dist = tabulate(global.depth)
+# and the new max depth is:
+length(global.depth.dist) # which is the gloabl Q99</code></pre>
+<pre><code>## [1] 914</code></pre>
+<pre class="r"><code>names(global.depth.dist) = as.character(1:length(global.depth.dist))
+# plot the new global per site coverage distribution
+barplot(global.depth.dist, xlab=&quot;across sample coverage&quot;, ylab=&quot;count&quot;, main=&quot;Global coverage distribution&quot;)</code></pre>
+<p><img src="QC_files/figure-html/unnamed-chunk-6-1.png" title="" alt="" width="672" /></p>
+</div>
+<div id="average-per-site-per-individual-coverage" class="section level2">
+<h2>Average per-site, per-individual coverage</h2>
+<pre class="r"><code>cov = sum(global.depth.dist*1:length(global.depth.dist))/(length(global.depth)*36)</code></pre>
+<p>So the average coverage per site and per individual for the filtered sites is 6.3.</p>
+</div>
+<div id="individual-coverage-distributions" class="section level2">
+<h2>Individual coverage distributions</h2>
+<pre class="r"><code>z = boxplot(depth.table[,3:38], outline=F, plot=F)
+bxp(z, outline=F, boxfill=c(rep(&quot;red&quot;, 18), rep(&quot;green&quot;, 18)), xaxt=&quot;n&quot;, ylab=&quot;coverage&quot;, main=&quot;Individual coverage distributions&quot;)
+axis(side=1, at=1:36, labels=names(depth.table)[3:38], cex.axis=.6, las=2)</code></pre>
+<p><img src="QC_files/figure-html/unnamed-chunk-8-1.png" title="" alt="" width="672" /></p>
+<p>With my <em>even depth</em> filtering I required at least 15 individuals with each at least 3x coverage by reads with mapQ&gt;5. So, there should not be any site with less than 45x total coverage.</p>
+<pre class="r"><code>global.depth.dist[1:45]</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 
+##  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 
+## 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 
+##  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0</code></pre>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

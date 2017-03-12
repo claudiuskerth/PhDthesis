@@ -1,0 +1,118 @@
+---
+title: "Quality Control"
+author: "Claudius"
+date: "11/12/2016"
+output: 
+  html_document:
+    self_contained: no
+    theme: cosmo
+    toc: yes
+---
+
+## Global coverage
+
+```{r setup options, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(dev=c("png", "pdf"))
+setwd("/data3/claudius/Big_Data/ANGSD/Quality_Control")
+```
+
+I have run `samtools depth -aa -b ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.bed -Q 5 Data/*sorted.slim.bam | bgzip > ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.depths.gz`.
+
+```{r, cache=TRUE}
+# read.table can also read zipped files
+depth.table = read.table("ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.depths.gz", header=F)
+head(depth.table)
+# the first two columns are contig id and position, respectively.
+# The remaining 36 columns are per individual depths.
+```
+
+```{r}
+# get contingency table of the across individual per site depths
+global.depth = rowSums(depth.table[,3:38])
+# count the number of positions with total sample coverage > 1000:
+sum(global.depth>1000)
+# 12693
+```
+
+```{r}
+# tabulate returns a count is for coverage 1 till max coverage:
+global.depth.dist = tabulate(global.depth)
+# bin all counts >=1000:
+ge.1000 = sum(global.depth.dist[1000:length(global.depth.dist)])
+global.depth.dist.capped = global.depth.dist[1:1000]
+global.depth.dist.capped[1000] = ge.1000
+names(global.depth.dist.capped) = as.character(1:1000)
+barplot(global.depth.dist.capped, xlab="across sample coverage", ylab="count", main="Global coverage distribution")
+```
+
+There are apparently more than 12k sites with more than 1000x coaverage. My excess coverage filtering only looked at the SE read coverage on each contig
+and removed contigs where the coverage from reads of one individual exceeded the 99th percentile of the coverage distribution from that same individual. The average coverage 99th percentile across the 36 individuals is ~100. So after this filtering a site can have coverage >1000. I think, however, that I should not analyse contigs that have total coverage above 1000x. I think I should do another across sample excess coverage filtering based on the across sample coverage disribution and remove contigs with coverage >99th percentile of that distribution.
+
+The 99th percentile of the global depth distribution is:
+
+```{r}
+quantile(global.depth, probs=c(0.99))
+```
+
+
+I have removed all contigs with global coverage greater than the 99th percentile of the global coverage distribution. So let's have a look at the new global coverage distribution.
+
+
+```{r, cache=TRUE, eval=FALSE}
+depth.table = read.table("ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz", header=F)
+names(depth.table)[1:2] = c("contig_ID", "position")
+filenames = scan("../slim.bamfile.list", what="character")
+names(depth.table)[3:ncol(depth.table)] = gsub("Data/", "", gsub(".sorted.*", "", filenames))
+names(depth.table)
+save(depth.table, file="depth.table.RData")
+```
+
+```{r}
+load("depth.table.RData")
+# get contingency table of the across individual per site depths
+global.depth = rowSums(depth.table[,3:38])
+# tabulate returns a count is for each depth from 1 till max coverage:
+global.depth.dist = tabulate(global.depth)
+# and the new max depth is:
+length(global.depth.dist) # which is the gloabl Q99
+names(global.depth.dist) = as.character(1:length(global.depth.dist))
+# plot the new global per site coverage distribution
+barplot(global.depth.dist, xlab="across sample coverage", ylab="count", main="Global coverage distribution")
+```
+
+
+## Average per-site, per-individual coverage
+
+```{r}
+cov = sum(global.depth.dist*1:length(global.depth.dist))/(length(global.depth)*36)
+```
+
+So the average coverage per site and per individual for the filtered sites is `r round(cov, 1)`.
+
+
+## Individual coverage distributions
+
+```{r}
+z = boxplot(depth.table[,3:38], outline=F, plot=F)
+bxp(z, outline=F, boxfill=c(rep("red", 18), rep("green", 18)), xaxt="n", ylab="coverage", main="Individual coverage distributions")
+axis(side=1, at=1:36, labels=names(depth.table)[3:38], cex.axis=.6, las=2)
+```
+
+
+
+With my _even depth_ filtering I required at least 15 individuals with each at least 3x coverage by reads with mapQ>5.
+So, there should not be any site with less than 45x total coverage.
+
+```{r}
+global.depth.dist[1:45]
+```
+
+
+
+
+
+
+
+
+

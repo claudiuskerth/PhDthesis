@@ -1,0 +1,362 @@
+---
+title: "PCA"
+author: "Claudius"
+date: "12/12/2016"
+output: 
+  html_document:
+    self_contained: no
+    theme: cosmo
+    toc: yes
+---
+
+```{r setup options, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(dev=c("png", "pdf"))
+setwd("/data3/claudius/Big_Data/ANGSD/PCA/GlobalMAFprior")
+```
+
+## PCA with known minor allele and SNP calling
+
+SNP calling has identified 73,841 variable sites.
+
+```{r}
+#list.files(getwd(), ".*covar")
+covar = as.matrix(read.table("ParEry.covar", header=F))
+```
+
+```{r, echo=FALSE}
+# PCA = princomp(covar)
+# names(PCA)
+# summary(PCA)
+# plot(PCA)
+# biplot(PCA)
+# PCA$loadings[1:10,1:2]
+# plot(PCA$loadings[,1], PCA$loadings[,2], col=c(rep("red", 18), rep("green", 18)), pch=20)
+```
+
+
+```{r, echo=FALSE}
+# # PCA using 'eigen' function and ggplot2:
+# eig = eigen(covar, symm=TRUE)
+# names(eig)
+# eig$vectors
+# PC = as.data.frame(eig$vectors)
+# PC[,1:5]
+# colnames(PC) = gsub("V", "PC", colnames(PC))
+# PC$Pop = factor(c(rep("ERY", 18), rep("PAR", 18)))
+# PC$Pop
+# eig$values = eig$val/sum(eig$val) # values are standard deviations (not variances)
+# title = paste("PC1", " (", signif(eig$val[1], digits=3)*100, "%)", " / PC2 (", signif(eig$val[2], digits=3)*100, "%)", sep="", collapse="") 
+# x_axis = "PC1"
+# y_axis = "PC2"
+# library(ggplot2)
+# ggplot() + geom_point(data=PC, aes_string(x=x_axis, y=y_axis, col="Pop")) + ggtitle(title)
+# # I don't like this output of ggplot2
+```
+
+```{r}
+# getting filenames for labelling:
+filenames = scan("/data3/claudius/Big_Data/ANGSD/slim.bamfile.list", what="character")
+(Names = gsub("Data/", "", gsub(".sorted.*", "", filenames)))
+```
+
+
+```{r, echo=FALSE}
+# # PCA using eigen function:
+# eig = eigen(covar, symm=TRUE)
+# names(eig)
+# barplot(eig$values)
+# eig$vectors
+# plot(eig$vectors[,1], eig$vectors[,2], xlim=c(-0.25, 0.25), xlab="PC1", ylab="PC2", pch=16, col=c(rep("red", 18), rep("green", 18)))
+# text(eig$vectors[,1], eig$vectors[,2], labels=Names, cex=0.5, adj=c(1,1))
+# Names
+```
+
+```{r}
+# PCA using 'prcomp' function
+pca = prcomp(covar)
+#summary(pca)
+#names(pca)
+#pca$sdev
+plot(pca)
+pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
+pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
+```
+
+```{r knownMinor_SNPcalling}
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,2], xlim=c(-0.3, 0.3), 
+     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("PC2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     col=c(rep("red", 18), rep("green", 18)), pch=16,
+     main="73,841 variable sites\n known minor allele + SNP calling"
+    )
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=16,
+       col=c("red", "green"),
+       bty="n"
+       )
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,2])
+pc2_sd = (pca$rot[,2] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+```
+
+
+## PCA with unknown minor allele and SNP calling
+
+SNP calling has identified 68,590 variable sites.
+
+```{r}
+#list.files(getwd())
+covar = as.matrix(read.table("withSNPcall_unknownMinor/EryPar.covar", header=F))
+```
+
+```{r}
+# PCA using 'prcomp' function
+pca = prcomp(covar)
+#summary(pca)
+plot(pca)
+pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
+pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
+pc3_prop_var = (pca$sdev[3]^2)/sum((pca$sdev)^2)
+```
+
+```{r UNknownMinor_SNPcalling}
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,2], xlim=c(-0.3, 0.3), 
+     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("PC2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     col=c(rep("red", 18), rep("green", 18)), pch=16,
+     main="68,590 variable sites\n unknown minor allele + SNP calling"
+    )
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=16,
+       col=c("red", "green"),
+       bty="n"
+       )
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,2])
+pc2_sd = (pca$rot[,2] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[4]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+```
+
+When taking the uncertainty in the minor allele into account, the 2nd principal component picks up different variation in the covariance matrix than when using the ML minor allele (above PCA). I wonder whether this difference is significant.
+
+Let's plot PC1 versus PC3 instead:
+
+```{r UNknownMinor_SNPcalling-PC3}
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,3], xlim=c(-0.3, 0.3), 
+     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("PC3 (", signif(pc3_prop_var, digits=2)*100, "%)", sep=""), 
+     col=c(rep("red", 18), rep("green", 18)), pch=16,
+     main="68,590 variable sites\n unknown minor allele + SNP calling"
+    )
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=16,
+       col=c("red", "green"),
+       bty="n"
+       )
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,3])
+pc3_sd = (pca$rot[,3] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc3_sd >= sort(pc3_sd, dec=TRUE)[4]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,3][index], labels=Names[index], cex=0.7, adj=c(0,0))
+```
+
+So the PC3 picks up the variation that is picked up by PC2 in the other two PCA's.
+
+
+```{r, echo=FALSE}
+# # test of whether -skipTriallelic makes a difference
+# covar = as.matrix(read.table("/data3/claudius/Big_Data/ANGSD/TEST/ParEry.covar", header=F))
+# # ==> makes no difference
+```
+
+
+## PCA with unknown minor allele + SNP calling + genotype calling
+
+```{r}
+#list.files(getwd())
+covar = as.matrix(read.table("withSNPcall_unknownMinor/EryPar.covar.GC", header=F))
+```
+
+```{r}
+# PCA using 'prcomp' function
+pca = prcomp(covar)
+#summary(pca)
+plot(pca)
+pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
+pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
+pc3_prop_var = (pca$sdev[3]^2)/sum((pca$sdev)^2)
+```
+
+```{r UNknownMinor_SNPcalling_GenoCall}
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,2], xlim=c(-0.3, 0.3), 
+     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("PC2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     col=c(rep("red", 18), rep("green", 18)), pch=16,
+     main="68,590 variable sites\n unknown minor allele + SNP calling + genotype calling",
+     cex.main=.9
+    )
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=16,
+       col=c("red", "green"),
+       bty="n"
+       )
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,3])
+pc2_sd = (pca$rot[,2] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[4]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+```
+
+```{r UNknownMinor_SNPcalling_GenoCall-PC3}
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,3], xlim=c(-0.3, 0.3), 
+     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("PC3 (", signif(pc3_prop_var, digits=2)*100, "%)", sep=""), 
+     col=c(rep("red", 18), rep("green", 18)), pch=16,
+     main="68,590 variable sites\n unknown minor allele + SNP calling + genotype calling",
+     cex.main=.9
+    )
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=16,
+       col=c("red", "green"),
+       bty="n"
+       )
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,3])
+pc3_sd = (pca$rot[,3] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc3_sd >= sort(pc3_sd, dec=TRUE)[4]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,3][index], labels=Names[index], cex=0.7, adj=c(0,0))
+```
+
+
+## PCA with unknown minor allele and without SNP calling
+
+This covariance matrix was created from 1,730,389 sites while weighting each site by its probability of being variable (eq. 20 in Fumagalli2013).
+
+```{r}
+#list.files(getwd())
+covar = as.matrix(read.table("noSNPcall_unknownMinor/EryPar.covar", header=F))
+```
+
+```{r}
+# PCA using 'prcomp' function
+pca = prcomp(covar)
+#summary(pca)
+plot(pca)
+pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
+pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
+```
+
+
+```{r UNknownMinor_NOsnpCalling}
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,2], xlim=c(-0.3, 0.3), 
+     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("PC2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     col=c(rep("red", 18), rep("green", 18)), pch=16,
+     main="1,730,389 sites\n unknown minor allele + weighting by p(var)",
+     cex.main=.9
+    )
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=16,
+       col=c("red", "green"),
+       bty="n"
+       )
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,2])
+pc2_sd = (pca$rot[,2] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+```
+
+The PCA plot is just flipped on the PC2 axis compared to the PCA with known minor allele and SNP calling. The signs of eigen vectors are arbitrary. So this flipping bears no meaning. Otherwise, this PCA looks identical to the first, with known minor allele and SNP calling, but different PC2 compared to the second PCA, with unknown minor allele and SNP calling. 
+
+
+## ERY and PAR separately
+
+```{r per-pop-PCA}
+par(mfrow=c(1,2))
+#
+pca_ery = prcomp(read.table("just_ERY/Ery.covar", header=F))
+plot(pca_ery$rot[,1], pca_ery$rot[,2], 
+     xlim=c(1.2*min(pca_ery$rot[,1]), 1.2*max(pca_ery$rot[,1])), 
+     ylim=c(1.2*min(pca_ery$rot[,2]), 1.2*max(pca_ery$rot[,2])), 
+     xlab="PC1", ylab="PC2", pch=16, col="red", main="ERY")
+text(pca_ery$rot[,1], pca_ery$rot[,2], labels=Names[1:18], cex=.6, adj=c(1,1))
+#
+pca_par = prcomp(read.table("just_PAR/Par.covar", header=F))
+plot(pca_par$rot[,1], pca_par$rot[,2], 
+     xlim=c(1.2*min(pca_par$rot[,1]), 1.2*max(pca_par$rot[,1])), 
+     ylim=c(1.2*min(pca_par$rot[,2]), 1.2*max(pca_par$rot[,2])),
+     xlab="PC1", ylab="PC2", pch=16, col="green", main="PAR")
+text(pca_par$rot[,1], pca_par$rot[,2], labels=Names[19:36], cex=.6, adj=c(1,1))
+```
+
+The individuals par_34-5, par_34-14 and par_34-7 are also outliers in the within population PCA. So I am fairly certain I got the labeling right.
+
+
+
+
+

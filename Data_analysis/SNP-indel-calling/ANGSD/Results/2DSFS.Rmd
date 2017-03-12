@@ -1,0 +1,146 @@
+---
+title: "2DSFS"
+author: "Claudius"
+date: "24/11/2016"
+output: 
+  html_document:
+    self_contained: no
+    theme: cosmo
+    toc: yes
+---
+
+
+```{r setup options, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(dev=c("png", "pdf"))
+setwd("/data3/claudius/Big_Data/ANGSD/Results")
+```
+
+
+
+I have created a *folded* 2D-SFS with `ANGSD` and `realSFS`.
+
+```{r}
+# realSFS has produced a flattened matrix with format nrow(pop2) x ncol(pop1)
+sfs2d = scan("ERY_PAR.2dsfs")
+# a matrix is filled column wise:
+matrix(1:16, nrow=4, ncol=4)
+sfs2d = matrix(sfs2d, nrow=19, ncol=19) # rows should be PAR, columns should be ERY
+sfs2d
+sfs2d[1,1] = 0
+image(0:18, 0:18, sfs2d, xlab="PAR", ylab="ERY", main="2D-SFS", col=heat.colors(22))
+```
+
+```{r}
+library(fields)
+pdf("ERY_PAR.2dsfs.pdf")
+# rows in the matrix are on the x-axis, columns are on the y-axis:
+image.plot(0:18, 0:18, sfs2d, xlab="PAR", ylab="ERY", main="folded 2D-SFS")
+dev.off()
+```
+
+```{r}
+sfs2d_prop = sfs2d/sum(sfs2d)
+image.plot(0:18, 0:18, sfs2d_prop, xlab="PAR", ylab="ERY", main="folded 2D-SFS")
+```
+
+
+### Which population on which axis?
+
+I have created an undolded 2D-SFS with `ANGSD` and `realSFS`, but this time giving it only 10 individuals for population ERY. I gave to `realSFS` the two *saf.idx* files, the one from ERY before the one from PAR. So there are 21 categories for ERY and 37 for parallelus (2*n+1).
+
+The 2D matrix is output in a flattened format by `realSFS`. After running `tr ' ' '\n' < *2dsfs | less -N`, I convinced myself that every 38th number is much higher than every 37th number. This indicates that the flattened matrix contains the concatenated columns (not rows) of the 2D matrix and that PAR is on the *row* dimension and ERY on the *column* dimension.
+
+The help text for the function `image.plot` from the package `fields` says:
+
+> If the z component is a matrix then the user should be aware that this function locates the matrix element z[i,j] at the grid locations (x[i], y[j]) 
+
+That means that the rows of the matrix are plotted on the x-axis (PAR) and the columns on the y-axis (ERY).
+
+```{r}
+library(fields)
+setwd("/data3/claudius/Big_Data/ANGSD/2D-SFS-axes")
+sfs2d = matrix(scan("ERY.PAR.unfolded.2dsfs"), nrow=37, ncol=21)
+sfs2d[1,1] = 0
+image.plot(0:36, 0:20, sfs2d, xlab="ERY", ylab="PAR", main="unfolded 2D-SFS")
+sfs2d[,1:15]
+```
+
+
+
+
+## Population differentiation
+
+I have estimated unfolded SAF's for Par and Ery populations separately and then
+used these to estimate a ML 2D-SFS. I then used this 2D-SFS as prior for estimating Fst (see assembly.sh and Fumagalli2013).
+
+```{r FST-distribution}
+fst = read.delim("ERY.PAR.fst.tab", header=TRUE)
+par(mfrow=c(1,1))
+hist(fst[,3]/fst[,4], col="grey", xlab="Fst", main="Fst distribution")
+```
+
+As can be seen from this distribution plot, the vast majority of $F_{ST}$ values is close to 0. But note, that $F_{ST}$ was calculated for all positions, i. e. including those which are likely monomorphic. Alos, many positions are linked.
+An alternative could to extract only the highest $F_{ST}$ from each contig.
+
+```{r, cache=TRUE}
+A = fst[,3] # between population genetic variance
+A_plus_B= fst[,4] # total genetic variance
+B = A_plus_B - A
+FST = A / A_plus_B # equation (3) in Fumagalli2013
+FST[which(A_plus_B==0)] = 0 # replace NAN caused by division by zero in the previous command with 0
+any(A_plus_B < 0)
+length(fst$Chrom) # number of positions with Fst estimate
+# png("ERY.PAR.fst.png") # I am going to plot >1M data points, don't want to store all of them in a vector graphics file, hence pixel graphics file
+# par(mfrow=c(1,1))
+# # this may take a few seconds:
+# plot(x=A_plus_B, y=FST, xlim=c(0,1), ylim=c(0,1),pch=20, col=grey(0, 0.2), xlab="a+b", ylab="a/(a+b)")
+# dev.off()
+```
+
+There are `r length(fst$chrom)` positions for which I have a ML estimate of $F_{ST}$. The genome wide $F_{ST}$ is `r sum(A)/sum(A_plus_B)`. This is a **weighted** $F_{ST}$, i. e. at each position sample sizes are used to weigh variance estimates.
+
+## Diversity Estimates
+
+### Tajima's D
+
+```{r Tajimas-D-dist}
+thetasPAR = read.table("PAR.thetas.tab", header=TRUE)
+head(thetasPAR)
+thetasERY = read.table("ERY.thetas.tab", header=TRUE)
+head(thetasERY)
+# per-contig Tajima's D distribution:
+#pdf("TajimasD-dist.pdf")
+par(mfrow=c(2,1))
+hist(thetasPAR$Tajima, xlab="Tajima's D", main="parallelus", col="grey")
+hist(thetasERY$Tajima, xlab="Tajima's D", col="grey", main="erythropus")
+#dev.off()
+```
+
+
+### Nucleotide Diversity
+
+"tW" is Watterson's $\theta$, i. e. number of segregating sites. "tP" is $\pi$, but per contig. So I have to divide that by the number of sites in the contig to get the per-nt $\pi$ estimate.
+
+```{r dist-nucl-het}
+piPAR = thetasPAR$tP/thetasPAR$nSites
+piERY = thetasERY$tP/thetasERY$nSites
+thetasPAR[which(is.na(piPAR)),]
+thetasERY[which(is.na(piERY)),]
+piPAR[which(is.na(piPAR))] = 0
+piERY[which(is.na(piERY))] = 0
+length(piPAR)
+length(piERY)
+mean(piPAR)
+mean(piERY)
+# distribution of nucleotide heterozygosity:
+#pdf("NucleotideDiv.pdf")
+par(mfrow=c(2,1))
+hist(piPAR, breaks=seq(0, .06, .005), col="gray", xlab=expression(pi[nt]), main="parallelus")
+text(0.03, 6000, labels=expression(paste("average ", pi[nt] == 0.00568) ) )
+# ERY seems to have some contigs with extreme pi, i. e. >0.06:
+hist(piERY[piERY<.06], breaks=seq(0, .06, .005), col="gray", xlim=c(0, 0.06), xlab=expression(pi[nt]), main="erythropus")
+text(0.03, 6000, , labels=expression(paste("average ", pi[nt] == 0.00521) ) )
+#dev.off()
+```
+
