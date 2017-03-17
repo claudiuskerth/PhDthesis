@@ -1,6 +1,7 @@
 setwd("/Users/Claudius/Data_analysis/SNP-indel-calling/data")
 
 # ---- prequel to the following chunk ----
+rm(list=ls())
 # depths per site per ind from 'samtools depth':
 depth.table = read.table(
   "ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz", 
@@ -22,6 +23,7 @@ save(global.depth, file="global.depth.RData")
 
 
 
+
 ### ---- global-coverage-dist ----
 load("global.depth")
 # tabulate returns a count is for each depth from 1 till max coverage:
@@ -31,7 +33,7 @@ global.depth.dist = tabulate(global.depth)
 names(global.depth.dist) = as.character(1:length(global.depth.dist))
 # plot the new global per site coverage distribution
 par(mfrow=c(1,1))
-barplot(global.depth.dist, xlab="across sample coverage", ylab="count", main="Global coverage distribution")
+barplot(global.depth.dist, xlab="across sample coverage", ylab="count of sites", main="Global coverage distribution")
 # average coverage per-site per-ind.:
 #cov = sum(global.depth.dist*1:length(global.depth.dist))/(36*nrow(depth.table))
 cov = sum(global.depth)/36/length(global.depth)
@@ -89,7 +91,7 @@ text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c
 
 
 
-# ---- permut-global-fst-hist ---
+# ---- permut-global-fst-hist ----
 load("perm.global.fst.RData") # creates perm.fst
 load("boot.resample.Fst.by.contig.RData") # creates boot.resample.Fst.by.contig
 load("bhatia.RData")
@@ -191,98 +193,161 @@ legend("topright",
 )
 
 
+# ---- fit-neutral-theta ----
+# get observed folded spectra:
+ery.sfs = scan("ERY.FOLDED.sfs")
+par.sfs = scan("PAR.FOLDED.sfs")
+ery.sfs = ery.sfs[-1]
+par.sfs = par.sfs[-1]
+# read in functions from external file:
+source("functions.R")
+# unfortunately, function definitions when read by knitr expire at the end
+# of the code chunk
+# optimize theta
+ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs)),  eta=ery.sfs, n=36, maximum=FALSE, tol=0.001)
+par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs)),  eta=par.sfs, n=36, maximum=FALSE, tol=0.001)
+
+
+
 
 # ---- folded-sfs-boot-exh-ery ----
 ery.sfs.boot.exh = read.table("ERY.FOLDED.sfs.boot.exh", header=F)
-par.sfs.boot.exh = read.table("PAR.FOLDED.sfs.boot.exh", header=F)
-ery.sfs = scan("ERY.FOLDED.sfs")
-ery.sfs = ery.sfs[-1]
 # calculate 95% bootstrap CI:
 names(ery.sfs.boot.exh) = as.character(0:18)
 ery.sfs.boot.exh.CI95 = as.data.frame(t( apply(ery.sfs.boot.exh, 2, quantile, probs=c(0.25, 0.5, 0.975)) ))
 #
-names(par.sfs.boot.exh) = as.character(0:18)
-par.sfs.boot.exh.CI95 = as.data.frame(t( apply(par.sfs.boot.exh, 2, quantile, probs=c(0.25, 0.5, 0.975)) ))
+source("functions.R")
+snm.expect = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+# need to get snm.expect now to set the proper ylim
+#
 # plot:
 # ERY
+# plot medians of bootstraps:
 plot(1:18, 
      ery.sfs.boot.exh.CI95[2:19,2], 
-     ylim=c(0, max(ery.sfs.boot.exh.CI95[2:19,])),
+     ylim=c(0, max(ery.sfs.boot.exh.CI95[2:19,], snm.expect)),
      pch=20,
      xlab="minor allele count",
      ylab="number of sites",
-     main="erythropus"
+     main="erythropus",
+     type="b",
+     col="red"
 )
 arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
        1:18, ery.sfs.boot.exh.CI95[2:19,3],
        angle=90,
-       length=.05
+       length=.05,
+       col="red"
 )
 arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
        1:18, ery.sfs.boot.exh.CI95[2:19,1],
        angle=90,
-       length=.05
+       length=.05,
+       col="red"
 )
-points(1:18, ery.sfs, pch=4, cex=1, col="red", type="b", lwd=2)
-legend(x=10, y=8200, legend="real sample", bty="n", col="red", pch=4, lwd=2, cex=.9)
 #
-points(10.5, 7000, pch=20)
-arrows(10.5, 7000, 
-       10.5, 7300,
+# SNM expected:
+#
+points(1:length(snm.expect), snm.expect, 
+       pch=18, col="black", type="b"
+)
+# get lower and upper 95% quantiles:
+low = qpois(p=0.025, lambda=snm.expect)
+high = qpois(p=0.975, lambda=snm.expect)
+# add 95% CI bars:
+arrows(1:length(snm.expect), snm.expect, 
+       1:length(snm.expect), high,
        angle=90,
        length=.05
 )
-arrows(10.5, 7000, 
-       10.5, 6700,
+arrows(1:length(snm.expect), snm.expect, 
+       1:length(snm.expect), low,
        angle=90,
        length=.05
 )
 #
-text(11, 6900, 
-     labels="median and 95% CI limits\nfrom 200 bootstrap resamples", 
-     cex=.9, pos=4
-     )
+# # plot observed spectrum:
+# points(1:18, ery.sfs, pch=4, cex=1, col="red", type="b", lwd=2)
+# legend(x=10, y=8200, legend="real sample", bty="n", col="red", pch=4, lwd=2, cex=.9)
+# SNM expected:
+points(1:length(snm.expect), snm.expect, 
+       pch=18, col="black", type="b"
+)
+# get lower and upper 95% quantiles:
+low = qpois(p=0.025, lambda=snm.expect)
+high = qpois(p=0.975, lambda=snm.expect)
+#
+legend("topright", bty="n",
+       legend=c("observed", "optimal neutral fit"),
+       fill=c("red", "black"),
+       border=c("red", "black")
+       )
+
+
+
 # ---- folded-sfs-boot-exh-par ----
 # PAR
-par.sfs = scan("PAR.FOLDED.sfs")
-par.sfs = par.sfs[-1]
+par.sfs.boot.exh = read.table("PAR.FOLDED.sfs.boot.exh", header=F)
+names(par.sfs.boot.exh) = as.character(0:18)
+# calculate 95% CI:
+par.sfs.boot.exh.CI95 = as.data.frame(t( apply(par.sfs.boot.exh, 2, quantile, probs=c(0.25, 0.5, 0.975)) ))
+#
+source("functions.R")
+snm.expect = snm(par_thetaOpt$min, len=length(ery.sfs), n=36)
+#
+# plot medians of bootstraps:
 plot(1:18, 
      par.sfs.boot.exh.CI95[2:19,2], 
-     ylim=c(0, max(par.sfs.boot.exh.CI95[2:19,])),
+     ylim=c(0, max(par.sfs.boot.exh.CI95[2:19,], snm.expect)),
      pch=20,
      xlab="minor allele count",
      ylab="number of sites",
-     main="parallelus"
+     main="parallelus",
+     type="b",
+     col="green"
 )
 arrows(1:18, par.sfs.boot.exh.CI95[2:19,2], 
        1:18, par.sfs.boot.exh.CI95[2:19,3],
        angle=90,
-       length=.05
+       length=.05,
+       col="green"
 )
 arrows(1:18, par.sfs.boot.exh.CI95[2:19,2], 
        1:18, par.sfs.boot.exh.CI95[2:19,1],
        angle=90,
-       length=.05
+       length=.05,
+       col="green"
 )
-points(1:18, par.sfs, pch=4, cex=1, col="green", type="b", lwd=2)
-legend(x=10, y=12300+500, legend="real sample", bty="n", col="green", pch=4, lwd=2, cex=.9)
+# 
+# SNM neutral spectrum
 #
-points(10.5, 10500+500, pch=20)
-arrows(10.5, 10500+500, 
-       10.5, 11000+500,
+# SNM expected:
+points(1:length(snm.expect), snm.expect, 
+       pch=18, col="black", type="b"
+)
+# get lower and upper 95% quantiles:
+low = qpois(p=0.025, lambda=snm.expect)
+high = qpois(p=0.975, lambda=snm.expect)
+# add 95% CI bars:
+arrows(1:length(snm.expect), snm.expect, 
+       1:length(snm.expect), high,
        angle=90,
        length=.05
 )
-arrows(10.5, 10500+500, 
-       10.5, 10000+500,
+arrows(1:length(snm.expect), snm.expect, 
+       1:length(snm.expect), low,
        angle=90,
        length=.05
 )
-#
-text(11, 10400+500, 
-     labels="median and 95% CI limits\nfrom 200 bootstrap resamples", 
-     cex=.9, pos=4
-     )
+# # plot observed spectrum:
+# points(1:18, par.sfs, pch=4, cex=1, col="green", type="b", lwd=2)
+# legend(x=10, y=12300+500, legend="real sample", bty="n", col="green", pch=4, lwd=2, cex=.9)
+legend("topright", bty="n",
+       legend=c("observed", "optimal neutral fit"),
+       fill=c("green", "black"),
+       border=c("green", "black")
+)
+
 
 
 

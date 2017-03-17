@@ -23,7 +23,7 @@ use strict;
 use warnings;
 
 # open region file made for ANGSD that contains all contigs with sites to analyse:
-open(my $CONTIGS, "../ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.sorted.rf") or die $!;
+open(my $CONTIGS, "../ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.noNegFis.sorted.rf") or die $!;
 
 my %KeepContigs = ();
 
@@ -42,12 +42,12 @@ close($CONTIGS);
 my $contig = "";
 my @line = ();
 
-foreach my $bam (glob("*sorted.bam")){
+foreach my $bam (glob("*sorted.slim.bam")){
 	# open stream of uncompressed SAM
 	open( my $BAM, "samtools view -h $bam | ") or die $!;
-	$bam =~ s/.bam$//;
+	$bam =~ s/\.slim\.bam$//;
 	# write output to samtools view for conversion to BAM
-	open( my $SLIM, "| samtools view -b - > $bam.slim.bam" ) or die $!;
+	open( my $SLIM, "| samtools view -b - > $bam.SLIM.bam" ) or die $!;
 
 	while(<$BAM>){
 		# if SAM header line

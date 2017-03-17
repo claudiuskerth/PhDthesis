@@ -179,6 +179,7 @@ Individuals from each of the two distal populations of a transect through the ea
 }
 \label{Fig:sampling-sites-map}
 \end{figure}
+\todo{move the description of map creation to supplementary M \& M}
 %
 
 %
@@ -198,9 +199,11 @@ After combining all \gls{se} sequences from these unique sequence pairs from all
 
 Next, I have used the \texttt{uclust} format output of \texttt{Vsearch} together with the collapsed read pairs from \texttt{starcode} to create a clustering output in the format of the output from \href{https://sourceforge.net/projects/bio-rainbow/files/}{\texttt{rainbow cluster} }\citep{Chong2012}. I then ran \texttt{rainbow div} on this cluster file. This programme recursively splits the initial clusters into putative alleles/haplotypes while keeping track of the relationships between split clusters in a tree--like data structure. These split clusters are next merged back recursively along this tree structure with \texttt{rainbow merge} that uses the similarity between \gls{pe} reads to determine whether two split clusters should be merged. Remember that the standard RAD protocol \citep{Baird2008} includes random shearing of restriction fragments. This produces \gls{pe} reads of variable distances from the same RAD tag \citep{Etter2011}. The unique feature of \texttt{rainbow} is to be able to utilise these shotgun--type \gls{pe} reads to distinguish alleles from paralogs. In addition, after recursively merging split clusters into putative RAD loci, \texttt{rainbow merge} also performs a local de novo assembly with the sequences of each merged cluster using \gls{se} and \gls{pe} reads. From the assembly output I then extracted the \gls{se} RAD tag sequences together with their longest \gls{pe} read contig (separating each with a sequence of 10 N's) using \texttt{gawk} code from \texttt{dDocent}. 
 
-Finally, since the merge process of \texttt{rainbow} depends on overlap between \gls{pe} reads from the same RAD locus, it could be incomplete when coverage is low. I therefore clustered the \texttt{rainbow} contigs again with the \texttt{Vsearch} subprogramme \texttt{cluster\_fast}, this time with an identity threshold of 0.9 and producing a majority consensus sequence from a multiple alignment of the sequences in each cluster of \texttt{rainbow} contigs.
+Finally, since the merge process of \texttt{rainbow} depends on overlap between \gls{pe} reads from the same RAD locus, it could be incomplete when coverage is low. I therefore clustered the \texttt{rainbow} contigs again with the \texttt{Vsearch} subprogramme \texttt{cluster\_fast}, this time with an identity threshold of 0.9 and producing a majority consensus sequence from a multiple alignment of the sequences in each cluster of \texttt{rainbow} contigs. All steps of the assembly are documented in the bash script 
+\href{https://bitbucket.org/claudiuskerth/phdthesis/src/fc097ea0cfc02ee2ed3d2d53a6c6ec40deef433a/Data_analysis/SNP-indel-calling/assembly.sh?at=master}{\texttt{assembly.sh}}. 
+\todo{here, I should provide a web link to the shell script \texttt{assembly.sh} which contains the commands I used for the assembly.} 
 
-The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}. In the following I will frequently refer to it as the Big Data reference assembly. 
+The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}. In the following I will frequently refer to it under the informal name of \emph{Big Data} reference assembly. 
 %
 %
 \subsection{Read mapping}
@@ -208,7 +211,7 @@ The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}
 %
 I mapped all quality filtered reads against the Big Data reference with the programme \href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}{\texttt{bowtie2}} \citep{Langmead2012}. I ran \texttt{bowtie2} in end--to--end mode, i. e. without soft--clipping of query sequences. Further, I specified "very--sensitive" search mode with a seed length of 20. I allowed gaps to be up to 10 bp long, but I disallowed gaps within 4 bp of either end of the read. In addition I specified a high penalty of 10 for alignments against ambiguous characters in the reference. In each reference contig, \gls{se} RAD tag and \gls{pe} contig were separated by 10 N's. This high penalty therefore makes successful read alignments across the gap between \gls{se} RAD tag and \gls{pe} read contig very unlikely. Further, I specified a minimum fragment length of 60 for \gls{proper pair} read alignments, thus allowing some overlap between reads in a pair. 
 
-Note that previous analysis of the same read data had revealed a high proportion of PCR duplicates. Although standard RAD data from paired--end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so for convenience. The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype. The following analyses should therefore be repeated excluding reads from PCR duplicates. Although variance and uncertainty in parameter estimates will then increase as a result of lower coverage, I do not expect the global estimates to change much, i. e. those which are based on data from $>$1 million nucleotide sites.
+Note that previous analysis of the same read data had revealed a high proportion of PCR duplicates. Although standard RAD data from paired--end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so for convenience. The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype.\todo{The analyses should be repeated excluding reads from PCR duplicates.} ~Although variance and uncertainty in parameter estimates will then increase as a result of lower coverage, I do not expect the global estimates to change much, i. e. those which are based on data from $>$1 million nucleotide sites.
 
 %
 %
@@ -217,22 +220,26 @@ Note that previous analysis of the same read data had revealed a high proportion
 %
 
 There are 4,575 contigs with \gls{se} reads that map to the \gls{pe} part of the contig, i. e. which do not pass the \textit{mismapping} filter. I have also filtered \glspl{contig} for excessive coverage by \gls{se} reads, which map to the \gls{RAD tag} part of each contig (i. e. next to the restriction site). The coverage by \gls{pe} reads is much more dependent on the length of the contig. With this filter a contig has excessive coverage if in any of the individual BAM files it has \gls{se} read coverage above the 99th percentile of the individual's coverage distribution. I have thus excluded 2,282 contigs due to excessive coverage. Since many false--positive \glspl{snp} fall within low--complexity sequences \citep{Li2014}, I have detected those regions within the \emph{Big Data} reference assembly with \texttt{dustmasker} \citep{Morgulis2006} and excluded them from further analysis. The above filters have excluded 10\% of the reference from further analysis, leaving 88 \gls{Mbp}. %before filtering: sum of interval length from Big_Data_ref.fa.bed, after filtering: sum of interval length from Big_Data_Contigs.noSEgt2.nogtQ99Cov.noDUST.bed
-I then went on to extract those bits of the filtered reference that have sufficient data for downstream analyses. I used the \texttt{samtools depth} command to get the read count for all positions and for all 36 individuals across the filtered reference. I then extracted those positions where at least 15 individuals have each at least 3$\times$ coverage. I only counted reads with a mapping quality greater than 5. This reduces the number of sites to 2\% of the original \emph{Big Data} reference assembly or 2 \gls{Mbp}, spread over 34,967 contigs. The first 6 base pairs of each contig are the remainder of the SbfI restriction site (\texttt{TGCAGG}) and therefore not variable. I have excluded those sites as well from further analysis. In addition to the excessive coverage filter, I have also applied a HWE filter to the remaining sites in order to reduce false heterozygotes caused by reads from paralogous sequences mapping to the same position in the reference. I have used the programme \texttt{ANGSD} \citep{Korneliussen2014} to estimate per site inbreeding coefficients ($F_{site}$) as well as LRT p--values using genotype likelihoods \citep{Vieira2013}. I removed entire contigs that had a site with a negative estimate of inbreeding coefficient and a p--value for deviation of $F_{site}$ from 0 of less than 0.05.  I estimated inbreeding coefficients for each population separately as well as for both populations taken together. The latter increased sample size for the estimation of $F_{site}$ but also increased estimates of $F_{site}$ for \glspl{snp} with different allele frequencies in the two populations. This filter removed 217 contigs. This has left 1,799,962 filtered sites on 34,750 contigs for further analysis. Inspection of the global, i. e. across sample, coverage distribution revealed that there were 12,693 sites with total coverage greater than 1000$\times$. I have therefore also determined the 99th percentile of the global per--site coverage distribution and removed all contigs with a position that had coverage greater than the global 99th percentile. This has removed 69,438 sites on 407 contigs leaving 
-1,730,524 sites on 34,343 contigs for further analysis.
+
+I then went on to extract those bits of the filtered reference that have sufficient data for downstream analyses. I used the \texttt{samtools depth} command to get the read count for all positions and for all 36 individuals across the filtered reference. I then extracted those positions where at least 15 individuals have each at least 3$\times$ coverage. I only counted reads with a mapping quality greater than 5. This reduces the number of sites to 2\% of the original \emph{Big Data} reference assembly or 2 \gls{Mbp}, spread over 34,967 contigs. The first 6 base pairs of each contig are the remainder of the SbfI restriction site (\texttt{TGCAGG}) and therefore not variable. I have excluded those sites as well from further analysis. 
+
+In addition to the excessive coverage filter, I have also applied a HWE filter to the remaining sites in order to reduce false heterozygotes caused by reads from paralogous sequences mapping to the same position in the reference. I have used the programme \texttt{ANGSD} \citep{Korneliussen2014} to estimate per site inbreeding coefficients ($F_{site}$) as well as LRT p--values using genotype likelihoods \citep{Vieira2013}. I removed entire contigs that had a site with a negative estimate of inbreeding coefficient and a p--value for deviation of $F_{site}$ from 0 of less than 0.05.  I estimated inbreeding coefficients for each population separately as well as for both populations taken together. The latter increased sample size for the estimation of $F_{site}$ but also increased estimates of $F_{site}$ for \glspl{snp} with different allele frequencies in the two populations. This filter removed 217 contigs. This has left 1,799,962 filtered sites on 34,750 contigs for further analysis.\todo{include a plot of length distribution of the contigs here}
+
+Inspection of the global, i. e. across sample, coverage distribution revealed that there were 12,693 sites with total coverage greater than 1000$\times$. I have therefore also determined the 99th percentile of the global per--site coverage distribution and removed all contigs with a position that had coverage greater than the global 99th percentile. This has removed 69,438 sites on 407 contigs leaving 1,730,524 sites on 34,343 contigs for further analysis (fig. \ref{Fig:global-coverage-dist}).
 %
 \begin{figure}[htb]
 \centering
 << global-coverage-dist, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
-\caption{Global distribution of coverage with reads of mapping quality greater than 5 over 1.7 million sites in the \emph{Big Data} reference after filtering.}
+\caption{Histogram of across sample coverage with reads of mapping quality greater than 5 from 1.7 million nucleotide sites in the \emph{Big Data} reference after filtering.}
 \label{Fig:global-coverage-dist}
 \end{figure}
 %
-The average per site, per individual coverage across the 1.7M filtered sites is \Sexpr{round(cov, digits=1)}$\times$ (fig. \ref{Fig:global-coverage-dist}).
+The average per site, per individual coverage across the 1.7M filtered sites is \Sexpr{round(cov, digits=1)}$\times$ (fig. \ref{Fig:individual-coverage-dist}).
 %
 \begin{figure}[htb]
 \centering
-<< ind-cov-dist, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
+<<ind-cov-dist, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
 @
 \caption{Individual coverage distributions from reads with mapping quality greater than 5 over 1.7 million sites in the \emph{Big Data} reference after filtering. red: \textit{erythropus}, green: \textit{parallelus}.}
 \label{Fig:individual-coverage-dist}
@@ -244,21 +251,51 @@ The average per site, per individual coverage across the 1.7M filtered sites is 
 \subsection{PCA}
 %
 %
-I have used \texttt{ANGSD}  \citep{Korneliussen2014} to estimate posterior genotype probabilities across all sites using as prior a \gls{ML} estimate of the minor \gls{population allele frequency} per site across all individuals and the assumption of \gls{HWE} \citep{Kim2011}. Although the assumption of \gls{HWE} may well be violated, it should only make genotype probability estimates more similar between divergent individuals. Therefore, any major divergence detected between individuals based on these genotype probabilities cannot be an artifact of this prior. At low coverage, the identification of the minor allele can be uncertain. The estimation of the minor allele frequency incorporated this uncertainty \cite[suppl. mat.]{Skotte2012}. I have then estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{sample allele frequency} likelihoods, again across all individuals, using \texttt{ANGSD} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{sample allele frequency} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated. Finally, I estimated a covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals by summing over genotype probabilities and weighting each site by its probability of being variable \citep[eq. 19 and 20]{Fumagalli2013}. I then performed an eigen--decomposition on the resulting covariance matrix with the \texttt{R} function \texttt{prcomp}.
+I have used \texttt{ANGSD}  \citep{Korneliussen2014} to estimate posterior genotype probabilities across all sites using as prior a \gls{ML} estimate of the minor \gls{population minor allele frequency} (MAF) per site across all individuals and the assumption of \gls{HWE} \citep{Kim2011}. Although the assumption of \gls{HWE} may well be violated, it should only make genotype probability estimates more similar between divergent individuals. Therefore, any major divergence detected between individuals based on these genotype probabilities cannot be an artifact of this prior. At low coverage, the identification of the minor allele can be uncertain. The estimation of the minor allele frequency incorporated this uncertainty \cite[suppl. mat.]{Skotte2012}. I have then estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{sample allele frequency} likelihoods (SAF), again across all individuals, using \texttt{ANGSD} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{sample allele frequency} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of all individuals sequenced). Finally, I estimated a covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals by summing over genotype probabilities and weighting each site by its probability of being variable \citep[eq. 19 and 20]{Fumagalli2013}. I then performed an eigen--decomposition on the resulting covariance matrix with the \texttt{R} function \texttt{prcomp}.
 %
 %
 \subsection{$F_{ST}$}
 %
 %
 Using \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}, I have determined a ML estimate of the global \emph{unfolded} 2D--\gls{SFS} that contains the joint sample allele frequencies of the non--reference allele from \textit{erythropus} and \textit{parallelus}. I required a nucleotide site to have sequence reads from at least 9 individuals in each population. The 2D--SFS contains the joint frequencies from approximately 1.13 million sites. This global unfolded 2D--\gls{SFS} was then used as (empirical) prior for posterior sample allele frequency probabilities from which the posterior expectation of $F_{ST}$ per site is calculated using \texttt{realSFS} from ANGSD \citep{Fumagalli2013}. This programme reports the numerator and denominator for either Reynolds' \citep[eq. 3]{Fumagalli2013} or Hudson/Bhatia's $F_{ST}$ \citep[eq. 9 and 10]{Bhatia2013} for each site. I am not reporting estimates of $F_{ST}$ per site due to their large variance \citep{Weir2005}. Instead I am reporting \emph{average} $F_{ST}$ across sites within a contig or the global average $F_{ST}$ across all sites. This average is always calculated by summing nominator and denominator across sites and then taking the ratio \citep{Bhatia2013}.
-In order to investigate the dependence of $F_{ST}$ on SNP ascertainment in one or the other population, I have calculated ML estimates of population minor allele frequencies with \texttt{ANGSD} \citep{Kim2011}. I have then used these allele frequencies to subset sites into minor allele frequency classes and estimated average $F_{ST}$ for each bin as before.
+In order to investigate the dependence of $F_{ST}$ on SNP ascertainment in one or the other population, I have calculated ML estimates of \gls{population minor allele frequency} (MAF) with \texttt{ANGSD} \citep{Kim2011}. I have then used these allele frequencies to subset sites into minor allele frequency classes and estimated average $F_{ST}$ for each bin as before.\todo{these analyses are also documented in assembly.sh. It may be good to create a separate script for analyses with ANGSD/realSFS and then provide a link to it here.}
 %
 %
 \subsection{Genetic diversity estimates}
 %
 %
-I have calculated ML estimates of the \emph{folded} global \gls{SFS}, i. e. including all sites across contigs, for \textit{erythropus} and \textit{parallelus} separately with \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}. 
-I required 9 individuals to have read data in order to include a site into the estimation. Since I noticed a considerable amount of variability in the ML estimates of SFS from repeated runs of the programme \texttt{realSFS}, I turned off its accelerated \gls{EM} algorithm, extended the maximum number of \gls{EM} iterations to 50,000 and specified a \textit{tolerance} of 1e-06, which is the minimum difference in likelihood between two successive \gls{EM} iterations and therefore a stopping criterium. These modifications completely removed the variability in SFS estimates, but also greatly extended running time, particularly for the \gls{SFS} of \textit{parallelus}. The programme \texttt{realSFS} allows bootstrapping the \gls{SFS}, i. e. re--estimation of \gls{SFS} from nucleotide sites resampled with replacement.~\comment{The CI estimated from these bootstraps will be too narrow, since it ignores that sites in the same contig are not independent and the SFS estimated is therefore a \emph{composite likelihood} estimate.} I derived the global estimates of the number of segregating sites and the average number of pairwise differences from the global folded \gls{SFS} according to equations 1.3 and 1.4 in \cite{Wakeley2009}. The estimates of global Tajima's D are based on these estimates and equation 2.17 in \cite{Gillespie2004}.\todo{include those equations verbatim here} ~The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimates for \textit{erythropus} are based on 1,638,468 sites. I have also estimated Tajima's D per--contig with the empirical Bayes method described in \cite{Korneliussen2014}. This uses the ML estimate of the global folded \gls{SFS} as prior for posterior sample allele frequency probabilities that are then summed across the sites in each contig to get the per--contig estimate of \gls{SFS}.
+I have calculated ML estimates of the \emph{folded} global, i. e. including all sites across contigs, \gls{SFS} for \textit{erythropus} and \textit{parallelus} separately with \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}. 
+I required 9 individuals to have read data in order to include a site into the estimation. Since I noticed a considerable amount of variability in the ML estimates of SFS from repeated runs of the programme \texttt{realSFS}, I turned off its accelerated \gls{EM} algorithm, extended the maximum number of \gls{EM} iterations to 50,000 and specified a \textit{tolerance} of 1e-06, which is the minimum difference in likelihood between two successive \gls{EM} iterations and therefore a stopping criterium. These modifications completely removed the variability in SFS estimates, but also greatly extended running time, particularly for the \gls{SFS} of \textit{parallelus}. The programme \texttt{realSFS} allows bootstrapping the \gls{SFS}, i. e. re--estimation of \gls{SFS} from nucleotide sites resampled with replacement.~\comment{The CI estimated from these bootstraps will be too narrow, since it ignores that sites in the same contig are not independent and the SFS estimated is therefore a \emph{composite likelihood} estimate.} 
+
+I fitted standard-neutral-model site frequency spectra to the observed folded single-population spectra by optimising $\theta$ in the following equation \citep[eq. 4.21]{Wakeley2009}:
+ \begin{equation}
+E[\eta_i] = \theta \frac{\frac{1}{i} + \frac{1}{n-i}}{1+\delta_{i,n-i}} \qquad 1 \le i \le \big[n/2\big]
+\end{equation}
+This formula gives the neutral expectation of counts in each frequency class (i) in a folded spectrum. I used the R function \texttt{optimize} to find the value of $\theta$ that minimizes the deviation of the above equation from all observed counts $\eta_i$. According to \cite{Fu1995}, p. 192, for large sample sizes (i. e. large $n$) the counts in neutral spectra can be approximated by a Poisson distribution. I therefore added 95\% \gls{CI} limits from Poisson distributions with parameters equal to $E[\eta_i]$ to the fitted neutral spectra.
+
+I derived the global estimates of the number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) from the global folded \gls{SFS} according to equations 1.3 and 1.4 in \cite{Wakeley2009}, respectively:
+%
+\begin{equation}
+S = \sum_{i=1}^{n/2} \eta_{i}
+\end{equation}
+%
+\begin{equation}
+\pi = \frac{1}{\binom{n}{2}} \sum_{i=1}^{n/2} i(n-i)\eta_i
+\end{equation}
+%
+\ldots where $n$ is the number of alleles sampled, i. e. twice the number of sampled individuals for diploid loci. $\eta_i$ is the count in the i--th frequency class of the folded SFS.
+The estimates of global Tajima's D are based on these estimates and equation 2.17 in \cite{Gillespie2004}:
+%
+\begin{equation}
+D_{T} = \frac{\pi - \theta_{W}}{C}
+\end{equation}
+$\theta_{W}$ is Watterson's $\theta$ and is calculated with:
+\begin{equation}
+\theta_{W} = \sfrac{S}{\sum_{i=1}^{n-1} \frac{1}{i}}
+\end{equation}
+Details of the above calculations are documented in the Rmarkdown notebook \href{https://bitbucket.org/claudiuskerth/phdthesis/src/fc097ea0cfc02ee2ed3d2d53a6c6ec40deef433a/Data_analysis/SNP-indel-calling/ANGSD/SFS/SFS.Rmd?at=master}{\texttt{SFS.Rmd}}.
+
+The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimates for \textit{erythropus} are based on 1,638,468 sites. I have also estimated Tajima's D per contig with the empirical Bayes method described in \cite{Korneliussen2014}. This uses the ML estimate of the global folded \gls{SFS} as prior for posterior sample allele frequency probabilities that are then summed across the sites in each contig to get the per--contig estimate of \gls{SFS}.
 
 %
 %
@@ -273,7 +310,7 @@ I required 9 individuals to have read data in order to include a site into the e
 \subsection{Genetic differention between \textit{erythropus} and \textit{parallelus}}
 %
 %
-Figure \ref{Fig:PCA} shows a principal component analysis of genotypic covariances between all 36 individuals of \textit{erythropus} and \textit{parallelus} taking SNP and genotype uncertainty into account. Almost 1/4 of the total genotypic variance is explained by the first principal component which clearly separates the two subspecies. The second component captures only 3\% of the total genotypic variance. This confirms estimates of genetic differentiation by \cite{Cooper1995} based on sequence variation at a single nuclear locus that the two subspecies are genetically distinct. Individual \texttt{par\_34-1} seems to be considerably less differentiated from \textit{erythropus} than the other \textit{parallelus} individuals. This may be due to insufficient information because of extremely low coverage (see fig. \ref{Fig:individual-coverage-dist})
+Figure \ref{Fig:PCA} shows a principal component analysis of genotypic covariances between all 36 individuals of \textit{erythropus} and \textit{parallelus} taking SNP and genotype uncertainty into account. Almost $^1/_4$ of the total genotypic variance is explained by the first principal component which clearly separates the two subspecies. The second component captures only 3\% of the total genotypic variance. This confirms estimates of genetic differentiation by \cite{Cooper1995} -- based on sequence variation at a single nuclear locus -- that the two subspecies are genetically distinct. Individual \texttt{par\_34-1} seems to be considerably less differentiated from \textit{erythropus} than the other \textit{parallelus} individuals. This may be due to insufficient information because of extremely low coverage (see fig. \ref{Fig:individual-coverage-dist})
 %
 \begin{figure}[htb!]
 \centering
@@ -294,9 +331,9 @@ I estimated posterior expectations of $F_{ST}$ from 1.6 million sites across 32,
 \label{Fig:global-fst}
 \end{figure}
 %
-The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} with a bootstrap 95\% \gls{CI} between \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)} (see fig. \ref{Fig:global-fst}). Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \cite{Weir1996}, p. 161), not the variance due to sampling individuals from the population. The latter could be estimated by bootstrapping individuals from each population. Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, two RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the null distribution of global $F_{ST}$, estimated by randomly permuting individuals into two populations, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}.
+The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} with a bootstrap 95\% \gls{CI} between \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)} (see fig. \ref{Fig:global-fst}).\todo{mention how you did the bootstrapping, documented in Fst.Rmd} ~Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \cite{Weir1996}, p. 161), not the variance due to sampling individuals from the population. The latter could be estimated by bootstrapping individuals from each population. Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, two RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the null distribution of global $F_{ST}$, estimated by randomly permuting individuals into two populations, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}.\todo{what about Reynold's Fst? Does it show the same bias?}
 
-Figure \ref{Fig:fst-by-ascert-class} shows the dependence of average $F_{ST}$ on the minor allele frequency when only sites are included that are polymorphic in the ascertainment population. Not surprisingly, SNP ascertainment in one of the two populations lowers average $F_{ST}$ estimates since it also excludes highly differentiated sites where the ascertainment sample is fixed for one allele.
+Figure \ref{Fig:fst-by-ascert-class} shows the dependence of average $F_{ST}$ on the minor allele frequency when only sites are included that are polymorphic in the ascertainment population. Not surprisingly, SNP ascertainment in one of the two populations lowers average $F_{ST}$ estimates since it also excludes highly differentiated sites where the ascertainment population is fixed for one allele.
 %
 \begin{figure}[htb]
 \centering
@@ -306,7 +343,8 @@ Figure \ref{Fig:fst-by-ascert-class} shows the dependence of average $F_{ST}$ on
 \label{Fig:fst-by-ascert-class}
 \end{figure}
 %
-When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This is consistent with both populations having undergone a recent population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates \citep{Bhatia2013}.
+When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This is consistent with both populations having undergone a recent population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. \todo{Richard has suggested an alternative explanation, which is due to the higher variance of $F_{ST}$ for loci with low total heterozygosity (which is equivalent to low minor allele frequency in the total sample). He suggested using simulated 2D spectra under models of population expansion and constant population size to verify my claims.}
+Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates \citep{Bhatia2013}.
 %
 \begin{figure}[H]
 \centering
@@ -334,26 +372,35 @@ A ML estimate of the number of nucleotide sites with fixed differences between t
 \subsection{Genetic diversity within \textit{erythropus} and \textit{parallelus}}
 %
 %
-Figure \ref{Fig:folded-sfs} shows the ML estimate of global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario. Bootstrapping contigs instead of nucleotide sites could show whether this is an artifact due to one or a few contigs. However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right--skewed, that is having a greater proportion of low--frequency variants than \textit{erythropus}. 
+Figure \ref{Fig:folded-sfs} shows the ML estimate of global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario.\todo{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.} 
+~Bootstrapping contigs instead of nucleotide sites could show whether this is an artifact due to one or a few contigs.\todo{bootstrapping contigs instead of sites (as done by realSFS, presumably) could be achieved by a Perl script that resamples contigs from the sites file to realSFS. Bootstrapping contigs should also provide more accurate CI, since a contig can have at most one other linked contig, whereas a nucleotide site can have many linked sites on the same contig.} 
+~However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right--skewed, that is having a greater proportion of low--frequency variants than \textit{erythropus}. 
 %
 \begin{figure}[htb]
 \centering
 << folded-sfs, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
-\caption{ML estimate of the global minor allele frequency spectrum for \textit{erythropus} and \textit{parallelus}. The \gls{SFS} of  \textit{erythropus} is based on 1.6 million, the one of \textit{parallelus} on 1.2 million nucleotide sites.}
+\caption{ML estimate of the global minor allele frequency spectrum for \textit{erythropus} and \textit{parallelus}. The \gls{SFS} of  \textit{erythropus} is based on 1.6 million, the one of \textit{parallelus} on 1.2 million nucleotide sites (including non-variable sites).}
 \label{Fig:folded-sfs}
 \end{figure}
 %
-Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is based on per--site sample allele frequency likelihoods that incorporate the genotype uncertainty of each individual due to binomial sampling of alleles as well as sequencing and read alignment error \citep{Li2008, Li2011, Nielsen2012}. It does not therefore suffer from the ascertainment bias observed in previous studies that were based on sites detected as polymorphic in a specific sample \citep{Albrechtsen2010, Korneliussen2013}. This ascertainment bias has led to a relative excess of intermediate versus low frequency classes. 
+Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is based on per--site sample allele frequency likelihoods (SAF) that incorporate the genotype uncertainty of each individual due to binomial sampling of alleles as well as sequencing and read alignment error \citep{Li2008, Li2011, Nielsen2012}.\todo{Could the inflated $\eta_2$ in both populations be due to singletons on the haploid X chromosome of these male grasshoppers? How big is the X chromosome with respect to the rest of the genome? How does ANGSD deal with haploid loci? Does ANGSD's ML estimation of SFS include HWE expectation? Is there a way to specifically detect contigs from the X chromosom?} 
+~It does not therefore suffer from the ascertainment bias observed in previous studies that were based on sites detected as polymorphic in a specific sample \citep{Albrechtsen2010, Korneliussen2013}. This ascertainment bias has led to a relative excess of intermediate versus low frequency classes. 
 
-The \gls{SFS} has however not yet been corrected for bias due to allele--drop--out \citep{Luca2011, Cariou2016}. Allele--drop--out is a problem that has affected previous types of genetic markers like microsatellites or AFLP's, usually known under the term "null alleles". \cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele--drop--out show a greater proportion of intermediate allele frequencies as compared to loci not affected. They therefore show a relative excess of observed nucleotide expected heterozygosity ($\pi_{Tajima}$). My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele--drop--out. Those sites show the opposite bias towards a relative excess of low--frequency variants \citep{Arnold2013}. Since the same filtering thresholds were applied to the data from \textit{erythropus} and \textit{parallelus} and since the \textit{parallelus} sample has generally much lower coverage (see fig. \ref{Fig:individual-coverage-dist}), it seems plausible that the sites used to estimate the \gls{SFS} for \textit{parallelus} have been relatively more enriched for those less affected by allele--drop--out. This may explain the relative excess of low--frequency variants in \textit{parallelus} compared to \textit{erythropus}. Filtering with different minimum--individual or coverage thresholds could shed some light on the effect of allele--drop--out on the global folded \gls{SFS}. 
+The \gls{SFS} has however not yet been corrected for bias due to allele--drop--out \citep{Luca2011, Cariou2016}. Allele--drop--out is a problem that has affected previous types of genetic markers like microsatellites or AFLP's, usually known under the term "null alleles". \cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele--drop--out show a greater proportion of intermediate allele frequencies as compared to loci not affected. They therefore show a relative excess of observed nucleotide expected heterozygosity ($\pi_{Tajima}$). My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele--drop--out. Those sites show the opposite bias towards a relative excess of low--frequency variants \citep{Arnold2013}. Since the same filtering thresholds were applied to the data from \textit{erythropus} and \textit{parallelus} and since the \textit{parallelus} sample has generally much lower coverage (see fig. \ref{Fig:individual-coverage-dist}), it seems plausible that the sites used to estimate the \gls{SFS} for \textit{parallelus} have been relatively more enriched for those less affected by allele--drop--out. This may explain the relative excess of low--frequency variants in \textit{parallelus} compared to \textit{erythropus}. Filtering with different minimum--individual or coverage thresholds could shed some light on the effect of allele--drop--out on the global folded \gls{SFS}.\todo{I think, one way would be to downsample the coverage for erythropus to the level of parallelus and re-estimate SFS for erythropus.}
 
 The allele--drop--out problem is a missing data problem and to some extent similar to the missing data problem caused by low coverage next--generation sequencing. Both increase false homozygote calls for true heterozygotes and both therefore lead to a deviation of observed genotype frequencies from \gls{HWE}. The algorithms implemented in \texttt{ANGSD} and described in \cite{Li2011} and \cite{Nielsen2012} are designed to deal with this problem by
 \begin{enumerate}
 \item incorporating genotype uncertainty into downstream population genetic analyses
-\item "imputing" genotype likelihoods by estimating the population minor allele frequency using the raw genotype likelihoods from all individuals in the same population and \emph{assuming \gls{HWE}}.
+\item "imputing" genotype likelihoods by estimating the population minor allele frequency using the raw genotype likelihoods from all individuals in the same population and \emph{assuming \gls{HWE}}.\todo{is this really true?}
 \end{enumerate}
 I therefore expect \texttt{ANGSD} to reduce the effects of allele--drop--out on population genetic analyses.
+
+%
+<< fit-neutral-theta, echo=FALSE, warning=FALSE>>=
+@
+%
+
 %
 \begin{figure}[htbp]
 \centering
@@ -361,12 +408,13 @@ I therefore expect \texttt{ANGSD} to reduce the effects of allele--drop--out on 
 @
 << folded-sfs-boot-exh-par, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
-\caption{Estimation of the variance of the global folded \gls{SFS} by bootstrap resampling of nucleotide sites.}
+\caption{Estimation of the variance of the global folded \gls{SFS} by bootstrap resampling of nucleotide sites. The bars indicate 95\% \gls{CI} limits.}
 \label{Fig:folded-sfs-boot-exh}
 \end{figure}
 %
-\\
+
 Figure \ref{Fig:folded-sfs-boot-exh} shows that despite the large amount of sites included in the ML estimation, there is still considerable uncertainty in the global folded \gls{SFS}, particularly for \textit{parallelus}. This could be explained by the lower average sequence coverage for individuals from the \textit{parallelus} population (see fig. \ref{Fig:individual-coverage-dist}).
+
 %
 \begin{figure}[htb]
 \centering
@@ -376,8 +424,8 @@ Figure \ref{Fig:folded-sfs-boot-exh} shows that despite the large amount of site
 \label{Fig:S-and-Pi}
 \end{figure}
 %
-\\
-The number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) are summary statistics of the \gls{SFS}. While $S$ weights each site equally, intermediate frequency variants contribute much more to the magnitude of $\pi$ than high-- and low--frequency variants \cite[eq. 1.4]{Wakeley2009}. Figure \ref{Fig:S-and-Pi} shows both estimates for \textit{erythropus} and \textit{parallelus} together with distributions from 200 bootstrap resamples of nucleotide sites. Both diversity estimates are significantly higher in \textit{parallelus} than in \textit{erythropus}. This seems at odds with the expectation from the hitherto proposed demographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much smaller distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity much more so than for the \textit{erythropus} subspecies \citep{Luca2011}. That ancestral \textit{parallelus} and \textit{erythropus} expanded from their glacial refuges as a "wave", i. e. without colonisation by rare long--distance migration, is made unlikely by at least two observations: 
+
+The number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) are summary statistics of the \gls{SFS}. While $S$ weights each site equally, intermediate frequency variants contribute much more to the magnitude of $\pi$ than high-- and low--frequency variants \cite[eq. 1.4]{Wakeley2009}. Figure \ref{Fig:S-and-Pi} shows both estimates for \textit{erythropus} and \textit{parallelus} together with distributions from 200 bootstrap resamples of nucleotide sites. Both diversity estimates are significantly higher in \textit{parallelus} than in \textit{erythropus}. This seems at odds with the expectation from the hitherto proposed demographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much smaller distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity much more so than for the \textit{erythropus} subspecies \citep{Luca2011}.\todo{Look at data from other European species. Do they show the expected reduction of diversity with distance from the the glacial refuge?} ~That ancestral \textit{parallelus} and \textit{erythropus} expanded from their glacial refuges as a "wave", i. e. without colonisation by rare long--distance migration, is made unlikely by at least two observations: 
 \begin{itemize}
 \item the colonisation of Britain by \textit{C. p. parallelus} before the flooding of the English Channel after the last Ice Age \citep{Cooper1995},
 \item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the dispersal rate of this species of 30 m/generation \citep{Nichols1994}. 
@@ -407,6 +455,13 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 %%
 
 
+%
+%
+%
+\section{Supplementary Material \& Methods}
+%
+%
+%
 
 %----------------------------
 % Bibliography

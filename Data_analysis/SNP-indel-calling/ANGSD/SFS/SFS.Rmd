@@ -7,11 +7,13 @@ output:
     self_contained: yes
     theme: cosmo
     toc: yes
+bibliography: Literature.bib
 ---
 
-```{r setup options, cache=FALSE, include=FALSE}
+```{r setup options, cache=FALSE, include=TRUE}
 library(knitr)
-opts_chunk$set(dev=c("png", "pdf"))
+opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=12, fig.height=12)
+options(digits=10)
 setwd("/data3/claudius/Big_Data/ANGSD/SFS")
 ```
 
@@ -51,12 +53,136 @@ I have run `realSFS` with a _tolerance_ (`-tole`) of 1e-6, which means that the 
 I specified a maximum number of EM iterations of 50000 (`-maxIter`) after examining the speed at which both ERY and PAR reach the *tolerance* stopping criterium. I have also turned off the accelerated EM algorithm with `-m 0`. This guarantees that a good ML estimate of the SFS is found, but much more slowly. The ML estimate of the folded SFS in ERY is found within 8 minutes, the one of PAR within 26 minutes.
 
 
-```{r}
+```{r, eval=TRUE}
 ery.sfs = scan("ERY/ERY.FOLDED.sfs")
 par.sfs = scan("PAR/PAR.FOLDED.sfs")
 ery.sfs = ery.sfs[-1]
 par.sfs = par.sfs[-1]
 ```
+
+---- 
+
+I am trying to fit eq. 4.21 of @Wakeley2009 to the oberseved 1D folded spectra:
+
+$$
+E[\eta_i] = \theta \frac{\frac{1}{i} + \frac{1}{n-i}}{1+\delta_{i,n-i}} \qquad 1 \le i \le \big[n/2\big]
+$$
+
+This formula gives the neutral expectation of counts in each frequency class ($i$) in a folded spectrum. The count in each frequency class, $\eta_i$, provides an estimate of $\theta$. However, I would like to find the value of $\theta$ that minimizes the deviation of the above equation from all observed counts $\eta_i$.
+
+```{r, eval=TRUE}
+# define function to optimise
+
+f = function (theta, eta, n){ 
+  #
+  # theta: parameter to optimize
+  # eta: will get the observed SFS
+  # n: number of gene copies sampled per diploid locus
+  #
+  # returns sum of squared deviations (residuals) between observed counts
+  # and a candidate model
+  #
+  sumofsq = numeric(length(ery.sfs))
+  i = seq(1, length(eta))
+  delta = ifelse(i == n-i, 1, 0)
+  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  sumofsq = sum( (expected - eta)^2 )
+  return(sumofsq)
+}
+```
+
+```{r, eval=TRUE}
+# fit optimizal theta to ery and par SFS
+
+ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs)),  eta=ery.sfs, n=36, maximum=FALSE, tol=0.001)
+par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs)),  eta=par.sfs, n=36, maximum=FALSE, tol=0.001)
+```
+
+The optimal $\theta$ for the spectrum of _ery_ is `r format(ery_thetaOpt$min, scientific=F, digits=6)`. The optimal $\theta$ for the spectrum of _par_ is `r format(par_thetaOpt$min, scient=F, digits=6)`. These are almost exactly the same values I estimated with the `scipy.optimize` functions `curve_fit` and `minimize_scalar` in `First_Steps_with_dadi.ipynb`.
+
+```{r, eval=TRUE}
+# define a function that returns expected counts given a theta under the assumption of
+# the standard neutral model
+
+snm = function(theta, len=0, n=36){
+  #
+  # theta: should be optimized theta
+  # len: should be the length of the folded SFS, i. e. highest freq. class
+  # n: should be number of gene copies sampled per locus, i. e. 2*N for diploid loci
+  #
+  # returns expected SFS
+  #
+  i = seq(1, len)
+  delta = ifelse(i == n-i, 1, 0)
+  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  return(expected)
+}
+```
+
+
+```{r, eval=TRUE, fig.height=16}
+# plot observed spectra and expected neutral fit for ery and par
+
+par(mfrow=c(2,1))
+# standard neutral model expectation:
+plot(snm(ery_thetaOpt$min, len=length(ery.sfs), n=36), 
+     xlab="minor allele count", 
+     ylab="number of sites",
+     pch=18, col="black", type="b",
+     main="folded SFS of ery")
+# observed:
+lines(ery.sfs, pch=20, col="red", type="b")
+legend("topright", legend=c("ery", "neutral fit"), pch=c(20, 18), col=c("red", "black"), bty="n")
+#
+# standard neutral model expectation:
+plot(snm(par_thetaOpt$min, len=length(par.sfs), n=36), 
+     xlab="minor allele count", 
+     ylab="number of sites",
+     pch=18, col="black", type="b",
+     main="folded SFS of par")
+# observed:
+lines(par.sfs, pch=20, col="green", type="b")
+legend("topright", legend=c("par", "neutral fit"), pch=c(20, 18), col=c("green", "black"), bty="n")
+```
+
+The deviation, especially in the first two count classes, is astonishing and certainly cannot be explained just by violations of assumptions of standard neutral model.
+
+Let's get confidence intervals for SNM expected counts. According to @Fu1995, p. 192, the counts in neutral spectra can be approximated by a Poisson distribution for large sample sizes (i. e. large $n$).
+
+```{r, eval=TRUE, fig.height=7, fig.width=7}
+par(mfrow=c(1,1))
+# get neutral model expectation
+snm.expect = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+# expected:
+plot(snm.expect, 
+     xlab="minor allele count", 
+     ylab="number of sites",
+     pch=18, col="black", type="b",
+     main="folded SFS of ery")
+# observed:
+lines(ery.sfs, pch=20, col="red", type="b")
+legend("topright", legend=c("ery", "neutral fit"), pch=c(20, 18), col=c("red", "black"), bty="n")
+# get lower and upper 95% quantiles:
+low = qpois(p=0.025, lambda=snm.expect)
+high = qpois(p=0.975, lambda=snm.expect)
+# add 95% CI bars:
+arrows(1:length(snm.expect), snm.expect, 
+       1:length(snm.expect), high,
+       angle=90,
+       length=.05
+       )
+arrows(1:length(snm.expect), snm.expect, 
+       1:length(snm.expect), low,
+       angle=90,
+       length=.05
+       )
+```
+
+
+
+
+
+----
 
 
 ```{r ML}
@@ -370,24 +496,40 @@ par.sfs.boot.exh.CI95 = as.data.frame(t( apply(par.sfs.boot.exh, 2, quantile, pr
 ```
 
 ```{r}
+plot_ery_boot = function(...){
+  points(1:18, 
+       ery.sfs.boot.exh.CI95[2:19,2], 
+       ylim=c(0, max(ery.sfs.boot.exh.CI95[2:19,])),
+       pch=20,
+       xlab="minor allele count",
+       ylab="number of sites",
+       main="global folded SFS of ERY",
+       ...
+       )
+  arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
+         1:18, ery.sfs.boot.exh.CI95[2:19,3],
+         angle=90,
+         length=.05,
+         ...
+         )
+  arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
+         1:18, ery.sfs.boot.exh.CI95[2:19,1],
+         angle=90,
+         length=.05,
+         ...
+         )
+  }
+# set up plot device:
 plot(1:18, 
      ery.sfs.boot.exh.CI95[2:19,2], 
      ylim=c(0, max(ery.sfs.boot.exh.CI95[2:19,])),
      pch=20,
      xlab="minor allele count",
      ylab="number of sites",
-     main="global folded SFS of ERY"
+     main="global folded SFS of ERY",
+     type="n"
      )
-arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
-       1:18, ery.sfs.boot.exh.CI95[2:19,3],
-       angle=90,
-       length=.05
-       )
-arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
-       1:18, ery.sfs.boot.exh.CI95[2:19,1],
-       angle=90,
-       length=.05
-       )
+plot_ery_boot()
 points(1:18, ery.sfs, pch=4, cex=1, col="red", type="b", lwd=2)
 legend("topright", legend="real sample SFS from exhaustive EM search", bty="n", col="red", pch=4, lwd=2, cex=.9)
 #
@@ -409,24 +551,42 @@ text(11, 7000,
 ```
 
 ```{r, warning=FALSE}
+plot_par_boot = function(...){
+  # plot medians of bootstrap samples:
+  points(1:18, 
+       par.sfs.boot.exh.CI95[2:19,2], 
+       ylim=c(0, max(par.sfs.boot.exh.CI95[2:19,])),
+       pch=20,
+       xlab="minor allele count",
+       ylab="number of sites",
+       main="global folded SFS of PAR",
+       ...
+       )
+  # plot CI bars:
+  arrows(1:18, par.sfs.boot.exh.CI95[2:19,2], 
+         1:18, par.sfs.boot.exh.CI95[2:19,3],
+         angle=90,
+         length=.05,
+         ...
+         )
+  arrows(1:18, par.sfs.boot.exh.CI95[2:19,2], 
+         1:18, par.sfs.boot.exh.CI95[2:19,1],
+         angle=90,
+         length=.05,
+         ...
+         )
+  }
+# set up plot device:
 plot(1:18, 
      par.sfs.boot.exh.CI95[2:19,2], 
      ylim=c(0, max(par.sfs.boot.exh.CI95[2:19,])),
      pch=20,
      xlab="minor allele count",
      ylab="number of sites",
-     main="global folded SFS of PAR"
+     main="global folded SFS of PAR",
+     type="n"
      )
-arrows(1:18, par.sfs.boot.exh.CI95[2:19,2], 
-       1:18, par.sfs.boot.exh.CI95[2:19,3],
-       angle=90,
-       length=.05
-       )
-arrows(1:18, par.sfs.boot.exh.CI95[2:19,2], 
-       1:18, par.sfs.boot.exh.CI95[2:19,1],
-       angle=90,
-       length=.05
-       )
+plot_par_boot()
 points(1:18, par.sfs, pch=4, cex=1, col="green", type="b", lwd=2)
 legend("topright", legend="real sample SFS from exhaustive EM search", bty="n", col="green", pch=4, lwd=2, cex=.9)
 #
@@ -449,6 +609,198 @@ text(11, 11000,
 
 The SFS's estimated from the real samples (also with exhaustive EM search) match the medians of the frequency classes from bootstrap resampled sites very well for each population.
 
+
+
+-----------
+
+## Fitting an expected neutral SFS
+
+I have run `realSFS` with a _tolerance_ (`-tole`) of 1e-6, which means that the EM iteration is stopped if the likelihoods of the last two iterations differed by less than 1e-6.
+I specified a maximum number of EM iterations of 50000 (`-maxIter`) after examining the speed at which both ERY and PAR reach the *tolerance* stopping criterium. I have also turned off the accelerated EM algorithm with `-m 0`. This guarantees that a good ML estimate of the SFS is found, but much more slowly. The ML estimate of the folded SFS in ERY is found within 8 minutes, the one of PAR within 26 minutes.
+
+
+```{r, eval=TRUE}
+# read in the spectra again
+
+ery.sfs = scan("ERY/ERY.FOLDED.sfs")
+par.sfs = scan("PAR/PAR.FOLDED.sfs")
+ery.sfs = ery.sfs[-1]
+par.sfs = par.sfs[-1]
+```
+
+I am trying to fit eq. 4.21 of @Wakeley2009 to the oberseved 1D folded spectra:
+
+$$
+E[\eta_i] = \theta \frac{\frac{1}{i} + \frac{1}{n-i}}{1+\delta_{i,n-i}} \qquad 1 \le i \le \big[n/2\big]
+$$
+
+This formula gives the neutral expectation of counts in each frequency class ($i$) in a folded spectrum. The count in each frequency class, $\eta_i$, provides an estimate of $\theta$. However, I would like to find the value of $\theta$ that minimizes the deviation of the above equation from all observed counts $\eta_i$.
+
+```{r, eval=TRUE}
+# define function to optimise
+
+f = function (theta, eta, n){ 
+  #
+  # theta: parameter to optimize
+  # eta: will get the observed SFS
+  # n: number of gene copies sampled per diploid locus
+  #
+  # returns sum of squared deviations (residuals) between observed counts
+  # and a candidate model
+  #
+  sumofsq = numeric(length(ery.sfs))
+  i = seq(1, length(eta))
+  delta = ifelse(i == n-i, 1, 0)
+  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  sumofsq = sum( (expected - eta)^2 )
+  return(sumofsq)
+}
+```
+
+```{r, eval=TRUE}
+# fit optimizal theta to ery and par SFS
+
+ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs)),  eta=ery.sfs, n=36, maximum=FALSE, tol=0.001)
+par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs)),  eta=par.sfs, n=36, maximum=FALSE, tol=0.001)
+```
+
+The optimal $\theta$ for the spectrum of _ery_ is `r format(ery_thetaOpt$min, scientific=F, digits=6)`. The optimal $\theta$ for the spectrum of _par_ is `r format(par_thetaOpt$min, scient=F, digits=6)`. These are almost exactly the same values I estimated with the `scipy.optimize` functions `curve_fit` and `minimize_scalar` in `First_Steps_with_dadi.ipynb`.
+
+```{r, eval=TRUE}
+# define a function that returns expected counts given a theta under the assumption of
+# the standard neutral model
+
+snm = function(theta, len=0, n=36){
+  #
+  # theta: should be optimized theta
+  # len: should be the length of the folded SFS, i. e. highest freq. class
+  # n: should be number of gene copies sampled per locus, i. e. 2*N for diploid loci
+  #
+  # returns expected SFS
+  #
+  i = seq(1, len)
+  delta = ifelse(i == n-i, 1, 0)
+  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  return(expected)
+}
+```
+
+
+```{r, eval=TRUE, fig.height=16}
+# plot observed spectra and expected neutral fit for ery and par
+
+par(mfrow=c(2,1))
+# standard neutral model expectation:
+ery_expected = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+plot(ery_expected, 
+     xlab="minor allele count", 
+     ylab="number of sites",
+     pch=18, col="black", type="b",
+     main="folded SFS of ery")
+# observed:
+lines(ery.sfs, pch=20, col="red", type="b")
+legend("topright", legend=c("ery", "neutral fit"), pch=c(20, 18), col=c("red", "black"), bty="n")
+#
+# standard neutral model expectation:
+par_expected = snm(par_thetaOpt$min, len=length(par.sfs), n=36)
+plot(par_expected, 
+     xlab="minor allele count", 
+     ylab="number of sites",
+     ylim=c(0, max(par_expected)*1.1),
+     pch=18, col="black", type="b",
+     main="folded SFS of par")
+# observed:
+lines(par.sfs, pch=20, col="green", type="b")
+legend("topright", legend=c("par", "neutral fit"), pch=c(20, 18), col=c("green", "black"), bty="n")
+```
+
+The deviation, especially in the first two count classes, is astonishing and certainly cannot be explained just by violations of assumptions of standard neutral model.
+
+Let's get confidence intervals for SNM expected counts. According to @Fu1995, p. 192, the counts in neutral spectra can be approximated by a Poisson distribution for large sample sizes (i. e. large $n$).
+
+```{r, eval=TRUE, fig.height=7, fig.width=7}
+par(mfrow=c(1,1))
+
+plot_ery_snm = function(...){
+  # get neutral model expectation
+  snm.expect = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+  # expected:
+  points(snm.expect, 
+       xlab="minor allele count", 
+       ylab="number of sites",
+       ylim=c(0, max(snm.expect)*1.1),
+       pch=18, col="black", type="b",
+       main="folded SFS of ery",
+       ...
+       )
+  legend("topright", legend=c("ery", "neutral fit"), 
+         pch=c(20, 18), col=c("red", "black"), bty="n")
+  # get lower and upper 95% quantiles:
+  low = qpois(p=0.025, lambda=snm.expect)
+  high = qpois(p=0.975, lambda=snm.expect)
+  # add 95% CI bars:
+  arrows(1:length(snm.expect), snm.expect, 
+         1:length(snm.expect), high,
+         angle=90,
+         length=.05,
+         ...
+         )
+  arrows(1:length(snm.expect), snm.expect, 
+         1:length(snm.expect), low,
+         angle=90,
+         length=.05,
+         ...
+         )
+  }
+# set up plot device (false design of R!):
+plot(snm.expect, 
+       xlab="minor allele count", 
+       ylab="number of sites",
+       ylim=c(0, max(snm.expect)*1.1),
+       main="folded SFS of ery",
+       type="n",
+       )
+plot_ery_snm()
+# observed:
+lines(ery.sfs, pch=20, col="red", type="b")
+```
+
+
+Now, let's combine the 95% CI from bootstraps over nucleotide sites with the 95% CI of the fitted neutral spectrum.
+
+
+```{r, warning=FALSE, fig.width=7, fig.height=7}
+# set up plot device (false design of R!):
+plot(snm.expect, 
+       xlab="minor allele count", 
+       ylab="number of sites",
+       ylim=c(0, max(snm.expect)*1.1),
+       main="folded SFS of ery",
+       type="n",
+       )
+plot_ery_boot(col="red", type="b")
+plot_ery_snm(new=FALSE)
+```
+
+```{r, warning=FALSE, fig.width=7, fig.height=7}
+# set up plot device (false design of R!):
+# set up plot device:
+plot(1:18, 
+     par.sfs.boot.exh.CI95[2:19,2], 
+     ylim=c(0, max(par.sfs.boot.exh.CI95[2:19,])),
+     pch=20,
+     xlab="minor allele count",
+     ylab="number of sites",
+     main="global folded SFS of PAR",
+     type="n"
+     )
+plot_par_boot(col="green", type="b")
+plot_ery_snm(new=FALSE)
+```
+
+
+
+----
 
 ## Diversity Estimates
 
@@ -720,3 +1072,5 @@ multiplot(p1, p2, cols=1)
 ```
 
 
+
+## References
