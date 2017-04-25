@@ -389,12 +389,14 @@ Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is base
 
 The \gls{SFS} has however not yet been corrected for bias due to allele--drop--out \citep{Luca2011, Cariou2016}. Allele--drop--out is a problem that has affected previous types of genetic markers like microsatellites or AFLP's, usually known under the term "null alleles". \cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele--drop--out show a greater proportion of intermediate allele frequencies as compared to loci not affected. They therefore show a relative excess of observed nucleotide expected heterozygosity ($\pi_{Tajima}$). My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele--drop--out. Those sites show the opposite bias towards a relative excess of low--frequency variants \citep{Arnold2013}. Since the same filtering thresholds were applied to the data from \textit{erythropus} and \textit{parallelus} and since the \textit{parallelus} sample has generally much lower coverage (see fig. \ref{Fig:individual-coverage-dist}), it seems plausible that the sites used to estimate the \gls{SFS} for \textit{parallelus} have been relatively more enriched for those less affected by allele--drop--out. This may explain the relative excess of low--frequency variants in \textit{parallelus} compared to \textit{erythropus}. Filtering with different minimum--individual or coverage thresholds could shed some light on the effect of allele--drop--out on the global folded \gls{SFS}.\todo{I think, one way would be to downsample the coverage for erythropus to the level of parallelus and re-estimate SFS for erythropus.}
 
-The allele--drop--out problem is a missing data problem and to some extent similar to the missing data problem caused by low coverage next--generation sequencing. Both increase false homozygote calls for true heterozygotes and both therefore lead to a deviation of observed genotype frequencies from \gls{HWE}. The algorithms implemented in \texttt{ANGSD} and described in \cite{Li2011} and \cite{Nielsen2012} are designed to deal with this problem by
-\begin{enumerate}
-\item incorporating genotype uncertainty into downstream population genetic analyses
-\item "imputing" genotype likelihoods by estimating the population minor allele frequency using the raw genotype likelihoods from all individuals in the same population and \emph{assuming \gls{HWE}}.\todo{is this really true?}
-\end{enumerate}
-I therefore expect \texttt{ANGSD} to reduce the effects of allele--drop--out on population genetic analyses.
+The allele--drop--out problem is a missing data problem and to some extent similar to the missing data problem caused by low coverage next--generation sequencing. Both increase false homozygote calls for true heterozygotes and both therefore lead to a deviation of observed genotype frequencies from \gls{HWE}. The algorithms for inferring the \gls{SFS} implemented in \texttt{ANGSD} incorporate an assumption of HWE \cite[eq. 2 and 3]{Nielsen2012}. They place a low conditional probability on combinations of genotypes in the sample that would deviate strongly from HWE. I therefore expect \texttt{ANGSD} to mitigate the effects of allele--drop--out on population genetic analyses.
+
+%\begin{enumerate}
+%\item incorporating genotype uncertainty into downstream population genetic analyses
+%\item "imputing" genotype likelihoods by estimating the population minor allele frequency using the raw genotype likelihoods from all individuals in the same population and \emph{assuming \gls{HWE}}.\todo{is this really true?}
+%\end{enumerate}
+
+
 
 %
 << fit-neutral-theta, echo=FALSE, warning=FALSE>>=
@@ -453,6 +455,17 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 %\label{Fig:Tajimas-D-by-contig}
 %\end{figure}
 %%
+
+%
+%
+%
+\section{Future directions}
+%
+%
+%
+Sequencing an individual of a closely related outgroup species, e. g. \textit{Chorthippus montanus}, would allow the polarisation of allele frequencies with respect to ancestral and derived states, assuming that the outgroup sequence generally contains the ancestral state (i. e. that the infinite-sites mutation model holds across the two species). This would allow the analysis of unfolded (i. e. derived allele frequency) spectra and provide greater power to distinguish between alternative demographic models than with the folded (i. e. minor allele frequency) spectra that could be constructed with the data available for this study \cite[p. 128]{Wakeley2009}.\todo{D-statistics and PBS statistics}
+
+In this study, all sequenced grasshoppers were male. There is no male sex chromosome and so all males are haploid for the X chromosome. The X chromosome is the fourth largest of the 9 chromosomes in \textit{Chorthippus parallelus} (8 autosomes plus X) \cite[fig. 2]{Gosalvez1988}. That is, about 1/9th of the RAD loci in this study have been haploid while ANGSD assumed all loci to be diploid. Since these loci appear homozygous they contribute more toward even than uneven frequency classes, thereby creating large deviations from all possible expected counts. This is likely to reduce power to distinguish between demographic models. Since female grasshoppers have two X chromosomes, a future study that attempts to estimate accurate sample allele frequencies should therefore sequence female individuals instead of male individuals. 
 
 
 %

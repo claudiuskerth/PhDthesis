@@ -640,7 +640,7 @@ parallel -j 10 'zcat {} | gc' ::: *fq_1.gz | mean
 
 \ctable[
 width=\textwidth,
-doinside={ \relsize{-1.5} \setlength{\tabcolsep}{3pt} },
+doinside={ \relsize{-1.5} \setlength{\tabcolsep}{2pt} },
 caption=Studies that provide genome size estimates for \textit{Chorthippus parallelus},
 cap=Genome size estimates,
 label=ta:genome_size_studies

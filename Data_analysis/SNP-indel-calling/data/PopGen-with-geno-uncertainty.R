@@ -249,7 +249,7 @@ arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2],
 # SNM expected:
 #
 points(1:length(snm.expect), snm.expect, 
-       pch=18, col="black", type="b"
+       pch=18, col="gray", type="b"
 )
 # get lower and upper 95% quantiles:
 low = qpois(p=0.025, lambda=snm.expect)
@@ -271,7 +271,7 @@ arrows(1:length(snm.expect), snm.expect,
 # legend(x=10, y=8200, legend="real sample", bty="n", col="red", pch=4, lwd=2, cex=.9)
 # SNM expected:
 points(1:length(snm.expect), snm.expect, 
-       pch=18, col="black", type="b"
+       pch=18, col="gray", type="b"
 )
 # get lower and upper 95% quantiles:
 low = qpois(p=0.025, lambda=snm.expect)
@@ -279,8 +279,8 @@ high = qpois(p=0.975, lambda=snm.expect)
 #
 legend("topright", bty="n",
        legend=c("observed", "optimal neutral fit"),
-       fill=c("red", "black"),
-       border=c("red", "black")
+       fill=c("red", "gray"),
+       border=c("red", "gray")
        )
 
 
@@ -323,7 +323,7 @@ arrows(1:18, par.sfs.boot.exh.CI95[2:19,2],
 #
 # SNM expected:
 points(1:length(snm.expect), snm.expect, 
-       pch=18, col="black", type="b"
+       pch=18, col="gray", type="b"
 )
 # get lower and upper 95% quantiles:
 low = qpois(p=0.025, lambda=snm.expect)
@@ -344,8 +344,8 @@ arrows(1:length(snm.expect), snm.expect,
 # legend(x=10, y=12300+500, legend="real sample", bty="n", col="green", pch=4, lwd=2, cex=.9)
 legend("topright", bty="n",
        legend=c("observed", "optimal neutral fit"),
-       fill=c("green", "black"),
-       border=c("green", "black")
+       fill=c("green", "gray"),
+       border=c("green", "gray")
 )
 
 
