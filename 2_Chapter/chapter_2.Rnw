@@ -201,7 +201,7 @@ Next, I have used the \texttt{uclust} format output of \texttt{Vsearch} together
 
 Finally, since the merge process of \texttt{rainbow} depends on overlap between \gls{pe} reads from the same RAD locus, it could be incomplete when coverage is low. I therefore clustered the \texttt{rainbow} contigs again with the \texttt{Vsearch} subprogramme \texttt{cluster\_fast}, this time with an identity threshold of 0.9 and producing a majority consensus sequence from a multiple alignment of the sequences in each cluster of \texttt{rainbow} contigs. All steps of the assembly are documented in the bash script 
 \href{https://bitbucket.org/claudiuskerth/phdthesis/src/fc097ea0cfc02ee2ed3d2d53a6c6ec40deef433a/Data_analysis/SNP-indel-calling/assembly.sh?at=master}{\texttt{assembly.sh}}. 
-\todo{here, I should provide a web link to the shell script \texttt{assembly.sh} which contains the commands I used for the assembly.} 
+\todo[color=green]{here, I should provide a web link to the shell script \texttt{assembly.sh} which contains the commands I used for the assembly.} 
 
 The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}. In the following I will frequently refer to it under the informal name of \emph{Big Data} reference assembly. 
 %
@@ -211,7 +211,7 @@ The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}
 %
 I mapped all quality filtered reads against the Big Data reference with the programme \href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}{\texttt{bowtie2}} \citep{Langmead2012}. I ran \texttt{bowtie2} in end--to--end mode, i. e. without soft--clipping of query sequences. Further, I specified "very--sensitive" search mode with a seed length of 20. I allowed gaps to be up to 10 bp long, but I disallowed gaps within 4 bp of either end of the read. In addition I specified a high penalty of 10 for alignments against ambiguous characters in the reference. In each reference contig, \gls{se} RAD tag and \gls{pe} contig were separated by 10 N's. This high penalty therefore makes successful read alignments across the gap between \gls{se} RAD tag and \gls{pe} read contig very unlikely. Further, I specified a minimum fragment length of 60 for \gls{proper pair} read alignments, thus allowing some overlap between reads in a pair. 
 
-Note that previous analysis of the same read data had revealed a high proportion of PCR duplicates. Although standard RAD data from paired--end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so for convenience. The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype.\todo{The analyses should be repeated excluding reads from PCR duplicates.} ~Although variance and uncertainty in parameter estimates will then increase as a result of lower coverage, I do not expect the global estimates to change much, i. e. those which are based on data from $>$1 million nucleotide sites.
+Note that previous analysis of the same read data had revealed a high proportion of PCR duplicates. Although standard RAD data from paired--end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so for convenience. The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype.\todo[color=green]{The analyses should be repeated excluding reads from PCR duplicates.} ~Although variance and uncertainty in parameter estimates will then increase as a result of lower coverage, I do not expect the global estimates to change much, i. e. those which are based on data from $>$1 million nucleotide sites.
 
 %
 %
@@ -372,9 +372,9 @@ A ML estimate of the number of nucleotide sites with fixed differences between t
 \subsection{Genetic diversity within \textit{erythropus} and \textit{parallelus}}
 %
 %
-Figure \ref{Fig:folded-sfs} shows the ML estimate of global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario.\todo{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.} 
+Figure \ref{Fig:folded-sfs} shows the ML estimate of global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario.\todo[color=green]{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.} 
 ~Bootstrapping contigs instead of nucleotide sites could show whether this is an artifact due to one or a few contigs.\todo{bootstrapping contigs instead of sites (as done by realSFS, presumably) could be achieved by a Perl script that resamples contigs from the sites file to realSFS. Bootstrapping contigs should also provide more accurate CI, since a contig can have at most one other linked contig, whereas a nucleotide site can have many linked sites on the same contig.} 
-~However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right--skewed, that is having a greater proportion of low--frequency variants than \textit{erythropus}. 
+~However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right--skewed, that is having a greater proportion of low--frequency variants, than \textit{erythropus}. 
 %
 \begin{figure}[htb]
 \centering
@@ -384,10 +384,13 @@ Figure \ref{Fig:folded-sfs} shows the ML estimate of global folded \gls{SFS} for
 \label{Fig:folded-sfs}
 \end{figure}
 %
-Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is based on per--site sample allele frequency likelihoods (SAF) that incorporate the genotype uncertainty of each individual due to binomial sampling of alleles as well as sequencing and read alignment error \citep{Li2008, Li2011, Nielsen2012}.\todo{Could the inflated $\eta_2$ in both populations be due to singletons on the haploid X chromosome of these male grasshoppers? How big is the X chromosome with respect to the rest of the genome? How does ANGSD deal with haploid loci? Does ANGSD's ML estimation of SFS include HWE expectation? Is there a way to specifically detect contigs from the X chromosom?} 
+Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is based on per--site sample allele frequency likelihoods (SAF) that incorporate the genotype uncertainty of each individual due to binomial sampling of alleles as well as sequencing and read alignment error \citep{Li2008, Li2011, Nielsen2012}.
+\todo[inline]{Could the inflated $\eta_2$ in both populations be due to singletons on the haploid X chromosome of these male grasshoppers? How big is the X chromosome with respect to the rest of the genome? $\rightarrow$ fourth largest of 9 chromosomes (see Gosalvez1988, fig. 2);  How does ANGSD deal with haploid loci? $\rightarrow$ the genotype likelihoods it is based on refer to diploid loci; Does ANGSD's ML estimation of SFS include HWE expectation? $\rightarrow$ yes, SAF likelihood calculation includes the assumption of HWE;  Is there a way to specifically detect contigs from the X chromosom? $\rightarrow$ see \texttt{1D\_model\_synthesis.ipynb}, section 2.2 "reducing noise and bias"} 
+
 ~It does not therefore suffer from the ascertainment bias observed in previous studies that were based on sites detected as polymorphic in a specific sample \citep{Albrechtsen2010, Korneliussen2013}. This ascertainment bias has led to a relative excess of intermediate versus low frequency classes. 
 
-The \gls{SFS} has however not yet been corrected for bias due to allele--drop--out \citep{Luca2011, Cariou2016}. Allele--drop--out is a problem that has affected previous types of genetic markers like microsatellites or AFLP's, usually known under the term "null alleles". \cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele--drop--out show a greater proportion of intermediate allele frequencies as compared to loci not affected. They therefore show a relative excess of observed nucleotide expected heterozygosity ($\pi_{Tajima}$). My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele--drop--out. Those sites show the opposite bias towards a relative excess of low--frequency variants \citep{Arnold2013}. Since the same filtering thresholds were applied to the data from \textit{erythropus} and \textit{parallelus} and since the \textit{parallelus} sample has generally much lower coverage (see fig. \ref{Fig:individual-coverage-dist}), it seems plausible that the sites used to estimate the \gls{SFS} for \textit{parallelus} have been relatively more enriched for those less affected by allele--drop--out. This may explain the relative excess of low--frequency variants in \textit{parallelus} compared to \textit{erythropus}. Filtering with different minimum--individual or coverage thresholds could shed some light on the effect of allele--drop--out on the global folded \gls{SFS}.\todo{I think, one way would be to downsample the coverage for erythropus to the level of parallelus and re-estimate SFS for erythropus.}
+The \gls{SFS} has however not yet been corrected for bias due to allele--drop--out \citep{Luca2011, Cariou2016}. Allele--drop--out is a problem that has affected previous types of genetic markers like microsatellites or AFLP's, usually known under the term "null alleles".~\todo{check for the effect of allele-drop-out on the SFS.}
+\cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele--drop--out show a greater proportion of intermediate allele frequencies as compared to loci not affected. They therefore show a relative excess of observed nucleotide expected heterozygosity ($\pi_{Tajima}$). My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele--drop--out. Those sites show the opposite bias towards a relative excess of low--frequency variants \citep{Arnold2013}. Since the same filtering thresholds were applied to the data from \textit{erythropus} and \textit{parallelus} and since the \textit{parallelus} sample has generally much lower coverage (see fig. \ref{Fig:individual-coverage-dist}), it seems plausible that the sites used to estimate the \gls{SFS} for \textit{parallelus} have been relatively more enriched for those less affected by allele--drop--out. This may explain the relative excess of low--frequency variants in \textit{parallelus} compared to \textit{erythropus}. Filtering with different minimum--individual or coverage thresholds could shed some light on the effect of allele--drop--out on the global folded \gls{SFS}.\comment{I think, one way would be to downsample the coverage for erythropus to the level of parallelus and re-estimate SFS for erythropus.}
 
 The allele--drop--out problem is a missing data problem and to some extent similar to the missing data problem caused by low coverage next--generation sequencing. Both increase false homozygote calls for true heterozygotes and both therefore lead to a deviation of observed genotype frequencies from \gls{HWE}. The algorithms for inferring the \gls{SFS} implemented in \texttt{ANGSD} incorporate an assumption of HWE \cite[eq. 2 and 3]{Nielsen2012}. They place a low conditional probability on combinations of genotypes in the sample that would deviate strongly from HWE. I therefore expect \texttt{ANGSD} to mitigate the effects of allele--drop--out on population genetic analyses.
 
@@ -455,6 +458,28 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 %\label{Fig:Tajimas-D-by-contig}
 %\end{figure}
 %%
+
+%
+%
+%
+\section{$\delta$a$\delta$i}
+%
+%
+%
+
+\todo[inline, color=green]{check whether gene flow between the two subspecies could explain problems with fitting 1D models, by taking the marginal from the best-fit 2D model that includes migration and determine likelihood}
+
+\todo[inline]{fit secondary contact model}
+
+\todo[inline]{include population size change after split into the model}
+
+\todo[inline]{investigate deficit of divergently fixed SNP's according to best-fit dadi models}
+
+\todo[inline]{get bootstraps for \textbf{un}folded 2D spectrum, bootstrap contigs, not sites as with \texttt{realSFS}}
+
+\todo[inline]{apply Ludovic's correction to 1D and 2D unfolded spectra}
+
+\todo[inline]{test SFS creation from randomly selected alleles of each genotype in a VCF file (Roger's suggestion to circumvent genotype calling)}
 
 %
 %

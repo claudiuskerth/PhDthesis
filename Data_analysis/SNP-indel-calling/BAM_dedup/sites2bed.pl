@@ -1,0 +1,1 @@
+../../ANGSD/sites2bed.pl

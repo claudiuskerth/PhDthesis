@@ -25,7 +25,7 @@ save(global.depth, file="global.depth.RData")
 
 
 ### ---- global-coverage-dist ----
-load("global.depth")
+load("global.depth.RData")
 # tabulate returns a count is for each depth from 1 till max coverage:
 global.depth.dist = tabulate(global.depth)
 # # and the new max depth is:
@@ -33,7 +33,8 @@ global.depth.dist = tabulate(global.depth)
 names(global.depth.dist) = as.character(1:length(global.depth.dist))
 # plot the new global per site coverage distribution
 par(mfrow=c(1,1))
-barplot(global.depth.dist, xlab="across sample coverage", ylab="count of sites", main="Global coverage distribution")
+barplot(global.depth.dist, xlab="across sample coverage", ylab="number of sites", 
+        main="Global coverage distribution")
 # average coverage per-site per-ind.:
 #cov = sum(global.depth.dist*1:length(global.depth.dist))/(36*nrow(depth.table))
 cov = sum(global.depth)/36/length(global.depth)
