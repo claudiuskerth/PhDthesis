@@ -3,10 +3,12 @@ title: "Fst"
 author: "Claudius"
 date: "17/12/2016"
 output: 
-  html_document:
-    self_contained: yes
-    theme: cosmo
+  github_document:
     toc: yes
+#  html_document:
+#    self_contained: yes
+#    theme: cosmo
+#    toc: yes
 bibliography: Literature.bib
 ---
 

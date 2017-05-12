@@ -3,10 +3,12 @@ title: "2DSFS"
 author: "Claudius"
 date: "24/11/2016"
 output: 
-  html_document:
-    self_contained: no
-    theme: cosmo
+  github_document:
     toc: yes
+#  html_document:
+#    self_contained: no
+#    theme: cosmo
+#    toc: yes
 ---
 
 

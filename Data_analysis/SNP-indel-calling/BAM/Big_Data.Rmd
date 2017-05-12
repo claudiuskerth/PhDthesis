@@ -1,0 +1,172 @@
+---
+title: "Big_Data"
+author: "Claudius"
+date: "01/11/2016"
+output:
+  github_document:
+    toc: yes
+#  html_document:
+#    self_contained: no
+#    theme: cosmo
+#    toc: yes
+---
+
+```{r setup options, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(dev=c('png', 'pdf'))
+setwd("/data3/claudius/Big_Data/BOWTIE2/BAM")
+```
+
+I have created two coverage files with `bamtools coverage` from the BAM files of two individuals that shall
+represent their respective population:
+
+```{r}
+infiles = Sys.glob("*cov.gz")
+```
+
+```{r, cache=TRUE}
+ery = as.numeric( scan(pipe(paste("gzip -dc", infiles[1], "| cut -f 3"), open="r")) )
+ery[1:10]
+max(ery)
+min(ery)
+length(ery)
+```
+
+```{r}
+par = as.numeric( scan(pipe(paste("gzip -dc", infiles[2], "| cut -f 3"), open="r")) )
+par[1:10]
+max(par)
+min(par)
+length(par)
+```
+
+I have coverage information from `r length(ery)` sites for the individual ery_30-15 and `r length(par)` for individual par_34-14.
+
+```{r cov-dist-ery}
+hist(ery,
+     breaks=max(ery)/2,
+     xlab="read coverage",
+     ylab="frequency",
+     freq=FALSE,
+     xlim=c(0,100),
+     main="Distribution of coverage for ind ery_30-15",
+     col="blue"
+     )
+
+( Q = quantile(ery, probs=c(0.25, 0.5, 0.75, 0.95, 0.99, 0.999)) )
+
+abline(v=Q["50%"], col="darkgreen", lty="solid", lwd=2)
+abline(v=Q["95%"], col="red", lty="solid", lwd=2)
+
+legend("topright",
+       legend=c("median", "95th %"),
+       title="Quantiles",
+       col=c("darkgreen", "red"),
+       lty="solid"
+       )
+```
+
+
+```{r}
+avg_cov = mean(ery)
+avg_cov + 4*sqrt(avg_cov)
+```
+
+```{r cov-dist-par, echo=FALSE}
+hist(par,
+     breaks=max(par)/2,
+     xlab="read coverage",
+     ylab="frequency",
+     freq=FALSE,
+     xlim=c(0,100),
+     main="Distribution of coverage for ind par_34-14",
+     col="blue"
+     )
+
+( Q = quantile(par, probs=c(0.25, 0.5, 0.75, 0.95, 0.99, 0.999)) )
+
+abline(v=Q["50%"], col="darkgreen", lty="solid", lwd=2)
+abline(v=Q["95%"], col="red", lty="solid", lwd=2)
+#
+legend("topright",
+       legend=c("median", "95th %"),
+       title="Quantiles",
+       col=c("darkgreen", "red"),
+       lty="solid"
+       )
+```
+
+
+## Depth distribution over SE RAD tags
+
+I have created coverage count files from SE reads mapping to the 2nd position in the contigs (see assembly.sh).
+
+```{r cov-dist-all, cache=TRUE, warning=FALSE}
+infiles = list.files(getwd(), pattern=".*SE_depths")
+depths = list()
+for (i in 1:length(infiles)){
+  cat( infiles[i], "\n" )
+  depths[[i]] = scan(pipe(paste("cut -f 2", infiles[i]), open="r"))
+}
+x = depths[[1]]
+plot(table(x)[1:50]/length(x), 
+     ylim=c(0,0.25), 
+     type="l",
+     xlab="coverage",
+     ylab="frequency among all contigs",
+     main="coverage distributions of all 36 ind")
+for(i in 2:length(depths)){
+  x = depths[[i]]
+  lines(1:50, table(x)[1:50]/length(x), type="l", col=i, lwd=2)
+}
+```
+
+```{r}
+Q99 = numeric(length(depths))
+Q95 = numeric(length(depths))
+for(i in 1:length(depths)){
+  cat(infiles[i], "\t")
+  Q99[i] = quantile(depths[[i]], probs=0.99)
+  Q95[i] = quantile(depths[[i]], probs=0.95)
+  cat(Q95[i], "\t", Q99[i], "\n")
+}
+summary(Q95)
+summary(Q99)
+# number and proportion of discarded contigs with maxDepth 25x:
+sum(depths[[1]] > 25)
+sum(depths[[1]] > 25)/length(depths[[1]])
+# number and proportion of discarded contigs with maxDepth 101x:
+sum(depths[[1]] > 101)
+sum(depths[[1]] > 101)/length(depths[[1]])
+```
+
+
+## Mapping quality distribution
+
+Note, after bowtie2 mapping, I discarded all mappings with quality 0.
+
+```{r mapping-qual-dist}
+infiles = list.files(getwd(), pattern="*sorted.bam$")
+infiles
+mq = scan(pipe(paste("samtools view", infiles[1], "| cut -f 5"), open="r"))
+# hist(mq, breaks=max(mq), col="blue", xlim=c(0,45)) # produces rubbish, for unknown reason
+c = tabulate(mq)
+cbind(1:length(c), c, c/length(mq))
+mp = barplot(c/length(mq),
+        ylim=c(0,.3), 
+        col=c("blue"),
+        xlab="mapQ",
+        ylab="proportion of reads",
+        main=paste("mapping quality dist for", infiles[1])
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)], 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+```{r}
+sum(mq < 10)/length(mq)
+```
+
+About 40% of reads have a mapping quality below 10.
