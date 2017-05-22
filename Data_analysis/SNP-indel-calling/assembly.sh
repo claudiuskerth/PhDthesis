@@ -1447,7 +1447,7 @@
 # #
 # tr ' ' '\n' < FST/EryPar.unfolded.2dsfs | gawk '{sum+=$1}END{print sum}'
 # # this reports 1.13 M counts in the 2D-SFS. So, the  ML unfolded 2D-SFS was calculated from 1.13 M sites,
-# # that had reads from at least 9 individuals in either population. realSFS has automatically determined the overlapping sites
+# # that had reads from at least 9 individuals in each population. realSFS has automatically determined the overlapping sites
 # # between the two populations.
 # 
 # # 3) use unfolded 2D-SFS as prior for Fst estimation
@@ -2100,9 +2100,9 @@
 # samtools depth  -b Big_Data_Contigs.noSEgt2.noDUST.COVfiltered.noTGCAGG.bed -Q 5 *sorted.bam | bgzip > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.depth.gz
 # # Note, that I am skipping '-aa' from the upper command line, so the depth file only contains sites with at least 1x coverage in at least 1 individual.
 
-# # write even coverage filter script in Python
-# cd /data3/claudius/Big_Data/BOWTIE2/BAM_dedup
-# 
+# # # wrote even coverage filter script in Python
+# # cd /data3/claudius/Big_Data/BOWTIE2/BAM_dedup
+# # 
 # zcat ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.depth.gz | ./minimum_coverage_filter.py -mc 1 -mi 15 | gzip > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.sites.gz
 # # This takes 2h:35min to finish.
 # # The new sites file contains 2,683,395 sites from 85,488,084 sites (3.14%).
@@ -2202,11 +2202,11 @@
 
 # # index sites file for ANGSD
 # angsd sites index ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.negPosFisFiltered.sorted.sites
-
+# 
 # # create regions file for ANGSD
 # cut -f 1 ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.negPosFisFiltered.sorted.sites | uniq > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.negPosFisFiltered.sorted.rf
-
-
+# 
+# 
 # # -------------------------------------------------------
 # # Sample Allele frequency likelihoods (SAF's) UNFOLDED
 # # -------------------------------------------------------
@@ -2222,16 +2222,173 @@
 # 	-sites $keep.sites -rf $keep.rf -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 &
 # # note, running with minInd of 9
 # # running both commands in parallel (&) takes less than 15 min
-
+# 
 # # The SAF file for PAR contains 2,448,252 sites on ... contigs.
 # # The SAF file for ERY contains ... sites on ... contigs.
+# 
+# # --------------------------
+# # estimate ML UNFOLDED SFS
+# # --------------------------
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# mkdir -p sfs/par sfs/ery
+# # 
+# realSFS -P 12  Saf/Ery/Ery.unfolded.saf.idx 2>/dev/null > sfs/ery/Ery.unfolded.sfs
+# realSFS -P 12  Saf/Par/Par.unfolded.saf.idx 2>/dev/null > sfs/par/Par.unfolded.sfs
+# # # this takes less than 15 min to finish
+# # # === the spectra are as unusable as with previous filtering ===
+
+
+# # ===> try with filtering for higher coverage <===
+# 
+# cd /data3/claudius/Big_Data/BOWTIE2/BAM_dedup
+# # 
+# zcat ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.depth.gz | ./minimum_coverage_filter.py -mc 3 -mi 10 | gzip > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.depth.gz
+# # This takes 2h:35min to finish.
+## The Python script minimum_coverage_filter.py should be scraped and replaced by a simple gawk command, which is MUCH faster:
+# zcat ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.depth.gz | gawk '{for(i=3; i<=NF; i++) if($i>=3) mi++; if(mi>=10) print; mi=0}' | gzip > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.depth.gz
+# # The new sites file contains 414,122 sites from 85,488,084 sites (0.48%). There are only 125,875 sites with 3x coverage in at least 15 individuals.
+# # The filtered sites lie on 10,216 contigs.
+
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# mkdir SNPstat
+# ln -s ../../BOWTIE2/BAM_dedup/ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.sites.gz .
+# gzip -dc ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.sites.gz | sort -Vk1,1 -k2,2 > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.sorted.sites
+
+# # index sites file for ANGSD
+# angsd sites index ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.sorted.sites
+
+
+# # create regions file for ANGSD
+# cut -f 1 ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.sorted.sites | uniq > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.sorted.rf
+
+# mkdir SPLIT_rf
+# # split the regions file into small files, each containing only 500 contig names:
+# split -l 500 ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.sorted.rf SPLIT_RF/
+
+
+# #
+# # estimate total sample F:
+# #
+# ls SPLIT_rf/* | \
+# 	parallel -j 12 "angsd -b bamfile.list -doSnpStat 1 -doMaf 1 -domajorminor 1 -skipTriallelic 1 -gl 1 -snp_pval 1e-2 \
+# 	-sites ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.sorted.sites -only_proper_pairs 0 -minMapQ 5 -minQ 20 -out SNPstat/{/} -rf {}"
+
+# 
+# # combine split output files:
+# cd SNPstat
+# zcat aa.hwe.gz | head -n 1 > ParEry.hwe
+# for f in *hwe.gz; do zcat $f | tail -n +2 >> ParEry.hwe; done
+# 
+# #
+# # filter for sites with negative F and p-value below 0.05:
+# #
+# gawk '$7<0 && $9 < 0.05' ParEry.hwe | cut -f 1 | uniq > ParEry.negFis.contigs
+# # this finds 259 contigs
+
+
+# #
+# # estimate within population F
+# #
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# for POP in PAR ERY; 
+# do 
+# 	ls SPLIT_rf/* | \
+# 		parallel -j 12 "angsd -bam $POP.bamfile.list  -dosnpstat 1 -domaf 1 -domajorminor 1 -skiptriallelic 1 -gl 1 -snp_pval 1e-2 \
+# 		-sites ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.sorted.sites -only_proper_pairs 0 -minMapQ 5 -minQ 20 -out SNPstat/$POP.{/} -rf {}"; 
+# done
+
+
+# #
+# # filter out sites with negative F and p-value below 0.05:
+# #
+# for POP in ERY PAR;
+# do
+# 	gawk '$7<0 && $9 < 0.05' $POP.hwe | cut -f 1 | uniq > $POP.negFis.contigs;
+# done
+# # This finds 113 contigs in PAR and 322 in ERY.
+
+
+# #
+# # filter positive Fis contigs
+# #
+# # only within pop Fis! We don't want to filter out divergent SNP's.
+# for POP in ERY PAR;
+# do
+# 	gawk '$7 > 0 && $9 < 0.05' $POP.hwe | cut -f 1 | uniq > $POP.posFis.contigs;
+# done
+# # this finds 346 contigs in ERY and 326 in PAR.
+
+
+# # combine Fis.contigs files:
+# cat *Fis.contigs | sort -V | uniq > combined.negPosFis.contigs
+# # There are 1097 contigs in the combined list of contigs.
+
+
+# # #
+# # # create new keep.sites file:
+# # #
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# perl -ne'chomp; $H{$_}=1; \
+# 	END{open(I, "ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.sorted.sites"); while(<I>){@line=split; print if not exists $H{$line[0]}}}' \
+# 	SNPstat/combined.negPosFis.contigs > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.negPosFisFiltered.sorted.sites
+# # I have checked that the new keep.sites file contains 1097 fewer contigs than the one before.
+# # The new keep.sites file contains 368,764 sites on 9,119 contigs.
+
+# # index sites file for ANGSD
+# angsd sites index ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.negPosFisFiltered.sorted.sites
+
+
+# # create regions file for ANGSD
+# cut -f 1 ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.negPosFisFiltered.sorted.sites | uniq > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.negPosFisFiltered.sorted.rf
+
+
+# # -------------------------------------------------------
+# # Sample Allele frequency likelihoods (SAF's) UNFOLDED
+# # -------------------------------------------------------
+# # # preparation:
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# # #mkdir -p saf/ery saf/par
+# # 
+# export keep="ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.negPosFisFiltered.sorted"
+# 
+# angsd -bam PAR.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out saf/par/par.unfolded -fold 0 \
+# 	-sites $keep.sites -rf $keep.rf -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null &
+# angsd -bam ERY.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out saf/ery/ery.unfolded -fold 0 \
+# 	-sites $keep.sites -rf $keep.rf -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null &
+# # note, running with minInd of 9
+
+# # --------------------------
+# # estimate ML UNFOLDED SFS
+# # --------------------------
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# mkdir -p afs/par afs/ery
+# realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/ery/ery.unfolded.saf.idx 2>/dev/null > afs/ery/ery.unfolded.sfs &
+# realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/par/par.unfolded.saf.idx 2>/dev/null > afs/par/par.unfolded.sfs &
+
+
+# Let's enfore at least 15 individuals with read data:
+
+# # -------------------------------------------------------
+# # Sample Allele frequency likelihoods (SAF's) UNFOLDED
+# # -------------------------------------------------------
+# # # preparation:
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# export keep="ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.negPosFisFiltered.sorted"
+# 
+# angsd -bam PAR.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out saf/par/par.unfolded.15 -fold 0 \
+# 	-sites $keep.sites -rf $keep.rf -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 15 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null &
+# angsd -bam ERY.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out saf/ery/ery.unfolded.15 -fold 0 \
+# 	-sites $keep.sites -rf $keep.rf -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 15 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null &
+# # note, running with minInd of 9
 
 # # --------------------------
 # # estimate ML UNFOLDED SFS
 # # --------------------------
 cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
-# mkdir -p sfs/par sfs/ery
-# 
-realSFS -P 12  Saf/Ery/Ery.unfolded.saf.idx 2>/dev/null > sfs/ery/Ery.unfolded.sfs
-realSFS -P 12  Saf/Par/Par.unfolded.saf.idx 2>/dev/null > sfs/par/Par.unfolded.sfs
-# # this takes less than 15 min to finish
+realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/ery/ery.unfolded.15.saf.idx 2>/dev/null > afs/ery/ery.unfolded.15.sfs &
+realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/par/par.unfolded.15.saf.idx 2>/dev/null > afs/par/par.unfolded.15.sfs &
+# # ===> END with filtering for higher coverage <===
+
+
+
+

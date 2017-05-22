@@ -469,15 +469,21 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 
 \todo[inline, color=green]{check whether gene flow between the two subspecies could explain problems with fitting 1D models, by taking the marginal from the best-fit 2D model that includes migration and determine likelihood}
 
-\todo[inline]{fit secondary contact model}
+\todo[inline, color=green]{fit secondary contact model}
 
-\todo[inline]{include population size change after split into the model}
+\todo[inline, color=green]{include population size change after split into the model}
+
+\todo[inline, color=green]{include unequal migration rate into model}
+
+\todo[inline, color=green]{include isolation after migration model, i. e. only ancient migration model}
 
 \todo[inline]{investigate deficit of divergently fixed SNP's according to best-fit dadi models}
 
 \todo[inline]{get bootstraps for \textbf{un}folded 2D spectrum, bootstrap contigs, not sites as with \texttt{realSFS}}
 
 \todo[inline]{apply Ludovic's correction to 1D and 2D unfolded spectra}
+
+\todo[inline]{simulate data under best-fit model with ms}
 
 \todo[inline]{test SFS creation from randomly selected alleles of each genotype in a VCF file (Roger's suggestion to circumvent genotype calling)}
 
@@ -489,6 +495,8 @@ The Tajima's D estimates also differ significantly between the two subspecies (f
 %
 %
 Sequencing an individual of a closely related outgroup species, e. g. \textit{Chorthippus montanus}, would allow the polarisation of allele frequencies with respect to ancestral and derived states, assuming that the outgroup sequence generally contains the ancestral state (i. e. that the infinite-sites mutation model holds across the two species). This would allow the analysis of unfolded (i. e. derived allele frequency) spectra and provide greater power to distinguish between alternative demographic models than with the folded (i. e. minor allele frequency) spectra that could be constructed with the data available for this study \cite[p. 128]{Wakeley2009}.\todo{D-statistics and PBS statistics}
+
+A moderate increase in the number of sequenced individuals (>50 per population) would ensure enough power to infer more recent demographic events, like a recent secondary contact \citep{Adams2004, Robinson2014}.
 
 In this study, all sequenced grasshoppers were male. There is no male sex chromosome and so all males are haploid for the X chromosome. The X chromosome is the fourth largest of the 9 chromosomes in \textit{Chorthippus parallelus} (8 autosomes plus X) \cite[fig. 2]{Gosalvez1988}. That is, about 1/9th of the RAD loci in this study have been haploid while ANGSD assumed all loci to be diploid. Since these loci appear homozygous they contribute more toward even than uneven frequency classes, thereby creating large deviations from all possible expected counts. This is likely to reduce power to distinguish between demographic models. Since female grasshoppers have two X chromosomes, a future study that attempts to estimate accurate sample allele frequencies should therefore sequence female individuals instead of male individuals. 
 
