@@ -27,3 +27,6 @@ rsync -avzh --partial $1 --stats --filter=": rsync-filters" --prune-empty-dirs -
 
 # DEDEUP
 rsync -avzh --partial $1 --stats --filter=": rsync-filters" --prune-empty-dirs --max-size=10M -e'ssh -l claudius' huluvu.shef.ac.uk:/data3/claudius/Big_Data/BOWTIE2/BAM_dedup .
+
+# BOWTIE
+rsync -avzh --partial $1 --stats --filter=": rsync-filters" --prune-empty-dirs --max-size=10M -e'ssh -l claudius' huluvu.shef.ac.uk:/data3/claudius/Big_Data/BOWTIE2/BAM .

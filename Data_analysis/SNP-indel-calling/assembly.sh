@@ -2244,7 +2244,9 @@
 # # 
 # zcat ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.depth.gz | ./minimum_coverage_filter.py -mc 3 -mi 10 | gzip > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.depth.gz
 # # This takes 2h:35min to finish.
+#
 ## The Python script minimum_coverage_filter.py should be scraped and replaced by a simple gawk command, which is MUCH faster:
+#
 # zcat ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.depth.gz | gawk '{for(i=3; i<=NF; i++) if($i>=3) mi++; if(mi>=10) print; mi=0}' | gzip > ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.3.10.depth.gz
 # # The new sites file contains 414,122 sites from 85,488,084 sites (0.48%). There are only 125,875 sites with 3x coverage in at least 15 individuals.
 # # The filtered sites lie on 10,216 contigs.
@@ -2384,11 +2386,69 @@
 # # --------------------------
 # # estimate ML UNFOLDED SFS
 # # --------------------------
-cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
-realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/ery/ery.unfolded.15.saf.idx 2>/dev/null > afs/ery/ery.unfolded.15.sfs &
-realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/par/par.unfolded.15.saf.idx 2>/dev/null > afs/par/par.unfolded.15.sfs &
+# cd /data3/claudius/Big_Data/ANGSD/DEDUPLICATED
+# realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/ery/ery.unfolded.15.saf.idx 2>/dev/null > afs/ery/ery.unfolded.15.sfs &
+# realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/par/par.unfolded.15.saf.idx 2>/dev/null > afs/par/par.unfolded.15.sfs &
 # # ===> END with filtering for higher coverage <===
 
 
+# --------------------------
+# check `realSFS -sites`
+# --------------------------
+# 'realSFS -sites' did not work as expected: see angsd github issue #81
+# this got corrected with commit 845d83b
+# in the following I document the verification that the bug got fixed
+# 
+# cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+# 
+# realSFS print ../SAFs/ERY/ERY.unfolded.saf.idx -sites uniq.boot.sites 2>/dev/null | cut -f1-2 > extract
+# # uniq.boot.sites is a sites file that does not contain duplicates of contigs (uniq'ed 0_boot.sites file)
+# # uniq.boot.sites contains the sites from 21,807 contigs
+# # ../SAFs/ERY/ERY.unfolded.saf.idx contains 32,706 contigs (collected in ERY.contigs)
+# 
+# cut -f1 extract | uniq | wc -l
+# # the extracted sites come from 20,780 contigs. Are these truely the number of contigs that overlap
+# # between uniq.boot.sites and ERY.contigs?
+# 
+# perl -ne'$H{$_}=1;END{open(I, "cat uniq.boot.sites | cut -f1 | uniq |"); $c=0; while(<I>){if(exists $H{$_}){$c++}}; print $c, "\n";}' ERY.contigs
+# # this reads the contigs in ERY.contigs into a hash, then reads in the contigs in uniq.boot.sites and looks them up in the hash and counts
+# # the number of times a lookup is successful. This should be the overlap of contigs between ERY.contigs (32,706) and uniq.boot.sites (21,807).
+# # This counts 20,780, i. e. the same number as counted in 'extracted', the output of 'realSFS print -sites'.
+# # That means the '-sites' routine of realSFS from the angsd commit 845d83b seems to work correctly.
+# 
+# # Next I need to check whether contigs that occur multiple times in the sites file are also extracted multiple times,
+# # which is necessary for bootstrapping.
+# 
+# realSFS print ../SAFs/ERY/ERY.unfolded.saf.idx -sites 0_boot.sites 2>/dev/null | cut -f1-2 > 0_boot.extract
+# # 0_boot.extract contains 1,042,329 sites
+# # 0_boot.sites contains 1,733,791 sites (with duplicates)
+# # ERY.all.sites contains 1,638,468 sites
+# perl -ne'$H{$_}=1;END{open(I, "0_boot.sites"); $c=0; while(<I>){if(exists $H{$_}){$c++}}; print $c, "\n";}' ERY.all.sites
+# # this prints 1,644,232, i. e. of the 1,733,791 sites in 0_boot.sites 1,644,232 occur in ERY.
+# # Does 0_boot.extract contain duplicated sites, as it should?
+# sort 0_boot.extract | uniq -c  | grep -Ec "^\W*1"
+# # this prints 1,042,329, i. e. the same number of sites as in 0_boot.extract, which means there are no 
+# # duplicated sites in 0_boot.extract.
+# # CURRENTLY, REALSFS CANNOT BE USED FOR BOOTSTRAPPING SFS ESTIMATION!
 
-
+# # --------------------------
+# # check `realSFS cat`
+# # --------------------------
+# cd /data3/claudius/Big_Data/ANGSD
+# # 1) calculate UNFOLDED SAF's   
+# export keep="ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted"
+# mkdir -p SAFs/PAR/UNFOLDED
+# mkdir -p SAFs/ERY/UNFOLDED
+# # PER POP:
+# ls SPLIT_RF/* | parallel -j 12 "angsd -bam PAR.slim.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out SAFs/PAR/UNFOLDED/PAR.unfolded.{/} -fold 0 \
+# 	-sites $keep.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1"
+# # this calculates SAF's for 1,214,939 sites. I required at least 9 individuals to have reads. That's why it is less than 1.7M.
+# ls SPLIT_RF/* | parallel -j 12 "angsd -bam ERY.slim.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out SAFs/ERY/UNFOLDED/ERY.unfolded.{/} -fold 0 \
+# 	-sites $keep.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1"
+# # this calculates SAF's for 1,638,468 sites.
+# cd SAFs/ERY/UNFOLDED
+# # concatenate SAF files
+# realSFS cat -outnames ERY.unfolded.merged *saf.idx
+# # check integrity of SAF files
+# realSFS print ERY.unfolded.merged.saf.idx 2>/dev/null | less -S
+# # this works now without errors
