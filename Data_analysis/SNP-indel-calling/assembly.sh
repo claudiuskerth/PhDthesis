@@ -2452,3 +2452,11 @@
 # # check integrity of SAF files
 # realSFS print ERY.unfolded.merged.saf.idx 2>/dev/null | less -S
 # # this works now without errors
+
+
+
+
+
+
+
+
