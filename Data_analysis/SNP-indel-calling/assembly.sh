@@ -1312,7 +1312,7 @@
 # perl -ne'chomp; $H{$_}=1;
 # 	END{open(I, "ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.sorted.sites"); 
 # 	while(<I>){@line=split; print if not exists $H{$line[0]}}}' Quality_Control/gtGlobalQ99.contigs \
-# 	> ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtGlobalQ99Cov.sorted.sites
+# 	> ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.sites
 # # This new keep.sites file contains 1,730,524 sites on 34,343 contigs.
 # #
 # # After converting the new keep.sites file into bed format with sites2bed.pl, I can run the samtools depth command again in order
@@ -1655,7 +1655,7 @@
 # # I already created both folded and unfolded SAF's for each population:
 # # + unfolded SAF's: lines 1423 - 1432
 # # + folded SAF's: lines 1573 - 1582
-# # I have already estimated folded SFS's for each population with realSFS: lines 1586 - 1590.
+# # I have already estimated folded SFS's for each popul
 # # I still have to estimate unfolded 1D-SFS's for each population:
 # 
 # # 2) estimate ML unfolded 1D SFS:
@@ -1691,6 +1691,9 @@
 # # some information about the input sequences, i. e. when given fastq input files it outputs fastq output files, instead of a
 # # file containing just sequence strings. The starcode command collapses all read pairs that have a total edit distance across
 # # single-end and paired-end reads of up to 2.
+# # Due to the way connected-component clustering works in starcode, the resulting collapsed (canonical) sequences 
+# # should be NOT those with sequencig errors. So starcode clustering should remove sequencing errors:
+# # https://github.com/gui11aume/starcode/issues/13
 # 
 # 
 # # -----------------------------
@@ -1705,17 +1708,17 @@
 # do 
 # 	echo -n "$file   " >> deduplicated/uniqseq.count;
 # 	count=`zcat $file | gawk '(NR-1)%4==0' | wc -l`;
-#        	sum=$[$sum + $count];
-#        	echo $count >> deduplicated/uniqseq.count;
+# 	sum=$[$sum + $count];
+#       echo $count >> deduplicated/uniqseq.count;
 # done 
 # 
 # echo "sum   $sum" >> deduplicated/uniqseq.count
 #
-# # The total number of retained read pairs is 10,661,569. This is very close to the number of fragments I previously counted from the same data set with my
-# # Perl script purge_PCR_duplicates.pl.
+# # The total number of retained read pairs is 10,661,569. There are 6,648,052 unique read pairs for ERY, and 4,013,517 unique read pairs for PAR. 
+# # This is very close to the number of fragments I previously counted from the same data set with my Perl script purge_PCR_duplicates.pl.
 # # Note, that starcode has a bug that turns on message-passing clustering in --non-redundant mode even when --connected-component clustering is specified.
 # # That is the reason why the number of fastq sequences in the output is not identical to the output of my previous starcode clustering of read pairs
-# # for de novo assembly. See the issue on github: https://github.com/gui11aume/starcode/issues/16
+# # for de novo assembly. See the issue on github: https://github.com/gui11aume/starcode/issues/16 -- bug fixed
 
 
 
@@ -2454,9 +2457,339 @@
 # # this works now without errors
 
 
+# ----------------------------- adding positive Fis filtering to data WITH PCR duplicates ----------------
+
+# # See line 1240 onwards for the HWE filtering that I have done so far on the data without PCR duplicate removal.
+# # Contigs with F close to one could be affected by allele dropout (due to polymorphism in the restriction site)
+# # or they could map to the X chromosome, since all sequenced individuals are males. I am therefore going to use
+# # WITHIN population Fis values to filter out contigs with an excess of homozygosity:
+# #
+# # filter positive Fis contigs
+# #
+# cd /data3/claudius/Big_Data/ANGSD/SnpStat
+#
+# gawk '$7>0 && $9<0.05' ERY.hwe | cut -f 1 | uniq | wc -l
+# # This finds 13,052 contigs! This is 38% of all contigs after current filtering (see line 1316 above)!
+#
+# gawk '$7>0 && $9<0.05' PAR.hwe | cut -f 1 | uniq | wc -l
+# # This finds 16,622 contigs! This is 48% of all contigs after current filtering!
+#
+# # The high proportion of contigs with significantly positive Fis, indicates that the genotype likelihoods are severely
+# # biased towards the homozygous genotype (due to PCR duplicates and X-chromosomal loci).
+# # The ANGSD command for hwe estimation had done permissive SNP calling. For ERY it thus had found 24,073 contigs with
+# # a likely SNP, for PAR it had found 25,756 contigs with a likely SNP. So if I did positive Fis filtering with a p-
+# # value of 0.05, I would also discard 54% and 64% of polymorphic contigs, respectively. This will result in a much lower
+# # estimate of genetic diversity and therefore also effective population sizes if I do not reduce the total sequence length
+# # by the same proportion (assuming roughly equal lenghts of contigs).
+# # I am wondering whether the positive HWE filter preferentially targets SNP's with higher MAF than the average SNP, i. e. if there was one
+# # non-reference homozygote genotype (indicating low MAF) that would be less evidence for positive Fis than when there were
+# # two or more non-reference homozygote genotypes (indicating higher MAF).
+# # this gets the average MAF of all SNP's called by ANGSD:
+# tail -n +2 PAR.hwe | cut -f 6 | gawk '{s+=$1}END{print s/NR}'
+# 0.164813
+#
+# # this gets the average MAF of only those SNP's with positive Fis:
+# tail -n +2 PAR.hwe | gawk '$7>0 && $9<0.05' | cut -f 6 | gawk '{s+=$1}END{print s/NR}'
+# 0.200853
+# tail -n +2 PAR.hwe | gawk '$7>0 && $9<0.01' | cut -f 6 | gawk '{s+=$1}END{print s/NR}'
+# 0.262846
+# tail -n +2 PAR.hwe | gawk '$7>0 && $9<0.001' | cut -f 6 | gawk '{s+=$1}END{print s/NR}'
+# 0.336325
+# # This clearly shows the dependence of Fis filtering on MAF. This filter therefore preferentially
+# # filters SNP's with higher MAF and would lead to a reduction in the high SNP frequency classes of the SFS.
+# I have created MAF_by_pval files as follows:
+# echo "p-value    avg MAF #SNP" > MAF_by_pval_par;
+# for i in 1 10 100 500 1000 5000 10000 50000 100000;
+# do 
+# 	tail -n +2 PAR.hwe | gawk -v p=$i '$7>0 && $9<=1/p' | cut -f 6 | gawk -v p=$i 'BEGIN{ORS="\t"; printf("%1.00e\t", 1/p)}{s+=$1}END{ORS="\n"; OFS="\t";print s/NR, NR}' >> MAF_by_pval_par;
+# done
+# This creates a table with three columns. The first column is the p-value threshold for a positive deviation of F from 0.
+# The second column contains the average minor allele frequency (MAF) for all SNP's with positive F and p-value below the threshold.
+# The third column contains the number of SNP's with pos. F and p-value below the threshold.
+# I have plotted these tables in the IPython notebook MAF_by_pval.ipynb in the SnpStat directory.
+# -------------------------------------------------------------------------------------------------------------
 
 
 
 
+# ------------------ BEGIN BOOTSTRAPPING OVER CONTIGS --------------------------- 
+# The -bootstrap function of realSFS resamples sites (see ANGSD issue thread: https://github.com/ANGSD/angsd/issues/86).
+# However, this kind of bootstrapping leads to anti-conservative CI's since it assumes that no linkage exists between sites,
+# i. e. each site can be considered statistically independent from all other sites. Although, most of my contigs should not contain
+# more than 1 SNP, I think it would be best to resample over whole contigs instead of sites, since contigs should generally be independent
+# of each other, except that with this standard RAD data, each restriction site should have produced two RAD tags and therefore two
+# contigs, but without a good reference sequence I cannot find out which contigs came from the same restriction site.
 
+# I cannot use a bootstrapped sites file provided to realSFS since it ignores repeated sites (maybe due to indexing), but I can bootstrap
+# a regions file (see bootstrap_contigs.ipynb) since "regions" or chromosomes are identical to my contigs. This works fine for 1D SFS estimation
+# but for 2D SFS estimation, realSFS does not allow repeated sites/contigs since it uses an algortihm to find the intersection of sites between
+# two SAF files that requires complete position sorting. However, the SAF files are in a format that I cannot change, i. e. I cannot position sort
+# them after their creation. I therefore plan to create SAF files for ERY and PAR from only overlapping sites and try to disable the intersection
+# finding code in realSFS for bootstrapped 2D SFS estimation.
+
+# ---------------------------------------------------------------------------------
+# 1) create sites file containing only overlapping sites between ERY and PAR
+# ---------------------------------------------------------------------------------
+# I have previously created SAF files for ERY and PAR requiring at least 9 individuals with read data (see line 1426). I can therefore use those SAF files
+# to find the overlapping sites between ERY and PAR, i. e. overlapping sites are sites with at least 9 ind. with read data in each population,
+# as went into the 2D SFS so far.
+
+cd /data3/claudius/Big_Data/ANGSD/SAFs
+cd ERY
+# extract sites from ERY SAF file and sort on contig number then on position within contig
+realSFS print PAR.unfolded.saf.idx 2>/dev/null | cut -f 1-2 | sort -Vk1,1 -k2 > PAR.sites
+cd PAR
+realSFS print ERY.unfolded.saf.idx 2>/dev/null | cut -f 1-2 | sort -Vk1,1 -k2 > ERY.sites
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+# see bootstrap_contigs.ipynb, section "Get intersection of sites between ERY and PAR"
+# This created the sites file "from_SAFs_minInd9_overlapping.sites", which contains 1,130,775 sites.
+
+# using the depth file created from the final filtered sites before ANGSD analysis:
+# ---------------------------------------------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/Quality_Control
+# get sites with at least 9 individuals with read data from ery 
+zcat ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz | \
+	gawk '{for(i=3;i<=20;i++) if($i>0)m++; if(m>=9)print; m=0}' | cut -f 1-2 > ERY.minInd9.sites
+# the sites file contains 1,644,565 sites. This is slightly more than in the corresponding SAF file (see line 1435).
+
+# get sites with at least 9 individuals with read data from par 
+zcat ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz | \
+	gawk '{for(i=21;i<=NF;i++) if($i>0)m++; if(m>=9)print; m=0}' | cut -f 1-2 > PAR.minInd9.sites
+# the sites file contains 1,225,764 sites. This is slightly more than in the corresponding SAF file (see line 1432).
+
+# get sites with at least 9 individuals from ery and par with read data
+zcat ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz | \
+	gawk '{for(i=3;i<=20;i++) if($i>0)m++; if(m>=9)print; m=0}' | \
+	gawk '{for(i=21;i<=NF;i++) if($i>0)m++; if(m>=9)print; m=0}' | \
+	cut -f1-2 > EryPar.minInd9.overlap.sites
+# the sites file contains 1,143,453 sites.
+cd /data3/claudius/Big_Data/ANGSD/FST
+gawk '{for(i=1;i<=NF;i++)s+=$i; print s}' EryPar.unfolded.2dsfs
+# this reports 1.13078e+06 sites in the 2D SFS created by realSFS, so slightly below the number of overlapping sites determined directly from
+# the depth file above.
+
+# The number of overlapping sites counted from the depth file is 1,143,453. So slightly higher than the overlap between the two SAF files. 
+# I am therefore going to use the sites file created from the overlap between the SAF files (from_SAFs_minInd9_overlapping.sites).
+
+
+# -----------------------------------------------------------
+# 2) estimate UNFOLDED SAF files with overlapping.sites file
+# -----------------------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+mkdir minInd9_overlapping
+# index sites file:
+angsd sites index from_SAFs_minInd9_overlapping.sites
+# create regions file:
+cut -f 1 from_SAFs_minInd9_overlapping.sites | uniq > from_SAFs_minInd9_overlapping.rf
+# The regions file contains 22,742 contigs.
+
+# clear directory for split rf files
+rm -f split_rf/*
+split -l 500 from_SAFs_minInd9_overlapping.rf split_rf/
+
+mkdir -p minInd9_overlapping/SAF/original/ERY minInd9_overlapping/SAF/original/PAR
+
+export keep="from_SAFs_minInd9_overlapping"
+ls split_rf/* | parallel -j 12 "angsd -bam PAR.slim.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out minInd9_overlapping/SAF/original/PAR/{/}.unfolded \
+	-fold 0 -sites $keep.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null"
+#
+ls split_rf/* | parallel -j 12 "angsd -bam ERY.slim.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa -out minInd9_overlapping/SAF/original/ERY/{/}.unfolded \
+	-fold 0 -sites $keep.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null"
+
+cd minInd9_overlapping/SAF/original/PAR
+# concatenate saf files:
+realSFS cat -outnames PAR.unfolded *saf.idx
+# remove all saf files except concatenated one:
+rm -f [^P]*
+cd minInd9_overlapping/SAF/original/ERY
+# concatenate saf files:
+realSFS cat -outnames ERY.unfolded *saf.idx
+# remove all saf files except concatenated one:
+rm -f [^E]*
+
+# ----------------------------------------------------
+# estimate 1D SFS from SAF files of overlapping sites
+# ----------------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+mkdir -p minInd9_overlapping/SFS/original/ERY minInd9_overlapping/SFS/original/PAR
+realSFS -P 12 -maxIter 50000 -tole 1e-6 -m 0 minInd9_overlapping/SAF/original/PAR/PAR.unfolded.saf.idx 2>/dev/null > minInd9_overlapping/SFS/original/PAR/PAR.unfolded.sfs
+realSFS -P 12 -maxIter 50000 -tole 1e-6 -m 0 minInd9_overlapping/SAF/original/ERY/ERY.unfolded.saf.idx 2>/dev/null > minInd9_overlapping/SFS/original/ERY/ERY.unfolded.sfs
+
+
+# ----------------------------------------------------
+# estimate 2D SFS from SAF files of overlapping sites
+# ----------------------------------------------------
+realSFS -P 24 -maxIter 50000 -tole 1e-6 -m 0 minInd9_overlapping/SAF/original/PAR/PAR.unfolded.saf.idx minInd9_overlapping/SAF/original/ERY/ERY.unfolded.saf.idx \
+	2>/dev/null > minInd9_overlapping/SFS/original/EryPar.unfolded.sfs
+# this took 5h 52min to complete!
+# This 2D SFS is quite different from the 2D SFS previously estimated from full SAF files (see bootstrap_contigs.ipynb).
+
+# I now also want to re-estimate the previous 2D SFS from SAF files containing also non-overlapping sites
+# with exhaustive search. The non-exhaustive search command is shown on line 1439.
+cd /data3/claudius/Big_Data/ANGSD
+realSFS -P 24 -maxIter 50000 -tole 1e-6 -m 0 SAFs/ERY/ERY.unfolded.saf.idx SAFs/PAR/PAR.unfolded.saf.idx 2> /dev/null > FST/EryPar.unfolded.exhaustive.2dsfs
+# this took 3h 51min to complete
+# This 2D SFS is very similar to the 2D SFS estimated from the same SAF files but with non-exhaustive search (see bootstrap_contigs.ipynb).
+# The total sum of the SFS's is 1,113,774 for all 2D SFS. So I assume that all are based on the same sites. Could it be that the SAF calculation has
+# changed in ANGSD since I calculated the unfolded SAF's for Fst estimation? I know that I have pulled a new version of ANGSD for the `realSFS -sites` 
+# and the `realSFS cat` issue.
+
+# ----------------------------------------------------
+# re-calculate SAF files with new version of ANGSD
+# ----------------------------------------------------
+# What is the version of ANGSD that I am currently using?
+# angsd version: 0.917-142-ge3dbeaa (htslib: 1.4.1-33-g979571b) build(Jun 20 2017 11:03:58)
+
+# # 1) calculate UNFOLDED SAF's   
+# cd /data3/claudius/Big_Data/ANGSD
+# export keep="ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted"
+# mkdir -p SAFs/with_ANGSD-0.917-142-ge3dbeaa/ERY
+# mkdir -p SAFs/with_ANGSD-0.917-142-ge3dbeaa/PAR
+# rm -f split_rf/*
+# split -l 500 $keep.rf split_rf/
+# # PER POP:
+# ls split_rf/* | parallel -j 24 "angsd -bam PAR.slim.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa \
+#	-out SAFs/with_ANGSD-0.917-142-ge3dbeaa/PAR/{/}.unfolded -fold 0 \
+# 	-sites $keep.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null"
+# cd SAFs/with_ANGSD-0.917-142-ge3dbeaa/PAR
+# realSFS cat -outnames PAR.unfolded *saf.idx
+# rm -f [a-c]*
+# this calculates SAF's for 1,217,242 sites. This is 2,303 more sites than in the SAF file calculated with a previous version 
+# of ANGSD from exactly the same data! (see line 1432)
+# 
+# ls split_rf/* | parallel -j 24 "angsd -bam ERY.slim.bamfile.list -ref Big_Data_ref.fa -anc Big_Data_ref.fa \
+#	-out SAFs/with_ANGSD-0.917-142-ge3dbeaa/ERY/{/}.unfolded -fold 0 \
+# 	-sites $keep.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null"
+# cd SAFs/with_ANGSD-0.917-142-ge3dbeaa/ERY
+# realSFS cat -outnames ERY.unfolded *saf.idx
+# rm -f [a-c]*
+# this calculates SAF's for 1,639,873 sites. This is 1,405 more sites than in the SAF file calculated with a previous version
+# of ANGSD from exactly the same data! (see line 1435)
+#
+# # 2) estimate ML unfolded 2D-SFS:
+# mkdir -p SFS/with_ANGSD-0.917-142-ge3dbeaa/EryPar
+# realSFS -P 24 SAFs/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.saf.idx SAFs/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.saf.idx \
+# 	2>/dev/null > SFS/with_ANGSD-0.917-142-ge3dbeaa/EryPar/EryPar.unfolded.2dsfs
+
+# 3) re-estimate ML unfolded 1D SFS's (with exhaustive search parameters)
+mkdir -p SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR
+realSFS -P 12 -maxIter 50000 -tole 1e-6 -m 0 SAFs/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.saf.idx 2>/dev/null > SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs
+realSFS -P 12 -maxIter 50000 -tole 1e-6 -m 0 SAFs/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.saf.idx 2>/dev/null > SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs
+# fold
+./BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/fold_1D_spectrum.py < SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs \
+	> SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.folded
+#
+./BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/fold_1D_spectrum.py < SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs \
+	> SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.folded
+
+# ----------------------------------------------------
+# bootstrap regions file from only overlapping sites
+# ----------------------------------------------------
+mkdir -p minInd9_overlapping/BOOT_RF
+mkdir -p minInd9_overlapping/SAF/bootstrap/ERY minInd9_overlapping/SAF/bootstrap/PAR
+# see bootstrap_contigs.ipynb
+
+# ----------------------------------------------------
+# calculate SAF files for bootstrapped regions files
+# ----------------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+# see bootstrao_contigs.ipynb
+# I have put the code for SAF file estimation into the script estimate_SAFs.py.
+# It took 5h 22min to estimate the SAF's for 200 regions files for ERY and PAR.
+# The new SAF files are in ./minInd9_overlapping/SAF/bootstrap/PAR/ and ./minInd9_overlapping/SAF/bootstrap/ERY/.
+
+# ----------------------------------------------------
+# estimate 1D SFS for boostrapped SAF's
+# ----------------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+# estimate the first 100 bootstrap replicate SFS's for ERY 
+# see run_realSFS.sh
+# this has taken about 8 hours to finish with exhaustive search parameters
+# the results are in ./minInd9_overlapping/SFS/bootstrap/ERY
+
+
+# ----------------------------------------------------
+# estimate 2D SFS for boostrapped SAF's
+# ----------------------------------------------------
+# this requires turning off the code in realSFS that checks for sorting
+# and determines overlapping sites
+
+
+
+# ------------------ END BOOTSTRAPPING OVER CONTIGS ---------------------------
+
+
+# --------------
+# STAIRWAY PLOT
+# --------------
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS
+
+# I have applied Ludovic's correction to the original 1D spectrum of ERY 
+# (ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/check_effect_of_Ludovics_correction.ipynb).
+# The optimal p is only small, about 6%. It has been estimated with a new version of ANGSD/realSFS from June 2017
+# and is markedly different (probably better) from the previously estimated one.
+# The optimal p for the PAR 1D spectrum is about 31%. So a correction could have significant effects
+# on stairway-plots estimates. I therefore need to run stairway-plot with uncorrected and corrected spectra.
+
+# fold bootstrapped spectra
+for SFS in bootstrap/ERY/*; do cat $SFS | ./fold_1D_spectrum.py > $SFS.folded; done
+# these spectra can be used to run stairway-plot with uncorrected spectra
+
+# turn into stairway-plot input format
+# an example input file for stairway-plot looks like this:
+# ERY     36      1638468.0       1       18
+#         10582.7248972319        6159.016033158898       4796.282480132464       3304.986864378908       3470.515515242947       1823.523387798733       1979.503570964456       2372.671653076308       1373.894271109588   796.5329707570527       1605.704594     880.037652068803        1125.522275     824.7160120355443       557.278052      1229.227436153989       381.147771      642.6240428904118
+# It is a tab delimited file. It's header line contains the population label, number of haploid samples,
+# total sequence length from which the SFS was determined and the range of frequency classes to use in the SFS.
+# The second line contains the frequency spectrum. It does not contain the frequency classes of monomorphic counts (ancestral or derived).
+# Note that the second line starts with a TAB character.
+# Each bootstrap replicate SFS has a slightly different total length, so I want to adjust this value in the
+# header line for each replicate by taking the sum over the SFS.
+cd bootstrap/ERY
+./to_stairway_format.sh
+# this script converts the folded SFS to stairway-plot format, adding the extension "stair"
+# it also determines for each bootstrap replicate spectrum the total sequence length including monomorphic
+# sites from the spectrum returned by angsd and inserts that number (which is slightly different for each
+# bootstrap replicate) into the header of each stairway-plot formatted SFS.
+
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/STAIRWAY-PLOT
+# I added the java class file Stairway_fold_random_break5.class, kindly provided by Xiaoming Liu, to the stairway_plot_es folder.
+# I edited ERY.blueprint, specifying "nrand: 34" as the sole break point (turning off random breakpoints).
+# I specified an output directory name "out_ERY_100ninput" and a mutation rate of 3e-9.
+java –cp stairway_plot_es Stairbuilder/ ERY.blueprint
+# this creates the output directory and a batch script ERY.blueprint.sh. The output dir contains two subdirs: input and rand34.
+# The dir input contains 100 stairway-plot input files containing exactly the same SFS as provided in the ERY.blueprint file.
+# put the bootstrap replicate SFS's into the input dir:
+cd out_ERY_100ninput/input/
+cp ../../../SFS/bootstrap/ERY/*stair .
+# next, I edited the ERY.blueprint.sh batch file that was created by Stairbuilder:
+cd ../..
+# I parallelised the creation of .addTheta files with GNU parallel, replaced Stairway_fold_training_testing5
+# with Stairway_fold_random_break5 in the .addTheta command (1. step) and removed the percent training option (0.67).
+# For instruction on how to use Xiaoming Liu's hack for bootrapping, see Hack_for_version_2beta.txt on Mac
+# at /Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Programmes/stairway_plot_v2beta.
+# The estimation of the .addTheta files for the 100 bootstrap replicate SFS's in parallel on
+# 24 virtual cores took just 3min 41sec.
+# For step 2 in the batch file ("determine number of break points"), I had to edit the mv command.
+# In the batch script for plotting, ERY.blueprint.plot.sh, I had to comment out the cp commands and
+# do the copying myself. It then ran without error message.
+
+# create bootstrapped SFS's in dadi format
+for SFS in bootstrap/ERY/*sfs; do echo "37 unfolded" | cat - $SFS > $SFS.dadi; done
+# these are to be read by Ludovics_correction_1D.py to be folded and corrected.
+
+#
+# apply Ludovic's correction to bootstrapped SFS'
+#
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS 
+./Ludovics_correction_1D.py bootstrap/ERY/*dadi
+# this script takes unfolded 1D spectra in dadi input format, folds them, applies optimal
+# correction (after inferring the optimal p for each bootstrap replicate) and prints them out in dadi format
+
+#
+# convert dadi to stairway-plot format
+#
+./dadi_to_stairway_format.sh example_input_file.stair
+# this script turns the corrected spectra from the previous step into stairway-plot format.
+# The new files it creates have the ending *corr.stair.
 

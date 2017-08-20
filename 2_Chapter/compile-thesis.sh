@@ -34,6 +34,9 @@ if [ $1 = $clean ]; then
 	rm -rf *.ist
 	rm -rf *.loc
 	rm -rf *.tdo
+	rm -rf *synctex*
+	rm -rf *.glo
+	rm -rf *concordance*
 	rm -rf $filename.pdf
 	rm -rf $filename.ps
 	rm -rf $filename.dvi

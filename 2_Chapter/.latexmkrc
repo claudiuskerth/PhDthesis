@@ -1,3 +1,7 @@
+$pdflatex = 'pdflatex -synctex=1';
+@generated_exts = (@generated_exts, 'synctex.gz');
+
+
 # add glossary generation to LATEXMK routine
 # ==========================================
 # taken from:

@@ -15,7 +15,7 @@ Claudius
 
 ``` r
 library(knitr)
-opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=12, fig.height=12)
+opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=10, fig.height=8)
 options(digits=10)
 setwd("/data3/claudius/Big_Data/ANGSD/SFS")
 ```
@@ -58,7 +58,7 @@ f = function (theta, eta, n){
   sumofsq = numeric(length(ery.sfs))
   i = seq(1, length(eta))
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   sumofsq = sum( (expected - eta)^2 )
   return(sumofsq)
 }
@@ -71,7 +71,7 @@ ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs)),  eta=ery.sfs, n=36, maxi
 par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs)),  eta=par.sfs, n=36, maximum=FALSE, tol=0.001)
 ```
 
-The optimal *θ* for the spectrum of *ery* is 10198.8. The optimal *θ* for the spectrum of *par* is 11828.1. These are almost exactly the same values I estimated with the `scipy.optimize` functions `curve_fit` and `minimize_scalar` in `First_Steps_with_dadi.ipynb`.
+The optimal *θ* for the spectrum of *ery* is 9582.95. The optimal *θ* for the spectrum of *par* is 10965. These are almost exactly the same values I estimated with the `scipy.optimize` functions `curve_fit` and `minimize_scalar` in `First_Steps_with_dadi.ipynb`.
 
 ``` r
 # define a function that returns expected counts given a theta under the assumption of
@@ -87,7 +87,7 @@ snm = function(theta, len=0, n=36){
   #
   i = seq(1, len)
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   return(expected)
 }
 ```
@@ -97,21 +97,32 @@ snm = function(theta, len=0, n=36){
 
 par(mfrow=c(2,1))
 # standard neutral model expectation:
-plot(snm(ery_thetaOpt$min, len=length(ery.sfs), n=36), 
+snm_ery = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+snm_par = snm(par_thetaOpt$min, len=length(par.sfs), n=36)
+
+y_max = max(par.sfs, snm_par, ery.sfs, snm_ery)
+plot(snm_ery, 
      xlab="minor allele count", 
      ylab="number of sites",
+     ylim=c(0, y_max),
      pch=18, col="black", type="b",
-     main="folded SFS of ery")
+     main="folded SFS of ery",
+     xaxp=c(1, length(ery.sfs), length(ery.sfs)-1)
+)
+abline(h=seq(0,y_max,2000), lty="dashed", col="lightgrey")
 # observed:
 lines(ery.sfs, pch=20, col="red", type="b")
 legend("topright", legend=c("ery", "neutral fit"), pch=c(20, 18), col=c("red", "black"), bty="n")
 #
-# standard neutral model expectation:
-plot(snm(par_thetaOpt$min, len=length(par.sfs), n=36), 
+plot(snm_par, 
      xlab="minor allele count", 
      ylab="number of sites",
+     ylim=c(0, y_max),
      pch=18, col="black", type="b",
-     main="folded SFS of par")
+     main="folded SFS of par",
+     xaxp=c(1, length(par.sfs), length(par.sfs)-1)
+     )
+abline(h=seq(0,y_max,2000), lty="dashed", col="lightgrey")
 # observed:
 lines(par.sfs, pch=20, col="green", type="b")
 legend("topright", legend=c("par", "neutral fit"), pch=c(20, 18), col=c("green", "black"), bty="n")
@@ -119,7 +130,7 @@ legend("topright", legend=c("par", "neutral fit"), pch=c(20, 18), col=c("green",
 
 ![](SFS_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
-The deviation, especially in the first two count classes, is astonishing and certainly cannot be explained just by violations of assumptions of standard neutral model.
+The deviation, especially in the first two count classes, is astonishing and certainly cannot be explained just by violations of assumptions of the standard neutral model.
 
 Let's get confidence intervals for SNM expected counts. According to Fu (1995), p. 192, the counts in neutral spectra can be approximated by a Poisson distribution for large sample sizes (i. e. large *n*).
 
@@ -716,7 +727,7 @@ f = function (theta, eta, n){
   sumofsq = numeric(length(ery.sfs))
   i = seq(1, length(eta))
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   sumofsq = sum( (expected - eta)^2 )
   return(sumofsq)
 }
@@ -729,7 +740,7 @@ ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs)),  eta=ery.sfs, n=36, maxi
 par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs)),  eta=par.sfs, n=36, maximum=FALSE, tol=0.001)
 ```
 
-The optimal *θ* for the spectrum of *ery* is 10198.8. The optimal *θ* for the spectrum of *par* is 11828.1. These are almost exactly the same values I estimated with the `scipy.optimize` functions `curve_fit` and `minimize_scalar` in `First_Steps_with_dadi.ipynb`.
+The optimal *θ* for the spectrum of *ery* is 9582.95. The optimal *θ* for the spectrum of *par* is 10965. These are almost exactly the same values I estimated with the `scipy.optimize` functions `curve_fit` and `minimize_scalar` in `First_Steps_with_dadi.ipynb`.
 
 ``` r
 # define a function that returns expected counts given a theta under the assumption of

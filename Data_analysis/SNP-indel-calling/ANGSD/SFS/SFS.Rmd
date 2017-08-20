@@ -3,18 +3,18 @@ title: "SFS"
 author: "Claudius"
 date: "21/12/2016"
 output: 
-  github_document:
-    toc: yes
-#  html_document:
-#    self_contained: yes
-#    theme: cosmo
+#  github_document:
 #    toc: yes
+  html_document:
+    self_contained: true
+    theme: cosmo
+    toc: true
 bibliography: Literature.bib
 ---
 
 ```{r setup options, cache=FALSE, include=TRUE}
 library(knitr)
-opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=12, fig.height=12)
+opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=10, fig.height=8)
 options(digits=10)
 setwd("/data3/claudius/Big_Data/ANGSD/SFS")
 ```
@@ -87,7 +87,7 @@ f = function (theta, eta, n){
   sumofsq = numeric(length(ery.sfs))
   i = seq(1, length(eta))
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   sumofsq = sum( (expected - eta)^2 )
   return(sumofsq)
 }
@@ -116,7 +116,7 @@ snm = function(theta, len=0, n=36){
   #
   i = seq(1, len)
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   return(expected)
 }
 ```
@@ -127,27 +127,38 @@ snm = function(theta, len=0, n=36){
 
 par(mfrow=c(2,1))
 # standard neutral model expectation:
-plot(snm(ery_thetaOpt$min, len=length(ery.sfs), n=36), 
+snm_ery = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+snm_par = snm(par_thetaOpt$min, len=length(par.sfs), n=36)
+
+y_max = max(par.sfs, snm_par, ery.sfs, snm_ery)
+plot(snm_ery, 
      xlab="minor allele count", 
      ylab="number of sites",
+     ylim=c(0, y_max),
      pch=18, col="black", type="b",
-     main="folded SFS of ery")
+     main="folded SFS of ery",
+     xaxp=c(1, length(ery.sfs), length(ery.sfs)-1)
+)
+abline(h=seq(0,y_max,2000), lty="dashed", col="lightgrey")
 # observed:
 lines(ery.sfs, pch=20, col="red", type="b")
 legend("topright", legend=c("ery", "neutral fit"), pch=c(20, 18), col=c("red", "black"), bty="n")
 #
-# standard neutral model expectation:
-plot(snm(par_thetaOpt$min, len=length(par.sfs), n=36), 
+plot(snm_par, 
      xlab="minor allele count", 
      ylab="number of sites",
+     ylim=c(0, y_max),
      pch=18, col="black", type="b",
-     main="folded SFS of par")
+     main="folded SFS of par",
+     xaxp=c(1, length(par.sfs), length(par.sfs)-1)
+     )
+abline(h=seq(0,y_max,2000), lty="dashed", col="lightgrey")
 # observed:
 lines(par.sfs, pch=20, col="green", type="b")
 legend("topright", legend=c("par", "neutral fit"), pch=c(20, 18), col=c("green", "black"), bty="n")
 ```
 
-The deviation, especially in the first two count classes, is astonishing and certainly cannot be explained just by violations of assumptions of standard neutral model.
+The deviation, especially in the first two count classes, is astonishing and certainly cannot be explained just by violations of assumptions of the standard neutral model.
 
 Let's get confidence intervals for SNM expected counts. According to @Fu1995, p. 192, the counts in neutral spectra can be approximated by a Poisson distribution for large sample sizes (i. e. large $n$).
 
@@ -653,7 +664,7 @@ f = function (theta, eta, n){
   sumofsq = numeric(length(ery.sfs))
   i = seq(1, length(eta))
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   sumofsq = sum( (expected - eta)^2 )
   return(sumofsq)
 }

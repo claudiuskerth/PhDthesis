@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,times,print,index,custombib,custommargin]{PhDThesisPSnPDF}
+\documentclass[a4paper,12pt,times,print,custombib,custommargin]{../Classes/PhDThesisPSnPDF}
 %\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
 
 \usepackage{import}
@@ -124,7 +124,8 @@ In terms of machinery and personnel, there never seems to be enough to get thing
 
 \cite{Altshuler2000} were the first to use reduced-representation sequencing libraries from genomic restriction fragments for SNP discovery (now widely called \gls{rad}). After the introduction of massively parallel sequencing technologies, these were further developed for population allele frequency and genotype estimation \citep{Baird2008,VanTassell2008,Andolfatto2011,Elshire2011,Davey2011}.  By sequencing only the ends of restriction fragments, \gls{rad} creates sequencing libraries with reduced complexity as compared to whole-genome shotgun sequencing, thus subsampling the genome at homologous locations to identify and type SNPs evenly throughout the genome and increasing \gls{read} coverage for a given sequenced site. It is therefore a cost--effective alternative to whole genome shotgun sequencing of random loci. It is also superior to microsatellites, AFPL or EST markers since it can be used with study organisms without genome sequence information and allows genome-wide discovery of co--dominant genetic markers and their genotyping in one go \citep{Davey2011}. If template molecules for sequencing are labelled with different \glspl{barcode} from ligated adapter oligonucleotides, then individual or population samples can be pooled during sequence library preparation and sequenced together in the same parallel sequencing run. restriction enzyme--based genotyping by sequencing (GBS) technique \\
 the regions of the genome that flank the recognition sites of restriction enzymes \\
-reduced rep- resentation libraries (RRL) have been used to subsample genomes in a repeatable manner
+
+reduced rep- resentation libraries (RRL) have been used to subsample genomes in a repeatable manner\addcit{\cite{Andrews2016}}
 
 
 
