@@ -3,21 +3,20 @@ title: "new 1D SFS"
 author: "Claudius"
 date: "19/08/2017"
 output: 
-  # github_document:
-  #   toc: yes
-  #   md_extensions: +tex_math_single_backslash
-  html_document:
-    self_contained: true
-    theme: yeti
-    toc: true
-    fig_caption: true
+   github_document:
+     toc: yes
+  #html_document:
+  #  self_contained: true
+  #  theme: yeti
+  #  toc: true
+  #  fig_caption: true
 bibliography: Literature.bib
 ---
 
 
 ```{r setup options, cache=FALSE, include=TRUE}
 library(knitr)
-opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=10, fig.height=8)
+opts_chunk$set(dev=c("png", "pdf"), eval=TRUE, fig.width=10, fig.height=8, warning = FALSE)
 options(digits=10)
 setwd("/data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS")
 ```
@@ -33,6 +32,8 @@ This notebook analyses 1D site frequency spectra of ERY and PAR. There is a simi
 3. analysing only spectra that have been estimated with exhaustive search parameters to guarantee convergence: `-maxIter 50000 -tole 1e-6 -m 0` (see line 2611 onwards and 2692 onwards in `assembly.sh`)
 
 ```{r, eval=TRUE}
+# read in folded spectra from only overlapping sites
+
 ery.sfs = scan("original/ERY/ERY.unfolded.sfs.folded")
 par.sfs = scan("original/PAR/PAR.unfolded.sfs.folded")
 ```
@@ -188,7 +189,7 @@ arrows(1:length(snm_par), snm_par,
 
 # Add bootstrap confidence intervals
 
-I have bootstrapped the regions file and estimated SAF's and SFS' from it (see line 2676 onwards in `assembly.sh`). These are therefore bootstraps over contigs, not over sites as done by the `bootstrap` function of `realSFS`.
+I have bootstrapped the (ANGSD) _regions_ file and estimated SAF's and SFS' from it (see line 2676 onwards in `assembly.sh`). These are therefore bootstraps over contigs, not over sites as done by the `bootstrap` function of `realSFS`.
 
 ```{r}
 pp = pipe("cat bootstrap/ERY/*.unfolded.sfs.folded", "r")
@@ -213,8 +214,15 @@ rowSums(par.sfs.boot)
 
 
 ```{r}
+# discard count of monomorphic sites
+
 ery.sfs.boot = ery.sfs.boot[,-1]
 par.sfs.boot = par.sfs.boot[,-1]
+```
+
+```{r}
+dim(ery.sfs.boot)
+dim(par.sfs.boot)
 ```
 
 
@@ -356,16 +364,16 @@ PI = function(sfs){
 ery.sfs = scan("original/ERY/ERY.unfolded.sfs.folded")
 ery.nSites = sum(ery.sfs)
 S.ery = sum(ery.sfs[-1])
-S.ery # number of segregating sites
+(S_prop.ery = S.ery/ery.nSites) # number of segregating sites
 pi.ery = PI( ery.sfs[-1] )
-pi.ery/ery.nSites # pi per site
+(pi_sites.ery = pi.ery/ery.nSites) # pi per site
 #
 par.sfs = scan("original/PAR/PAR.unfolded.sfs.folded")
 par.nSites = sum(par.sfs)
 S.par = sum(par.sfs[-1])
-S.par 
+(S_prop.par = S.par/par.nSites)
 pi.par = PI( par.sfs[-1] )
-pi.par/par.nSites
+(pi_sites.par = pi.par/par.nSites)
 ```
 
 PAR has `r formatC(S.par-S.ery, format="d", big.mark=",")` more SNP's than ERY (from exactly the same sites).
@@ -386,42 +394,46 @@ close(pp)
 # number of segregating sites in bootstrap replicates
 
 S.ery.boot = rowSums(ery.sfs.boot[,-1])
-quantile(S.ery.boot, probs=c(.025, 0.5, .975))
+S_prop.ery.boot = S.ery.boot/rowSums(ery.sfs.boot)
+quantile(S_prop.ery.boot, probs=c(.025, 0.5, .975))
 
 S.par.boot = rowSums(par.sfs.boot[,-1])
-quantile(S.par.boot, probs=c(.025, 0.5, .975))
+S_prop.par.boot = S.par.boot/rowSums(par.sfs.boot)
+quantile(S_prop.par.boot, probs=c(.025, 0.5, .975))
 ```
 
 ```{r}
 # pi from bootstrap replicates
 
 pi.ery.boot = apply( ery.sfs.boot, 1, function(sfs) PI( sfs[-1] ) )
-quantile(pi.ery.boot, probs=c(.025, 0.5, .975))
+pi_sites.ery.boot = pi.ery.boot/rowSums(ery.sfs.boot)
+quantile(pi_sites.ery.boot, probs=c(.025, 0.5, .975))
 
 pi.par.boot = apply( par.sfs.boot, 1, function(sfs) PI( sfs[-1] ) )
-quantile(pi.par.boot, probs=c(.025, 0.5, .975))
+pi_sites.par.boot = pi.par.boot/rowSums(par.sfs.boot)
+quantile(pi_sites.par.boot, probs=c(.025, 0.5, .975))
 ```
 
 
 ```{r, fig.cap="The density curves are from 200 bootstrap resamples over contigs."}
-plot(density(S.ery.boot/ery.nSites),
+plot(density(S_prop.ery.boot),
      xlab=expression(S[prop]),
-     xlim=range(S.ery.boot/ery.nSites, S.par.boot/par.nSites),
+     xlim=range(S_prop.ery.boot, S_prop.par.boot),
      main="Proportion of segregating sites")
-lines(density(S.par.boot/par.nSites), lty=2, lwd=1.5)
-points(c(S.ery/ery.nSites, S.par/par.nSites), c(0, 0), pch=3)
+lines(density(S_prop.par.boot), lty=2, lwd=1.5)
+points(c(S_prop.ery, S_prop.par), c(0, 0), pch=3)
 legend("topright", legend=c("erythropus", "parallelus", "real sample"), 
        lty=c(1, 2, NA), lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
 ```
 
 ```{r, fig.cap="The density curves are from 200 bootstrap resamples over contigs."}
-plot(density(pi.ery.boot/ery.nSites),
-     xlim=range(c(pi.ery.boot/ery.nSites, pi.par.boot/par.nSites)),
+plot(density(pi_sites.ery.boot),
+     xlim=range(c(pi_sites.ery.boot, pi_sites.par.boot)),
      xlab=expression(pi[site]),
      main="Average number of pairwise differences"
      )
-lines(density(pi.par.boot/par.nSites), lty=2, lwd=1.5)
-points(c(pi.ery/ery.nSites, pi.par/par.nSites), c(0, 0), pch=3)
+lines(density(pi_sites.par.boot), lty=2, lwd=1.5)
+points(c(pi_sites.ery, pi_sites.par), c(0, 0), pch=3)
 legend("topright", legend=c("erythropus", "parallelus", "real sample"), lty=c(1, 2, NA), 
        lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
 ```
@@ -488,48 +500,55 @@ I have calculated SAF files with the new version of `angsd` and also non-overlap
 ```{r}
 # read in 1D SFS from also non-overlapping sites
 
-ery.sfs = scan("/data3/claudius/Big_Data/ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.folded")
-par.sfs = scan("/data3/claudius/Big_Data/ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.folded")
+ery.sfs.nonO = scan("/data3/claudius/Big_Data/ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.folded")
+par.sfs.nonO = scan("/data3/claudius/Big_Data/ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.folded")
 ```
 
 ```{r}
-sum(ery.sfs)
-sum(par.sfs)
+sum(ery.sfs.nonO)
+sum(par.sfs.nonO)
 ```
 
 When including also non-overlapping sites, the SFS of ERY is based on many more sites than the SFS of PAR. This is due to the higher coverage for ERY as compared to PAR.
 
-```{r}
-barplot(rbind(ery.sfs[-1], par.sfs[-1]), 
+```{r, fig.cap="comparison of SFS from only overlapping sites with SFS including non-overlapping sites."}
+mp = barplot(rbind(ery.sfs[-1], ery.sfs.nonO[-1], par.sfs[-1], par.sfs.nonO[-1])/c(sum(ery.sfs[-1]), sum(ery.sfs.nonO[-1]), sum(par.sfs[-1]), sum(par.sfs.nonO[-1])), 
         names.arg=1:length(ery.sfs[-1]),
         beside=TRUE,
+        col=c("red", "salmon1", "seagreen", "palegreen2"),
         xlab="minor allele count",
-        ylab="number of sites",
+        ylab="proportion of segregating sites",
         main="ML folded site frequency spectrum"
         )
+SNM = snm(1, 18, 36)
+lines(colMeans(mp), SNM/sum(SNM), pch=21, col="black", type="b")
 legend("topright",
-        legend=c("erythropus", "parallelus"),
-        fill=c(gray(.3), gray(.7))
+        legend=c("erythropus, only overlapping", "erythropus, including non-overlapping", "parallelus, only overlapping", "parallelus, including non-overlapping", "standard neutral model"),
+        fill=c("red", "salmon1", "seagreen", "palegreen2", NA),
+       border = c("black", "black", "black", "black", NA),
+       pch = c(NA, NA, NA, NA, 21),
+       bty = "n"
         )
 ```
 
+There is apparently not a big difference between spectra estimated from only overlapping sites and spectra including non-overlapping sites.
 
 ```{r}
 # get S and pi from observed spectra
 
 # ery
-ery.nSites = sum(ery.sfs)
-S.ery = sum(ery.sfs[-1])
-S.ery # number of segregating sites
-pi.ery = PI( ery.sfs[-1] )
-pi.ery/ery.nSites # pi per site
+ery.nSites.nonO = sum(ery.sfs.nonO)
+S.ery.nonO = sum(ery.sfs.nonO[-1])
+(S_prop.ery.nonO = S.ery.nonO/ery.nSites.nonO) # number of segregating sites
+pi.ery.nonO = PI( ery.sfs.nonO[-1] )
+(pi_sites.ery.nonO = pi.ery.nonO/ery.nSites.nonO) # pi per site
 
 # par
-par.nSites = sum(par.sfs)
-S.par = sum(par.sfs[-1])
-S.par 
-pi.par = PI( par.sfs[-1] )
-pi.par/par.nSites
+par.nSites.nonO = sum(par.sfs.nonO)
+S.par.nonO = sum(par.sfs.nonO[-1])
+(S_prop.par.nonO = S.par.nonO/par.nSites.nonO)
+pi.par.nonO = PI( par.sfs.nonO[-1] )
+(pi_sites.par.nonO = pi.par.nonO/par.nSites.nonO)
 ```
 
 These values are slightly _higher_ than those estimated from only overlapping sites (above). So, the overlapping sites have a slightly lower genetic diversity, which makes sense since loci with greater polymorphism should have a higher chance of allele-drop-out due to polymorphisms in the restriction site and therefore also a lower chance of overlapping between the two populations (i. e. having 9 individuals with read data in each population).  With the previous version of `angsd` I got $\pi_{site}$ values of around 0.0065 and 0.0073 for ERY and PAR, respectively. So, the new version of `angsd` does "call" higher sample allele frequencies.
@@ -539,15 +558,13 @@ These values are slightly _higher_ than those estimated from only overlapping si
 # ery
 n = 36
 a1 = sum(sapply(1:(n-1), function(x) x^(-1)))
-a1
 a2 = sum(sapply(1:(n-1), function(x) x^(-2)))
 b1 = (n+1)/(3*(n-1))
 b2 = 2*(n^2+n+3)/(9*n*(n-1))
 c1 = b1 - (1/a1)
 c2 = b2 - (n+2)/(a1*n)+a2/a1^2
-C = sqrt( c1/a1*S.ery + (c2/(a1^2+a2))*S.ery*(S.ery-1) )
-C
-( ery.TajimasD.global = (pi.ery - S.ery/a1)/C )
+C = sqrt( c1/a1*S.ery.nonO + (c2/(a1^2+a2))*S.ery.nonO*(S.ery.nonO-1) )
+( ery.TajimasD.global.nonO = (pi.ery.nonO - S.ery.nonO/a1)/C )
 ```
 
 ```{r}
@@ -560,10 +577,267 @@ b1 = (n+1)/(3*(n-1))
 b2 = 2*(n^2+n+3)/(9*n*(n-1))
 c1 = b1 - (1/a1)
 c2 = b2 - (n+2)/(a1*n)+a2/a1^2
-C = sqrt( c1/a1*S.par + (c2/(a1^2+a2))*S.par*(S.par-1) )
-( par.TajimasD.global = (pi.par - S.par/a1)/C )
+C = sqrt( c1/a1*S.par.nonO + (c2/(a1^2+a2))*S.par.nonO*(S.par.nonO-1) )
+( par.TajimasD.global.nonO = (pi.par.nonO - S.par.nonO/a1)/C )
 ```
 
-The Tajima's D values including all sites that have at least 9 individuals with read data are slightly less negative than those calculated from only overlapping sites.
+The Tajima's D values including all sites that have at least 9 individuals with read data are slightly less negative than those calculated from only overlapping sites. According to the 95% bootstrap CI's, the difference in Tajima's D is clearly significant for ERY and marginally significant for PAR.
+
+
+
+### apply Ludovic's correction
+
+I have put the code from the IPython notebook `Ludovics_correction.ipynb` into a separate script that can be used on the command line and easily be applied to hundreds of unfolded 1D spectra in dadi format. I have put the script `Ludovics_correction_1D.py` in /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS. I have applied Ludovic's correction to the 1D spectra including only overlapping sites as well as to their bootstrap replicates. I have also applied Ludovic's correction to the 1D spectra including non-overlapping sites.
+
+
+#### only overlapping sites
+
+```{r}
+# read in 1D SFS from only overlapping sites and with Ludovic's correction applied
+
+pp = pipe("tail -n 2 original/ERY/ERY.unfolded.sfs.dadi.corr | head -n 1 | sed -r 's/\\s+/\t/g' | cut -f 1-19", "r")
+ery.sfs.corr = scan(pp)
+close(pp)
+
+pp = pipe("tail -n 2 original/PAR/PAR.unfolded.sfs.dadi.corr | head -n 1 | sed -r 's/\\s+/\t/g' | cut -f 1-19", "r")
+par.sfs.corr = scan(pp)
+close(pp)
+```
+
+```{r, fig.cap="Comparison of SFS from only overlapping sites and Ludivic's correction applied or not."}
+mp = barplot(rbind(ery.sfs[-1], ery.sfs.corr[-1], par.sfs[-1], par.sfs.corr[-1]), 
+        names.arg=1:length(ery.sfs[-1]),
+        beside=TRUE,
+        col=c("red", "salmon1", "seagreen", "palegreen2"),
+        xlab="minor allele count",
+        ylab="number of segregating sites",
+        main="folded SFS from only overlapping sites"
+        )
+lines(colMeans(mp[1:2,]), snm_ery, pch=21, col="black", type="b")
+lines(colMeans(mp[3:4,]), snm_par, pch=21, col="black", type="b")
+#
+legend("topright",
+        legend=c("erythropus, original", "erythropus, corrected with p=0.07", "parallelus, original", "parallelus, corrected with p=0.15", "standard neutral model fit"),
+        fill = c("red", "salmon1", "seagreen", "palegreen2", NA),
+       pch = c(NA, NA, NA, NA, 21),
+       border = c("black", "black", "black", "black", NA),
+       bty = "n"
+        )
+```
+
+Note, that the standard neutral models used to find the optimal degree of correction, $p$, are slightly different from the SNM as plotted here and fit as shown above. Compare with `check_effect_of_Ludovics_correction.ipynb`. That is because the SNM used for correction are derived by `dadi` which scales a probability distribution of allele frequencies under a standard neutral model to fit an observed SFS by dividing the sum of the observed spectrum by the sum of the model spectrum. The scaling factor is an estimate of $\theta$ under the assumption of a standard neutral model. This leads to a less than optimal fit.
+
+```{r}
+# get S and pi from corrected spectra
+
+# ery
+ery.nSites.corr = sum(ery.sfs.corr)
+S.ery.corr = sum(ery.sfs.corr[-1])
+(S_prop.ery.corr = S.ery.corr/ery.nSites.corr) # number of segregating sites, this should be the same as with uncorrected spectra
+pi.ery.corr = PI( ery.sfs.corr[-1] )
+(pi_sites.ery.corr = pi.ery.corr/ery.nSites.corr) # pi per site
+
+# par
+par.nSites.corr = sum(par.sfs.corr)
+S.par.corr = sum(par.sfs.corr[-1])
+(S_prop.par = S.par.corr/par.nSites.corr ) 
+pi.par.corr = PI( par.sfs.corr[-1] )
+(pi_sites.par.corr = pi.par.corr/par.nSites.corr)
+```
+
+Applying Ludovic's correction reduces $\pi_{site}$ slightly. As expected from the greater degree of correction, the reduction is larger for PAR than for ERY.
+
+```{r}
+# get Tajima's D from corrected spectra
+
+# ery
+n = 36
+a1 = sum(sapply(1:(n-1), function(x) x^(-1)))
+a2 = sum(sapply(1:(n-1), function(x) x^(-2)))
+b1 = (n+1)/(3*(n-1))
+b2 = 2*(n^2+n+3)/(9*n*(n-1))
+c1 = b1 - (1/a1)
+c2 = b2 - (n+2)/(a1*n)+a2/a1^2
+C = sqrt( c1/a1*S.ery.corr + (c2/(a1^2+a2))*S.ery.corr*(S.ery.corr-1) )
+( ery.TajimasD.global.corr = (pi.ery.corr - S.ery.corr/a1)/C )
+
+# par
+n = 36
+a1 = sum(sapply(1:(n-1), function(x) x^(-1)))
+a2 = sum(sapply(1:(n-1), function(x) x^(-2)))
+b1 = (n+1)/(3*(n-1))
+b2 = 2*(n^2+n+3)/(9*n*(n-1))
+c1 = b1 - (1/a1)
+c2 = b2 - (n+2)/(a1*n)+a2/a1^2
+C = sqrt( c1/a1*S.par.corr + (c2/(a1^2+a2))*S.par.corr*(S.par.corr-1) )
+( par.TajimasD.global.corr = (pi.par.corr - S.par.corr/a1)/C )
+```
+
+Also as expected, due to the lower $\pi$, Tajima's D from the corrected spectra is more negative than with uncorrected spectra.
+
+```{r}
+# read in bootstrap replicates with Ludovic's correction applied
+
+pp = pipe("cat bootstrap/ERY/*corr | grep \"^[0-9]\" | grep -v \"folded\" | grep [2-9] | cut -d\" \" -f 1-19", "r")
+ery.sfs.boot.corr = read.table(pp, header=FALSE)
+close(pp)
+
+pp = pipe("cat bootstrap/PAR/*corr | grep \"^[0-9]\" | grep -v \"folded\" | grep [2-9] | cut -d\" \" -f 1-19", "r")
+par.sfs.boot.corr = read.table(pp, header=FALSE)
+close(pp)
+```
+
+```{r}
+# number of segregating sites in bootstrap replicates
+# should be the same as without correction
+
+S.ery.boot.corr = rowSums(ery.sfs.boot.corr[,-1])
+S_prop.ery.boot.corr = S.ery.boot.corr/rowSums(ery.sfs.boot.corr)
+quantile(S_prop.ery.boot.corr, probs=c(.025, 0.5, .975))
+
+S.par.boot.corr = rowSums(par.sfs.boot.corr[,-1])
+S_prop.par.boot.corr = S.par.boot.corr/rowSums(par.sfs.boot.corr)
+quantile(S_prop.par.boot.corr, probs=c(.025, 0.5, .975))
+```
+
+```{r}
+# pi from bootstrap replicates
+
+pi.ery.boot.corr = apply( ery.sfs.boot.corr, 1, function(sfs) PI( sfs[-1] ) )
+pi_sites.ery.boot.corr = pi.ery.boot.corr/rowSums(ery.sfs.boot.corr)
+quantile(pi_sites.ery.boot.corr, probs=c(.025, 0.5, .975))
+
+pi.par.boot.corr = apply( par.sfs.boot.corr, 1, function(sfs) PI( sfs[-1] ) )
+pi_sites.par.boot.corr = pi.par.boot.corr/rowSums(par.sfs.boot.corr)
+quantile(pi_sites.par.boot.corr, probs=c(.025, 0.5, .975))
+```
+
+```{r}
+# get bootstrap confidence intervals of global Tajima's D
+
+# ery
+C.boot.corr = sqrt( c1/a1*S.ery.boot.corr + (c2/(a1^2+a2))*S.ery.boot.corr*(S.ery.boot.corr-1) )
+ery.TajimasD.global.boot.corr = (pi.ery.boot.corr - S.ery.boot.corr/a1)/C.boot.corr
+quantile(ery.TajimasD.global.boot.corr, probs=c(0.025, 0.5, 0.975))
+
+# par
+C.boot.corr = sqrt( c1/a1*S.par.boot.corr + (c2/(a1^2+a2))*S.par.boot.corr*(S.par.boot.corr-1) )
+par.TajimasD.global.boot.corr = (pi.par.boot.corr - S.par.boot.corr/a1)/C.boot.corr
+quantile(par.TajimasD.global.boot.corr, probs=c(0.025, 0.5, 0.975))
+```
+
+
+#### including non-overlapping sites
+
+```{r}
+# read in 1D SFS from also non-overlapping sites
+
+pp = pipe("tail -n 2 /data3/claudius/Big_Data/ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.dadi.corr | head -n 1 | cut -d\" \" -f 1-19", "r")
+ery.sfs.nonO.corr = scan(pp)
+close(pp)
+
+pp = pipe("tail -n 2 /data3/claudius/Big_Data/ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.dadi.corr | head -n 1 | cut -d\" \" -f 1-19", "r")
+par.sfs.nonO.corr = scan(pp)
+close(pp)
+```
+```{r}
+# get S and pi from observed spectra
+
+# ery
+ery.nSites.nonO.corr = sum(ery.sfs.nonO.corr)
+S.ery.nonO.corr = sum(ery.sfs.nonO.corr[-1])
+(S_prop.ery.nonO.corr = S.ery.nonO.corr/ery.nSites.nonO.corr)
+pi.ery.nonO.corr = PI( ery.sfs.nonO.corr[-1] )
+(p_sites.ery.nonO.corr = pi.ery.nonO.corr/ery.nSites.nonO.corr) # pi per site
+
+# par
+par.nSites.nonO.corr = sum(par.sfs.nonO.corr)
+S.par.nonO.corr = sum(par.sfs.nonO.corr[-1])
+(S_prop.par.nonO.corr = S.par.nonO.corr/par.nSites.nonO.corr)
+pi.par.nonO.corr = PI( par.sfs.nonO.corr[-1] )
+(pi_sites.par.nonO.corr = pi.par.nonO.corr/par.nSites.nonO.corr)
+```
+
+```{r}
+# 1. calculate constant (see p. 45 in Gillespie)
+# ery
+n = 36
+a1 = sum(sapply(1:(n-1), function(x) x^(-1)))
+a2 = sum(sapply(1:(n-1), function(x) x^(-2)))
+b1 = (n+1)/(3*(n-1))
+b2 = 2*(n^2+n+3)/(9*n*(n-1))
+c1 = b1 - (1/a1)
+c2 = b2 - (n+2)/(a1*n)+a2/a1^2
+C = sqrt( c1/a1*S.ery.nonO.corr + (c2/(a1^2+a2))*S.ery.nonO.corr*(S.ery.nonO.corr-1) )
+( ery.TajimasD.global.nonO.corr = (pi.ery.nonO.corr - S.ery.nonO.corr/a1)/C )
+```
+
+```{r}
+# 1. calculate constant (see p. 45 in Gillespie)
+# par
+n = 36
+a1 = sum(sapply(1:(n-1), function(x) x^(-1)))
+a2 = sum(sapply(1:(n-1), function(x) x^(-2)))
+b1 = (n+1)/(3*(n-1))
+b2 = 2*(n^2+n+3)/(9*n*(n-1))
+c1 = b1 - (1/a1)
+c2 = b2 - (n+2)/(a1*n)+a2/a1^2
+C = sqrt( c1/a1*S.par.nonO.corr + (c2/(a1^2+a2))*S.par.nonO.corr*(S.par.nonO.corr-1) )
+( par.TajimasD.global.nonO.corr = (pi.par.nonO.corr - S.par.nonO.corr/a1)/C )
+```
+
+
+### comparison of results
+
+ERY, uncorrected:
+
+|                | only overlapping sites       | including non-overlapping sites |
+| -------------- | ---------------------------- | ------------------------------- |
+| $S_{prop}$     |   0.0326 (0.0320, 0.0331)    |  0.0325                         |
+| $\pi_{sites}$  |   0.00715 (0.00704, 0.00726) |  0.00735                        |
+| Tajima's D     |  -0.345 (-0.386, -0.308)     |  -0.242                         |
+
+
+PAR, uncorrected:
+
+|                | only overlapping sites       | including non-overlapping sites |
+| -------------- | ---------------------------- | ------------------------------- |
+| $S_{prop}$     |   0.0442 (0.0435, 0.0450)    |  0.0451                         |
+| $\pi_{sites}$  |   0.00804 (0.00794, 0.00815) |  0.00832                        |
+| Tajima's D     |  -0.936  (-0.965, -0.908)    | -0.897                          |
+
+
+
+
+ERY, corrected:
+
+|                | only overlapping sites      | including non-overlapping sites |
+| -------------- | --------------------------- | ------------------------------- |
+| $S_{prop}$     |  0.0326  (0.0320, 0.0331)   |  0.0325                         |
+| $\pi_{sites}$  |  0.00704 (0.00689, 0.00717) |  0.00716                        |
+| Tajima's D     |  -0.399  (-0.446, -0.353)   |  -0.334                         |
+
+
+PAR, corrected:
+
+|                | only overlapping sites      | including non-overlapping sites |
+| -------------- | --------------------------- | ------------------------------- |
+| $S_{prop}$     |  0.0442  (0.0435, 0.0450)   |   0.0451                        |
+| $\pi_{sites}$  |  0.00773 (0.00760, 0.00792) |   0.00797                       |
+| Tajima's D     |  -1.049  (-1.080, -0.997)   |  -1.020                         |
+
+
+
+# Conclusions
+
+Including overlapping sites leads to a greater estimate of $\pi$ and therefore also a less negative Tajima's D. Applying Ludovic's correction leads to a reduction in $\pi$ [^1] and therefore also to a more a more negative Tajima's D. Despite these differences and despite the open question which of these values are closer to the true values, two observations remain stable:
+
++ PAR has a greater genetic diversity than ERY
+
++ both Tajima's D values are significantly negative, the value of PAR being highly negative
+
+A negative $D_T$ could either be due to population expansion or linked selection (positive or negative). Unless selection is more widespread in the genome than I thought or these RAD markers are biased towards expressed sequences (restriction enzyme SbfI: CCTGCAGG), I would favour the first explanation.
 
 # References
+
+[^1]: since the correction only transfers counts from higher to lower count classes, this is expected
