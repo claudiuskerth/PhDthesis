@@ -2675,12 +2675,20 @@ realSFS -P 24 -maxIter 50000 -tole 1e-6 -m 0 SAFs/ERY/ERY.unfolded.saf.idx SAFs/
 mkdir -p SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR
 realSFS -P 12 -maxIter 50000 -tole 1e-6 -m 0 SAFs/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.saf.idx 2>/dev/null > SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs
 realSFS -P 12 -maxIter 50000 -tole 1e-6 -m 0 SAFs/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.saf.idx 2>/dev/null > SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs
+
 # fold
 ./BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/fold_1D_spectrum.py < SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs \
 	> SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.folded
 #
 ./BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/fold_1D_spectrum.py < SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs \
 	> SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.folded
+
+#
+# apply Ludovic's correction
+#
+for POP in ERY PAR; do echo "37 unfolded" | cat - SFS/with_ANGSD-0.917-142-ge3dbeaa/$POP/$POP.unfolded.sfs > SFS/with_ANGSD-0.917-142-ge3dbeaa/$POP/$POP.unfolded.sfs.dadi; done
+#
+for POP in ERY PAR; do ./BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/Ludovics_correction_1D.py SFS/with_ANGSD-0.917-142-ge3dbeaa/$POP/$POP.unfolded.sfs.dadi; done
 
 # ----------------------------------------------------
 # bootstrap regions file from only overlapping sites
@@ -2706,6 +2714,9 @@ cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
 # see run_realSFS.sh
 # this has taken about 8 hours to finish with exhaustive search parameters
 # the results are in ./minInd9_overlapping/SFS/bootstrap/ERY
+# it is fastest to submit run_realSFS.sh as an array job to iceberg (see /fastdata/bop08ck on iceberg)
+# I have analysed the new 1D SFS from ERY and PAR from overlapping as well as including non-overlapping sites
+# in a new Rmd file called "new_1D_SFS.Rmd" in /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS.
 
 
 # ----------------------------------------------------
@@ -2793,3 +2804,22 @@ cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS
 # this script turns the corrected spectra from the previous step into stairway-plot format.
 # The new files it creates have the ending *corr.stair.
 
+
+
+
+# -----------------------------------------------------------
+# bootstrap regions file from INCLUDING NON-overlapping sites
+# -----------------------------------------------------------
+mkdir -p including_non-overlapping/BOOT_RF
+mkdir -p including_non-overlapping/SAF/bootstrap/ERY including_non-overlapping/SAF/bootstrap/PAR
+# see bootstrap_contigs.ipynb
+
+
+# ----------------------------------------------------------------------------------------
+# calculate SAF files for bootstrapped regions files from INCLUDING NON-overlapping sites
+# ----------------------------------------------------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
+# see bootstrao_contigs.ipynb
+# I have put the code for SAF file estimation into the script estimate_SAFs.py.
+# I had to modify the paths in this script: replaced "minInd9_overlapping" with "including_non-overlapping" and
+# "from_SAFs_minInd9_overlapping.sites" with "all.sites"

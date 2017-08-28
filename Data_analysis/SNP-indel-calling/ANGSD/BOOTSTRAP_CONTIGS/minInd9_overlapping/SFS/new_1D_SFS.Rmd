@@ -3,13 +3,14 @@ title: "new 1D SFS"
 author: "Claudius"
 date: "19/08/2017"
 output: 
-   github_document:
-     toc: yes
-  #html_document:
-  #  self_contained: true
-  #  theme: yeti
-  #  toc: true
-  #  fig_caption: true
+#   github_document:
+#     toc: yes
+  html_document:
+    self_contained: true
+    theme: yeti
+    toc: true
+    toc_depth: 4
+    fig_caption: true
 bibliography: Literature.bib
 ---
 
@@ -236,7 +237,7 @@ ery.sfs.CI95 = data.frame(
   )
 #
 for(i in 1:ncol(ery.sfs.boot)){
-  ery.sfs.CI95[i,] = quantile(ery.sfs.boot[,i], probs=c(0.25, 0.5, 0.975))
+  ery.sfs.CI95[i,] = quantile(ery.sfs.boot[,i], probs=c(0.025, 0.5, 0.975))
 }
 
 
@@ -247,7 +248,7 @@ par.sfs.CI95 = data.frame(
   )
 #
 for(i in 1:ncol(par.sfs.boot)){
-  par.sfs.CI95[i,] = quantile(par.sfs.boot[,i], probs=c(0.25, 0.5, 0.975))
+  par.sfs.CI95[i,] = quantile(par.sfs.boot[,i], probs=c(0.025, 0.5, 0.975))
 }
 ```
 
@@ -344,7 +345,7 @@ text(12.3, 7400,
 
 ### S and $\pi$
 
-```{r}
+```{r, cache=TRUE}
 # define function to calculate average number of pairwise differences
 # from a folded SFS
 
@@ -490,7 +491,7 @@ par.TajimasD.global.boot = (pi.par.boot - S.par.boot/a1)/C.boot
 quantile(par.TajimasD.global.boot, probs=c(0.025, 0.5, 0.975))
 ```
 
-Both global Tajima's D values are significantly different from 0 and negative. I think this means that there is an excess of low frequency variants, which might be an expansion signal, i. e. many variable sites are recent.
+Both global Tajima's D values are significantly different from 0 and negative. I think this means that there is an excess of low frequency variants, which might be an expansion signal, i. e. many variable sites are recent. This interpretation, however, contradicts with the results from `stairway-plot`, which unambiguously infers a recent population decline for both ERY and PAR.
 
 
 ### Check including non-overlapping sites
@@ -583,6 +584,61 @@ C = sqrt( c1/a1*S.par.nonO + (c2/(a1^2+a2))*S.par.nonO*(S.par.nonO-1) )
 
 The Tajima's D values including all sites that have at least 9 individuals with read data are slightly less negative than those calculated from only overlapping sites. According to the 95% bootstrap CI's, the difference in Tajima's D is clearly significant for ERY and marginally significant for PAR.
 
+
+
+#### get bootstrap replicates
+
+```{r}
+# read in bootstrap replicates again
+
+pp = pipe("cat /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/including_non-overlapping/SFS/bootstrap/ERY/*.unfolded.sfs.folded", "r")
+ery.sfs.boot.nonO = read.table(pp, header=FALSE)
+close(pp)
+
+pp = pipe("cat /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/including_non-overlapping/SFS/bootstrap/PAR/*.unfolded.sfs.folded", "r")
+par.sfs.boot.nonO = read.table(pp, header=FALSE)
+close(pp)
+```
+
+
+```{r}
+# number of segregating sites in bootstrap replicates
+
+S.ery.boot.nonO = rowSums(ery.sfs.boot.nonO[,-1])
+S_prop.ery.boot.nonO = S.ery.boot.nonO/rowSums(ery.sfs.boot.nonO)
+quantile(S_prop.ery.boot.nonO, probs=c(.025, 0.5, .975))
+
+S.par.boot.nonO = rowSums(par.sfs.boot.nonO[,-1])
+S_prop.par.boot.nonO = S.par.boot.nonO/rowSums(par.sfs.boot.nonO)
+quantile(S_prop.par.boot.nonO, probs=c(.025, 0.5, .975))
+```
+
+
+```{r}
+# pi from bootstrap replicates
+
+pi.ery.boot.nonO = apply( ery.sfs.boot.nonO, 1, function(sfs) PI( sfs[-1] ) )
+pi_sites.ery.boot.nonO = pi.ery.boot.nonO/rowSums(ery.sfs.boot.nonO)
+quantile(pi_sites.ery.boot.nonO, probs=c(.025, 0.5, .975))
+
+pi.par.boot.nonO = apply( par.sfs.boot.nonO, 1, function(sfs) PI( sfs[-1] ) )
+pi_sites.par.boot.nonO = pi.par.boot.nonO/rowSums(par.sfs.boot.nonO)
+quantile(pi_sites.par.boot.nonO, probs=c(.025, 0.5, .975))
+```
+
+```{r}
+# get bootstrap confidence intervals of global Tajima's D
+
+# ery
+C.boot.nonO = sqrt( c1/a1*S.ery.boot.nonO + (c2/(a1^2+a2))*S.ery.boot.nonO*(S.ery.boot.nonO-1) )
+ery.TajimasD.global.boot.nonO = (pi.ery.boot.nonO - S.ery.boot.nonO/a1)/C.boot.nonO
+quantile(ery.TajimasD.global.boot.nonO, probs=c(0.025, 0.5, 0.975))
+
+# par
+C.boot.nonO = sqrt( c1/a1*S.par.boot.nonO + (c2/(a1^2+a2))*S.par.boot.nonO*(S.par.boot.nonO-1) )
+par.TajimasD.global.boot.nonO = (pi.par.boot.nonO - S.par.boot.nonO/a1)/C.boot.nonO
+quantile(par.TajimasD.global.boot.nonO, probs=c(0.025, 0.5, 0.975))
+```
 
 
 ### apply Ludovic's correction

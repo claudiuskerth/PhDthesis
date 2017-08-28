@@ -175,117 +175,196 @@ image.plot(0:37, 0:37, sfs2d, xlab="PAR", ylab="ERY", main="global unfolded 2D-S
 
 
 # ---- folded-sfs ----
-ery.sfs = scan("ERY.FOLDED.sfs")
-par.sfs = scan("PAR.FOLDED.sfs")
-ery.sfs = ery.sfs[-1]/sum(ery.sfs[-1])
-par.sfs = par.sfs[-1]/sum(par.sfs[-1])
-barplot(rbind(ery.sfs, par.sfs), 
-        names.arg=1:length(ery.sfs),
-        beside=TRUE,
-        xlab="minor allele count",
-        ylab="proportion of variable sites",
-        col=c(gray(.3), gray(.7)),
-        main="global folded SFS"
+# read in folded spectra from only overlapping sites
+ery.sfs = scan("../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/original/ERY/ERY.unfolded.sfs.folded")
+par.sfs = scan("../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/original/PAR/PAR.unfolded.sfs.folded")
+# read in 1D SFS from also non-overlapping sites
+ery.sfs.nonO = scan("../ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.folded")
+par.sfs.nonO = scan("../ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.folded")
+# unfortunately, function definitions when read by knitr expire at the end
+# of the code chunk
+# read in functions from external file:
+source("functions.R")
+par(mar=c(5,4,2,0))
+mp = barplot(rbind(ery.sfs[-1], ery.sfs.nonO[-1], par.sfs[-1], par.sfs.nonO[-1])/c(sum(ery.sfs[-1]), sum(ery.sfs.nonO[-1]), sum(par.sfs[-1]), sum(par.sfs.nonO[-1])), 
+             names.arg=1:length(ery.sfs[-1]),
+             beside=TRUE,
+             col=c("red", "salmon1", "seagreen", "palegreen2"),
+             xlab="minor allele count",
+             ylab="proportion of segregating sites",
+             main="ML folded site frequency spectrum"
 )
+SNM = snm(1, 18, 36)
+lines(colMeans(mp), SNM/sum(SNM), pch=21, col="black", type="b")
 legend("topright",
-       legend=c("erythropus", "parallelus"),
-       fill=c(gray(.3), gray(.7)),
-       bty="n"
+       legend=c("erythropus, only overlapping", "erythropus, including non-overlapping", "parallelus, only overlapping", "parallelus, including non-overlapping", "standard neutral model"),
+       fill=c("red", "salmon1", "seagreen", "palegreen2", NA),
+       border = c("black", "black", "black", "black", NA),
+       pch = c(NA, NA, NA, NA, 21),
+       bty = "n"
 )
+
 
 
 # ---- fit-neutral-theta ----
-# get observed folded spectra:
-ery.sfs = scan("ERY.FOLDED.sfs")
-par.sfs = scan("PAR.FOLDED.sfs")
-ery.sfs = ery.sfs[-1]
-par.sfs = par.sfs[-1]
+# get observed folded spectra from only overlapping sites:
+ery.sfs = scan("../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/original/ERY/ERY.unfolded.sfs.folded")
+par.sfs = scan("../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/original/PAR/PAR.unfolded.sfs.folded")
 # read in functions from external file:
 source("functions.R")
 # unfortunately, function definitions when read by knitr expire at the end
 # of the code chunk
 # optimize theta
-ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs)),  eta=ery.sfs, n=36, maximum=FALSE, tol=0.001)
-par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs)),  eta=par.sfs, n=36, maximum=FALSE, tol=0.001)
+ery_thetaOpt = optimize(f, interval=c(0, sum(ery.sfs[-1])),  eta=ery.sfs[-1], n=36, maximum=FALSE, tol=0.001)
+par_thetaOpt = optimize(f, interval=c(0, sum(par.sfs[-1])),  eta=par.sfs[-1], n=36, maximum=FALSE, tol=0.001)
 
 
 
 
-# ---- folded-sfs-boot-exh-ery ----
-ery.sfs.boot.exh = read.table("ERY.FOLDED.sfs.boot.exh", header=F)
+
+#
+#
+#
+
+# ---- folded-sfs-boot ----
+# get 200 bootstrap replicates of ERY spectrum from only overlapping sites, with exhaustive search
+pp = pipe("cat ../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/bootstrap/ERY/*.unfolded.sfs.folded", "r")
+ery.sfs.boot = read.table(pp, header=F)
+close(pp)
+ery.sfs.boot = ery.sfs.boot[,-1] # discard count of monomorphic sites
+# get 200 bootstrap replicates of PAR spectrum from only overlapping sites, with exhaustive search
+pp = pipe("cat ../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/bootstrap/PAR/*.unfolded.sfs.folded", "r")
+par.sfs.boot = read.table(pp, header=F)
+close(pp)
+par.sfs.boot = par.sfs.boot[,-1]
+
 # calculate 95% bootstrap CI:
-names(ery.sfs.boot.exh) = as.character(0:18)
-ery.sfs.boot.exh.CI95 = as.data.frame(t( apply(ery.sfs.boot.exh, 2, quantile, probs=c(0.25, 0.5, 0.975)) ))
+#names(ery.sfs.boot) = as.character(0:18)
+ery.sfs.boot.CI95 = apply(ery.sfs.boot, 2, quantile, probs=c(0.025, 0.5, 0.975))
+par.sfs.boot.CI95 = apply(par.sfs.boot, 2, quantile, probs=c(0.025, 0.5, 0.975))
 #
+# get optimal standard neutral model spectra
 source("functions.R")
-snm.expect = snm(ery_thetaOpt$min, len=length(ery.sfs), n=36)
+snm_ery = snm(ery_thetaOpt$min, len=18, n=36)
+snm_par = snm(par_thetaOpt$min, len=18, n=36)
 # need to get snm.expect now to set the proper ylim
+y_max =  max(ery.sfs.boot.CI95[3,], par.sfs.boot.CI95[3,], snm_ery, snm_par)
+par(mfrow=c(1,1), mar=c(5,4,2,0))
 #
-# plot:
-# ERY
+# ERY:
+#
 # plot medians of bootstraps:
 plot(1:18, 
-     ery.sfs.boot.exh.CI95[2:19,2], 
-     ylim=c(0, max(ery.sfs.boot.exh.CI95[2:19,], snm.expect)),
+     ery.sfs.boot.CI95[2,1:18], 
+     ylim=c(0, y_max),
      pch=20,
      xlab="minor allele count",
      ylab="number of sites",
      main="erythropus",
      type="b",
-     col="red"
+     col="red",
+     xaxp=c(1, 18, 18-1)
 )
-arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
-       1:18, ery.sfs.boot.exh.CI95[2:19,3],
+abline(h=seq(0, y_max, 2000), lty="dashed", col="lightgrey")
+arrows(1:18, ery.sfs.boot.CI95[2,1:18], 
+       1:18, ery.sfs.boot.CI95[3,1:18],
        angle=90,
        length=.05,
        col="red"
 )
-arrows(1:18, ery.sfs.boot.exh.CI95[2:19,2], 
-       1:18, ery.sfs.boot.exh.CI95[2:19,1],
+arrows(1:18, ery.sfs.boot.CI95[2,1:18], 
+       1:18, ery.sfs.boot.CI95[1,1:18],
        angle=90,
        length=.05,
        col="red"
 )
+
 #
 # SNM expected:
 #
-points(1:length(snm.expect), snm.expect, 
-       pch=18, col="gray", type="b"
+points(1:18, snm_ery, pch=18, col=gray(0, 0.5), type="b")
+#
+legend("topright", bty="n",
+       legend=c("standard neutral model"),
+       pch=18,
+       col="gray"
 )
-# get lower and upper 95% quantiles:
-low = qpois(p=0.025, lambda=snm.expect)
-high = qpois(p=0.975, lambda=snm.expect)
-# add 95% CI bars:
-arrows(1:length(snm.expect), snm.expect, 
-       1:length(snm.expect), high,
-       angle=90,
-       length=.05
-)
-arrows(1:length(snm.expect), snm.expect, 
-       1:length(snm.expect), low,
-       angle=90,
-       length=.05
-)
+# # get lower and upper 95% quantiles:
+# low = qpois(p=0.025, lambda=snm.expect)
+# high = qpois(p=0.975, lambda=snm.expect)
+# # add 95% CI bars:
+# arrows(1:length(snm.expect), snm.expect, 
+#        1:length(snm.expect), high,
+#        angle=90,
+#        length=.05
+# )
+# arrows(1:length(snm.expect), snm.expect, 
+#        1:length(snm.expect), low,
+#        angle=90,
+#        length=.05
+# )
 #
 # # plot observed spectrum:
 # points(1:18, ery.sfs, pch=4, cex=1, col="red", type="b", lwd=2)
 # legend(x=10, y=8200, legend="real sample", bty="n", col="red", pch=4, lwd=2, cex=.9)
 # SNM expected:
-points(1:length(snm.expect), snm.expect, 
-       pch=18, col="gray", type="b"
+# points(1:length(snm.expect), snm.expect, 
+#        pch=18, col="gray", type="b"
+# )
+# # get lower and upper 95% quantiles:
+# low = qpois(p=0.025, lambda=snm.expect)
+# high = qpois(p=0.975, lambda=snm.expect)
+# #
+#
+
+# PAR:
+#
+# plot medians of bootstraps:
+par(mar=c(5, 2,2,0))
+plot(1:18, 
+     par.sfs.boot.CI95[2,1:18], 
+     ylim=c(0, y_max),
+     pch=20,
+     type="b",
+     xlab="minor allele count",
+     ylab="",
+     yaxt = "n",
+     main="parallelus",
+     col="seagreen",
+     xaxp=c(1, 18, 18-1)
 )
-# get lower and upper 95% quantiles:
-low = qpois(p=0.025, lambda=snm.expect)
-high = qpois(p=0.975, lambda=snm.expect)
+#axis(2, at=c(0, 5000, 10000, 15000), labels=FALSE)
+abline(h=seq(0, y_max, 2000), lty="dashed", col="lightgrey")
+arrows(1:18, par.sfs.boot.CI95[2,1:18], 
+       1:18, par.sfs.boot.CI95[3,1:18],
+       angle=90,
+       length=.05,
+       col="seagreen"
+)
+arrows(1:18, par.sfs.boot.CI95[2,1:18], 
+       1:18, par.sfs.boot.CI95[1,1:18],
+       angle=90,
+       length=.05,
+       col="seagreen"
+)
+#
+# SNM expected:
+#
+points(1:18, snm_par, pch=18, col=gray(0, 0.5), type="b")
 #
 legend("topright", bty="n",
-       legend=c("observed", "optimal neutral fit"),
-       fill=c("red", "gray"),
-       border=c("red", "gray")
-       )
+       legend=c("standard neutral model"),
+       pch=18,
+       col="gray"
+)
 
 
 
+
+#
+#
+#
+#
 # ---- folded-sfs-boot-exh-par ----
 # PAR
 par.sfs.boot.exh = read.table("PAR.FOLDED.sfs.boot.exh", header=F)
@@ -353,50 +432,135 @@ legend("topright", bty="n",
 
 
 
+
+
+
+
+
+#
+#
+#
+#
+#
+#
+
 # ---- S-and-Pi ----
-# bootstrap resampled SFS's:
-# number of segregating sites:
-S.ery.boot = apply( ery.sfs.boot.exh, c(1), function(x) sum(x[2:length(x)]) )
-#quantile(S.ery.boot, probs=c(.025, .975))
-# average number of pairwise differences:
-PI = function(sfs){
-  n.half = 18
-  n = 36
-  1/(n*(n-1)/2) * sum( sapply(1:n.half, function(i) i*(n-i)*sfs[i]) )
-}
-pi.ery.boot = apply( ery.sfs.boot.exh, c(1), function(x) PI( x[2:length(x)] ) )
+rm(list=ls())
+# read in folded spectra from only overlapping sites
+ery.sfs = scan("../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/original/ERY/ERY.unfolded.sfs.folded")
+par.sfs = scan("../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/original/PAR/PAR.unfolded.sfs.folded")
+# read in 1D SFS from also non-overlapping sites
+ery.sfs.nonO = scan("../ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/ERY/ERY.unfolded.sfs.folded")
+par.sfs.nonO = scan("../ANGSD/SFS/with_ANGSD-0.917-142-ge3dbeaa/PAR/PAR.unfolded.sfs.folded")
+# unfortunately, function definitions when read by knitr expire at the end
+# of the code chunk
+# read in functions from external file:
+source("functions.R")
 #
-S.par.boot = apply( par.sfs.boot.exh, c(1), function(x) sum(x[2:length(x)]) )
-pi.par.boot = apply( par.sfs.boot.exh, c(1), function(x) PI( x[2:length(x)] ) )
-# real sample SFS:
-ery.sfs = read.table("ERY.FOLDED.sfs", header=F)
+# real sample SFS from overlapping sites:
+#
+# S:
 ery.nSites = sum(ery.sfs)
-S.ery = apply( ery.sfs, c(1), function(x) sum(x[2:length(x)]) )
-pi.ery = apply( ery.sfs, c(1), function(x) PI( x[2:length(x)] ) )
-#
-par.sfs = read.table("PAR.FOLDED.sfs", header=F)
+S.ery = sum(ery.sfs[-1])
+S_prop.ery = S.ery/ery.nSites
+# pi:
+pi.ery = PI( ery.sfs[-1] )
+pi_sites.ery = pi.ery/ery.nSites
+# S:
 par.nSites = sum(par.sfs)
-S.par = apply( par.sfs, c(1), function(x) sum(x[2:length(x)]) )
-pi.par = apply( par.sfs, c(1), function(x) PI( x[2:length(x)] ) )
-# plot S:
-plot(density(S.ery.boot/ery.nSites),
-     xlab=expression(S[prop]),
-     xlim=range(S.ery.boot/ery.nSites, S.par.boot/par.nSites),
-     main="Proportion of segregating sites")
-lines(density(S.par.boot/par.nSites), lty=2, lwd=1.5)
-points(c(S.ery/ery.nSites, S.par/par.nSites), c(0, 0), pch=3)
-legend("topright", legend=c("erythropus", "parallelus", "real sample"), 
-       lty=c(1, 2, NA), lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
-# plot pi:
-plot(density(pi.par.boot/par.nSites),
-     xlim=range(c(pi.ery.boot/ery.nSites, pi.par.boot/par.nSites)),
-     xlab=expression(pi[site]), lty=2, lwd=1.5,
-     main="Average number of pairwise differences per nucleotide site"
-)
-lines(density(pi.ery.boot/ery.nSites), lty=1)
-points(c(pi.ery/ery.nSites, pi.par/par.nSites), c(0, 0), pch=3)
-legend("top", legend=c("erythropus", "parallelus", "real sample"), lty=c(1, 2, NA), 
-       lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
+S.par = sum(par.sfs[-1])
+S_prop.par = S.par/par.nSites
+pi.par = PI( par.sfs[-1] )
+pi_sites.par = pi.par/par.nSites
+#
+# bootstrap resampled SFS from overlapping sites:
+#
+# get 200 bootstrap replicates of ERY spectrum from only overlapping sites, with exhaustive search
+pp = pipe("cat ../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/bootstrap/ERY/*.unfolded.sfs.folded", "r")
+ery.sfs.boot = read.table(pp, header=F)
+close(pp)
+# get 200 bootstrap replicates of PAR spectrum from only overlapping sites, with exhaustive search
+pp = pipe("cat ../ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/bootstrap/PAR/*.unfolded.sfs.folded", "r")
+par.sfs.boot = read.table(pp, header=F)
+close(pp)
+# number of segregating sites:
+S.ery.boot = rowSums( ery.sfs.boot[,-1] )
+S_prop.ery.boot = S.ery.boot/rowSums(ery.sfs.boot)
+#formatC(quantile(S_prop.ery.boot, probs=c(.025, .975)), format="f", digits=4)
+S.par.boot = rowSums( par.sfs.boot[,-1] )
+S_prop.par.boot = S.par.boot/rowSums(par.sfs.boot)
+# average number of pairwise differences:
+source("functions.R")
+pi.ery.boot = apply( ery.sfs.boot[,-1], 1, function(sfs) PI( sfs ) )
+pi_sites.ery.boot = pi.ery.boot/rowSums(ery.sfs.boot)
+#formatC(quantile(pi_sites.ery.boot, probs=c(.025, 0.5, .975)), format="f", digits=4)
+pi.par.boot = apply( par.sfs.boot[,-1], 1, function(sfs) PI( sfs ) )
+pi_sites.par.boot = pi.par.boot/rowSums(par.sfs.boot)
+#quantile(pi_sites.par.boot, probs=c(.025, 0.5, .975))
+#
+# including non-overlapping sites
+#
+# S:
+ery.nSites.nonO = sum(ery.sfs.nonO)
+S.ery.nonO = sum(ery.sfs.nonO[-1])
+S_prop.ery.nonO = S.ery.nonO/ery.nSites.nonO
+# pi:
+pi.ery.nonO = PI( ery.sfs.nonO[-1] )
+pi_sites.ery.nonO = pi.ery.nonO/ery.nSites.nonO
+# S:
+par.nSites.nonO = sum(par.sfs.nonO)
+S.par.nonO = sum(par.sfs.nonO[-1])
+S_prop.par.nonO = S.par.nonO/par.nSites.nonO
+pi.par.nonO = PI( par.sfs.nonO[-1] )
+pi_sites.par.nonO = pi.par.nonO/par.nSites.nonO
+#
+# bootstrap resampled SFS from including non-overlapping sites:
+#
+pp = pipe("cat ../ANGSD/BOOTSTRAP_CONTIGS/including_non-overlapping/SFS/bootstrap/ERY/*.unfolded.sfs.folded", "r")
+ery.sfs.boot.nonO = read.table(pp, header=FALSE)
+close(pp)
+#
+pp = pipe("cat ../ANGSD/BOOTSTRAP_CONTIGS/including_non-overlapping/SFS/bootstrap/PAR/*.unfolded.sfs.folded", "r")
+par.sfs.boot.nonO = read.table(pp, header=FALSE)
+close(pp)
+#
+# number of segregating sites in bootstrap replicates
+S.ery.boot.nonO = rowSums(ery.sfs.boot.nonO[,-1])
+S_prop.ery.boot.nonO = S.ery.boot.nonO/rowSums(ery.sfs.boot.nonO)
+#quantile(S_prop.ery.boot.nonO, probs=c(.025, 0.5, .975))
+#
+S.par.boot.nonO = rowSums(par.sfs.boot.nonO[,-1])
+S_prop.par.boot.nonO = S.par.boot.nonO/rowSums(par.sfs.boot.nonO)
+#quantile(S_prop.par.boot.nonO, probs=c(.025, 0.5, .975))
+#
+# pi from bootstrap replicates
+pi.ery.boot.nonO = apply( ery.sfs.boot.nonO, 1, function(sfs) PI( sfs[-1] ) )
+pi_sites.ery.boot.nonO = pi.ery.boot.nonO/rowSums(ery.sfs.boot.nonO)
+#quantile(pi_sites.ery.boot.nonO, probs=c(.025, 0.5, .975))
+#
+pi.par.boot.nonO = apply( par.sfs.boot.nonO, 1, function(sfs) PI( sfs[-1] ) )
+pi_sites.par.boot.nonO = pi.par.boot.nonO/rowSums(par.sfs.boot.nonO)
+#quantile(pi_sites.par.boot.nonO, probs=c(.025, 0.5, .975))
+#
+# # plot S:
+# plot(density(S.ery.boot/ery.nSites),
+#      xlab=expression(S[prop]),
+#      xlim=range(S.ery.boot/ery.nSites, S.par.boot/par.nSites),
+#      main="Proportion of segregating sites")
+# lines(density(S.par.boot/par.nSites), lty=2, lwd=1.5)
+# points(c(S.ery/ery.nSites, S.par/par.nSites), c(0, 0), pch=3)
+# legend("topright", legend=c("erythropus", "parallelus", "real sample"), 
+#        lty=c(1, 2, NA), lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
+# # plot pi:
+# plot(density(pi.par.boot/par.nSites),
+#      xlim=range(c(pi.ery.boot/ery.nSites, pi.par.boot/par.nSites)),
+#      xlab=expression(pi[site]), lty=2, lwd=1.5,
+#      main="Average number of pairwise differences per nucleotide site"
+# )
+# lines(density(pi.ery.boot/ery.nSites), lty=1)
+# points(c(pi.ery/ery.nSites, pi.par/par.nSites), c(0, 0), pch=3)
+# legend("top", legend=c("erythropus", "parallelus", "real sample"), lty=c(1, 2, NA), 
+#        lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
 
 
 
@@ -422,20 +586,50 @@ ery.TajimasD.global.boot = (pi.ery.boot - S.ery.boot/a1)/C.boot
 C.boot = sqrt( c1/a1*S.par.boot + (c2/(a1^2+a2))*S.par.boot*(S.par.boot-1) )
 par.TajimasD.global.boot = (pi.par.boot - S.par.boot/a1)/C.boot
 #
-par(mar=c(5, 4, 2, 2) + 0.1)
-plot(density(ery.TajimasD.global.boot),
-     xlim=range(ery.TajimasD.global.boot, par.TajimasD.global.boot),
-     type="l",
-     xlab="Tajima's D",
-     main="global Tajima's D"
-)
-lines(density(par.TajimasD.global.boot), lty=2, lwd=1.5)
-points(c(ery.TajimasD.global, par.TajimasD.global), c(0, 0), pch=3)
-legend("top", legend=c("erythropus", "parallelus", "real sample"), lty=c(1, 2, NA), 
-       lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
+# including non-overlapping sites
+#
+# ery
+C = sqrt( c1/a1*S.ery.nonO + (c2/(a1^2+a2))*S.ery.nonO*(S.ery.nonO-1) )
+ery.TajimasD.global.nonO = (pi.ery.nonO - S.ery.nonO/a1)/C
+# par
+C = sqrt( c1/a1*S.par.nonO + (c2/(a1^2+a2))*S.par.nonO*(S.par.nonO-1) )
+par.TajimasD.global.nonO = (pi.par.nonO - S.par.nonO/a1)/C
+#
+# bootstrap replicates:
+#
+# ery
+C.boot.nonO = sqrt( c1/a1*S.ery.boot.nonO + (c2/(a1^2+a2))*S.ery.boot.nonO*(S.ery.boot.nonO-1) )
+ery.TajimasD.global.boot.nonO = (pi.ery.boot.nonO - S.ery.boot.nonO/a1)/C.boot.nonO
+#quantile(ery.TajimasD.global.boot.nonO, probs=c(0.025, 0.5, 0.975))
+# par
+C.boot.nonO = sqrt( c1/a1*S.par.boot.nonO + (c2/(a1^2+a2))*S.par.boot.nonO*(S.par.boot.nonO-1) )
+par.TajimasD.global.boot.nonO = (pi.par.boot.nonO - S.par.boot.nonO/a1)/C.boot.nonO
+#quantile(par.TajimasD.global.boot.nonO, probs=c(0.025, 0.5, 0.975))
+#
+# par(mar=c(5, 4, 2, 2) + 0.1)
+# plot(density(ery.TajimasD.global.boot),
+#      xlim=range(ery.TajimasD.global.boot, par.TajimasD.global.boot),
+#      type="l",
+#      xlab="Tajima's D",
+#      main="global Tajima's D"
+# )
+# lines(density(par.TajimasD.global.boot), lty=2, lwd=1.5)
+# points(c(ery.TajimasD.global, par.TajimasD.global), c(0, 0), pch=3)
+# legend("top", legend=c("erythropus", "parallelus", "real sample"), lty=c(1, 2, NA), 
+#        lwd=c(1, 1.5, NA), pch=c(NA, NA, 3), bty="n")
 
 
 
+
+
+
+
+#
+#
+#
+#
+##
+#
 # ---- Tajimas-D-by-contig ----
 load("thetas.RData")
 par(mfrow=c(2,1))

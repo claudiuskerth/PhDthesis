@@ -51,7 +51,7 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
     {./Figs/Raster/}
     {./Figs/PDF/}
     {./Figs/}
-    {../Data_analysis/reference-mapping/figure/}
+    {../Data_analysis/SNP-indel-calling/figure/}
     }
 \else
     \graphicspath{ 
@@ -374,15 +374,15 @@ A ML estimate of the number of nucleotide sites with fixed differences between t
 \subsection{Genetic diversity within \textit{erythropus} and \textit{parallelus}}
 %
 %
-Figure \ref{Fig:folded-sfs} shows the \gls{ML} estimate of global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario.\todo[color=green]{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.} 
+Figure \ref{Fig:folded-sfs} shows the \gls{ML} estimate of the global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario.\todo[color=green]{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.} 
 ~Bootstrapping contigs instead of nucleotide sites could show whether this is an artifact due to one or a few contigs.\todo{bootstrapping contigs instead of sites (as done by realSFS, presumably) could be achieved by a Perl script that resamples contigs from the sites file to realSFS. Bootstrapping contigs should also provide more accurate CI, since a contig can have at most one other linked contig, whereas a nucleotide site can have many linked sites on the same contig.} 
 ~However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right--skewed, that is having a greater proportion of low--frequency variants, than \textit{erythropus}. 
 %
 \begin{figure}[htb]
 \centering
-<< folded-sfs, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
+<< folded-sfs, out.width='\\textwidth', echo=FALSE, cache=TRUE>>=
 @
-\caption{ML estimate of the global minor allele frequency spectrum for \textit{erythropus} and \textit{parallelus}. The \gls{SFS} of  \textit{erythropus} is based on 1.6 million, the one of \textit{parallelus} on 1.2 million nucleotide sites (including non-variable sites).}
+\caption{ML estimate of the global minor allele frequency spectrum for \textit{erythropus} (red) and \textit{parallelus} (green). \gls{SFS} were estimated from either \textsl{only overlapping} nucleotide sites (1.13 million) or \textsl{including non-overlapping} sites (1.6 million from \textit{erythropus} and 1.2 million from \textit{parallelus}).}
 \label{Fig:folded-sfs}
 \end{figure}
 %
@@ -417,47 +417,69 @@ The allele--drop--out problem is a missing data problem and to some extent simil
 %
 \begin{figure}[htbp]
 \centering
-<< folded-sfs-boot-exh-ery, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+<< folded-sfs-boot, out.width='.49\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
-<< folded-sfs-boot-exh-par, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
-@
-\caption{Estimation of the variance of the global folded \gls{SFS} by bootstrap resampling of nucleotide sites. The bars indicate 95\% \gls{CI} limits.}
+\caption{The global folded \gls{SFS} of \textit{erythropus} and \textit{parallelus} with absolute counts and 95\% \gls{CI} limits from 200 bootstrap resamples of contigs. A standard neutral model was fit to each spectrum for comparison.}
 \label{Fig:folded-sfs-boot-exh}
 \end{figure}
 %
 
 Figure \ref{Fig:folded-sfs-boot-exh} shows that despite the large amount of sites included in the ML estimation, there is still considerable uncertainty in the global folded \gls{SFS}, particularly for \textit{parallelus}. This could be explained by the lower average sequence coverage for individuals from the \textit{parallelus} population (see fig. \ref{Fig:individual-coverage-dist}).
 
-%
-\begin{figure}[htb]
-\centering
-<< S-and-Pi, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
+
+<< S-and-Pi, echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
-\caption{Global estimates of the proportion of segregating sites (top) and average number of pairwise differences per nucleotide site (bottom) derived from ML estimates of the global folded \gls{SFS}. The distributions are based on 200 bootstrap resamples of sites.}
-\label{Fig:S-and-Pi}
-\end{figure}
+<< Tajimas-D, echo=FALSE, cache=TRUE, warning=FALSE>>= %out.height='.4\\textheight', 
+@
+
+%\Sexpr{formatC(quantile(S_prop.ery.boot, probs=c(.025, .975)), format="f", digits=4)}
+
 %
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{7pt}
+\caption{Comparison of the proportion of segregating sites $S_{prop}$, the average number of pairwise differences per site $\pi_{site}$ and Tajima's D for the \gls{SFS} of \textit{erythropus} and \textit{parallelus}. Numbers in brackets are 95\% bootstrap confidence intervals.}
+\label{Tab:diversity_parameters }
+\vspace{5pt}
+\begin{tabular}{lllll}
+%\begin{tabularx}{\textwidth}{XXXXX}
+\toprule
+\multirow{2}{*}{parameter} & \multicolumn{2}{c}{\textbf{only overlapping sites}} & \multicolumn{2}{c}{\textbf{including non-overlapping sites}} \\[5pt]
+                                    & \textit{erythropus} & \textit{parallelus} & \textit{erythropus} & \textit{parallelus} \\
+\midrule
+$S_{prop}$ & \Sexpr{formatC(S_prop.ery, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.par, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.ery.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.par.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot.nonO, probs=c(.025, .975)), format="f", digits=4)})\\[3pt]
+%\rowcolor[gray]{0.9} 
+$\pi_{site}$ & \Sexpr{formatC(pi_sites.ery, format="f", digits=5)}  (\Sexpr{formatC(quantile(pi_sites.ery.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.par, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.ery.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.par.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot.nonO, probs=c(.025, .975)), format="f", digits=5)})\\[3pt]
+
+Tajima's D &  \Sexpr{formatC(ery.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)}) & \Sexpr{formatC(par.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)})  & \Sexpr{formatC(ery.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)}) & \Sexpr{formatC(par.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)})\\
+\bottomrule
+\end{tabular}
+\end{table}
+%
+%%
+%%
+%%
+
 
 The number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) are summary statistics of the \gls{SFS}. While $S$ weights each site equally, intermediate frequency variants contribute much more to the magnitude of $\pi$ than high- and low-frequency variants \cite[eq. 1.4]{Wakeley2009}. Figure \ref{Fig:S-and-Pi} shows both estimates for \textit{erythropus} and \textit{parallelus} together with distributions from 200 bootstrap resamples of nucleotide sites. Both diversity estimates are significantly higher in \textit{parallelus} than in \textit{erythropus}.\todo{Are $S$ and $\pi$ also different went calculated from only overlapping sites? This could quickly be done from marginal spectra in dadi.}
 This seems at odds with the expectation from the hitherto proposed demographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much smaller distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity much more so than for the \textit{erythropus} subspecies \citep{Luca2011}.\todo{Look at data from other European species. Do they show the expected reduction of diversity with distance from the the glacial refuge? see \cite{Hewitt2004, Hewitt1996, Hewitt2000, Ramachandran2005, Slatkin2012, Petit1999, Pool2008}}~
+
+\begin{figure}
+\includegraphics[width=\textwidth]{ERY_-_200_bootstrap_replicates_final_summary}
+\includegraphics[width=\textwidth]{PAR_-_200_bootstrap_replicates_final_summary}
+\caption{\texttt{stairway plot} for \textit{erythropus} and \textit{parallelus} from only overlapping sites. The thick grey lines define the 75\% bootstrap-CI and the light grey lines define the 95\% bootstrap-CI.}
+\label{Fig:overlapping_stairway_plot}
+\end{figure}
+
+
 That ancestral \textit{parallelus} and \textit{erythropus} expanded from their glacial refuges as a "wave", i. e. without colonisation by rare long--distance migration, is made unlikely by at least two observations: 
 \begin{itemize}
 \item the colonisation of Britain by \textit{C. p. parallelus} before the flooding of the English Channel after the last Ice Age \citep{Cooper1995},
-\item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the dispersal rate of this species of 30 m/generation \citep{Nichols1994}. \todo{\cite{Ibrahim1996}}
+\item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the \emph{average} dispersal rate of this species of 30 m/generation \citep{Nichols1994}. \todo{\cite{Ibrahim1996}}
 \end{itemize}
-The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence variation that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.\todo{$K_S$ values in \cite{Cooper1995} from a single nuclear locus contradict this and show about twice as much genetic variation in Spain as in France.}
-%
-\begin{figure}[htb]
-\centering
-<< Tajimas-D, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>= %out.height='.4\\textheight', 
-@
-<< Tajimas-D-by-contig, out.width='.75\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
-@
-\caption{Top: ML estimate of global Tajima's D and distribution of Tajima's D from 200 bootstraps of the global folded \gls{SFS}. Bottom: Distribution of Tajima's D estimates for each contig.}
-\label{Fig:Tajimas-D}
-\end{figure}
-%
-\\
+The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.\todo{$K_S$ values in \cite{Cooper1995} from a single nuclear locus contradict this and show about twice as much genetic variation in Spain as in France.}
+
+
 The Tajima's D estimates also differ significantly between the two subspecies (fig. \ref{Fig:Tajimas-D}). While the value for \textit{erythropus} is slightly positive (\Sexpr{signif(ery.TajimasD.global, 3)}), the value for \textit{parallelus} is clearly negative (\Sexpr{signif(par.TajimasD.global, 3)}). The latter would be consistent with a recent increase in population size. However -- as already explained above for the apparent right--skew of the global folded \gls{SFS} of \textit{parallelus} -- this difference in Tajima's D might also be caused at least in part by the greater enrichment of sites that are not affected by allele--drop--out in \textit{parallelus} versus \textit{erythropus} due to lower coverage and applying the same filtering thresholds. Again, investigating the effect of varying filtering thresholds for the \textit{parallelus} sample on the Tajima's D estimate could already show whether the difference in Tajima's D is indeed caused by differences in sequence coverage between the two subspecies. Interestingly, despite a slightly positive global Tajima's D, the distribution of Tajima's D per contig has a strong peak below zero in \textit{erythropus} (fig. \ref{Fig:Tajimas-D}). 
 %%
 %\begin{figure}[htb]
@@ -530,6 +552,13 @@ In this study, all sequenced grasshoppers were male. There is no male sex chromo
 %
 %
 %
+\begin{figure}
+\includegraphics[width=\textwidth]{ERY_-_200_bootstrap_replicates_final_summary_nonO}
+\includegraphics[width=\textwidth]{PAR_-_200_bootstrap_replicates_final_summary_nonO}
+\caption{\texttt{stairway plot} for \textit{erythropus} and \textit{parallelus} from including non-overlapping sites. The thick grey lines define the 75\% bootstrap-CI and the light grey lines define the 95\% bootstrap-CI.}
+\label{Fig:nonO_stairway_plot}
+\end{figure}
+
 
 %----------------------------
 % Bibliography

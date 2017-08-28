@@ -639,9 +639,10 @@ parallel -j 10 'zcat {} | gc' ::: *fq_1.gz | mean
 
 \textit{Chorthippus parallelus} has a chromosome complement of 2n = 16 + X. Males have one X-chromosomes, females have two. Table \ref{ta:genome_size_studies} shows four studies that provide genome size estimates for \textit{Chorthippus parallelus}. Note that all studies are measuring the DNA content of spermatids. However, none of the studies explicitly deal with the issue that half of their measurements are missing the contribution from the X chromosome. Table \ref{ta:genome_size_studies} mentions the country of origin of the grasshoppers used for genome size estimates. Note, however, that only \cite{Belda1991} provide sampling locations. For the rest it is assumed that individuals were sampled close to the authors institutes. So two studies provide genome size estimates for \textit{C. parallelus parallelus} and two for \textit{C. parallelus erythropus}. The \textit{parallelus} subspecies seems to have a genome 2--4 giga \glspl{bp} larger than the one of subspecies \textit{erythropus}. Apart from possible systematic differences in methodology, this apparent difference in genome size could be real, since several studies have shown chromosomal differentiation between the two subspecies, in particular on the X chromosome: an active nucleolar organiser region (NOR) distally on the X in \textit{C. p. parallelus} but not in \textit{C. p. erythropus} \citep{Gosalvez1988}. This NOR on X lies in or near a distinctive distal C-band\footnote{\gls{heterochromatin} stained with Giemsa}. In addition, Pyrenean \textit{C. p. erythropus} also show an interstitial C-band on X that does not occur in pure \textit{C. p. parallelus} \citep{Bella2007}. Further chromosomal differences are listed in table 1 of \cite{Ferris1993}.
 
+
 \ctable[
-width=\textwidth,
-doinside={ \relsize{-1.5} \setlength{\tabcolsep}{2pt} },
+width=1.18\textwidth,
+doinside={ \hspace{-2.5cm} \relsize{-1.5} \setlength{\tabcolsep}{4pt} },
 caption=Studies that provide genome size estimates for \textit{Chorthippus parallelus},
 cap=Genome size estimates,
 label=ta:genome_size_studies
@@ -667,6 +668,7 @@ label=ta:genome_size_studies
 \cite{Belda1991} & Spain & 10&73 ($\pm$ 0.97)\tmark[g]  & Feulgen staining, microdensitometry & spermatid & chick erythrocytes \\
 \bottomrule
 }
+
 
 \cite{Gosalvez1988} showed that all the heterochromatin present in both subspecies is particularly rich in GC DNA base pairs\todo{This would suggest using restriction enzymes for RAD with recognition sequences rich in AT in order to preferentially target transcribed regions of the genome.}.
 

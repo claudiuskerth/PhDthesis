@@ -36,7 +36,7 @@ def split_regions_file(boot_contigs_dict, fnames, size):
 
 index = '' # index of bootstrap replicate
 
-for rf in sorted(glob("minInd9_overlapping/BOOT_RF/*")):
+for rf in sorted(glob("including_non-overlapping/BOOT_RF/000*")):
     start = time()
     index = re.findall(r'\d+', rf)[-1]
     # reset array for bootstrapped contigs
@@ -53,21 +53,21 @@ for rf in sorted(glob("minInd9_overlapping/BOOT_RF/*")):
     # split bootstrapped regions file, 400 contigs per file
     split_regions_file(boot_contigs_dict, fnames, 400)
     # remove previous split SAF files for PAR
-    cmd = "rm -f minInd9_overlapping/SAF/bootstrap/PAR/[a-z]*"
+    cmd = "rm -f including_non-overlapping/SAF/bootstrap/PAR/[a-z]*"
     sp.call(cmd, shell=True)
     # remove previous split SAF files for ERY
     cmd = cmd.replace("PAR", "ERY")
     sp.call(cmd, shell=True)
     # run SAF calculation in parallel for PAR
     cmd = 'ls split_rf/* | parallel -j 24 "angsd -bam PAR.slim.bamfile.list -ref Big_Data_ref.fa \
-            -anc Big_Data_ref.fa -out minInd9_overlapping/SAF/bootstrap/PAR/{/}.unfolded -fold 0 \
-            -sites from_SAFs_minInd9_overlapping.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null"'
+            -anc Big_Data_ref.fa -out including_non-overlapping/SAF/bootstrap/PAR/{/}.unfolded -fold 0 \
+            -sites all.sites -rf {} -only_proper_pairs 0 -baq 1 -minMapQ 5 -minInd 9 -GL 1 -doSaf 1 -nThreads 1 2>/dev/null"'
     sp.call(cmd, shell=True)
     # run SAF calculation in parallel for ERY
     cmd = cmd.replace("PAR", "ERY")
     sp.call(cmd, shell=True)
     # concatenate split SAF files for PAR
-    cmd = "realSFS cat -outnames minInd9_overlapping/SAF/bootstrap/PAR/{}.unfolded minInd9_overlapping/SAF/bootstrap/PAR/[a-z]*saf.idx 2>/dev/null".format(index)
+    cmd = "realSFS cat -outnames including_non-overlapping/SAF/bootstrap/PAR/{}.unfolded including_non-overlapping/SAF/bootstrap/PAR/[a-z]*saf.idx 2>/dev/null".format(index)
     sp.call(cmd, shell=True)
     # concatenate split SAF files for ERY
     cmd = cmd.replace("PAR", "ERY")
@@ -78,7 +78,7 @@ for rf in sorted(glob("minInd9_overlapping/BOOT_RF/*")):
 
 
 # remove split SAF files for PAR
-cmd = "rm -f minInd9_overlapping/SAF/bootstrap/PAR/[a-z]*"
+cmd = "rm -f including_non-overlapping/SAF/bootstrap/PAR/[a-z]*"
 sp.call(cmd, shell=True)
 # remove split SAF files for ERY
 cmd = cmd.replace("PAR", "ERY")

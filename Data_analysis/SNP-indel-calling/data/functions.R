@@ -11,7 +11,7 @@ f = function(theta, eta, n){
   sumofsq = numeric(length(ery.sfs))
   i = seq(1, length(eta))
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   sumofsq = sum( (expected - eta)^2 )
   return(sumofsq)
 }
@@ -28,8 +28,14 @@ snm = function(theta, len=0, n=36){
   #
   i = seq(1, len)
   delta = ifelse(i == n-i, 1, 0)
-  expected = theta * 1/i + 1/(n-i) / (1 + delta)
+  expected = theta * (1/i + 1/(n-i)) / (1 + delta)
   return(expected)
+}
+
+PI = function(sfs){
+  n.half = 18
+  n = 36
+  1/(n*(n-1)/2) * sum( sapply(1:n.half, function(i) i*(n-i)*sfs[i]) )
 }
 
 #### ---- fit-neutral-theta ----
