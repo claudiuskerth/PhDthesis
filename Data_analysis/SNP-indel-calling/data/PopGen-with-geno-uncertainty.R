@@ -51,6 +51,53 @@ axis(side=1, at=1:36, labels=names(depth.table)[3:38], cex.axis=.6, las=2)
 
 
 
+
+### ---- mapQ-dist ----
+load("../ANGSD/Data/mapQ_ERY_afterFiltering.RData")
+load("../ANGSD/Data/mapQ_ERY.RData")
+load("../ANGSD/Data/mapQ_PAR_afterFiltering.RData")
+load("../ANGSD/Data/mapQ_PAR.RData")
+# ERY
+ery.mq = as.matrix(rbind(mq.ery/sum(mq.ery), mq.after.ery/sum(mq.after.ery)))
+rownames(ery.mq) = c("before filtering", "after filtering")
+par(mfrow=c(1,1), mar=c(5,4,2,0))
+mp = barplot(ery.mq,
+             ylim=c(0,.3), 
+             xlab="mapping quality score",
+             ylab="proportion of reads",
+             main="mapping quality distribution for ERY",
+             col=c("orange", "blue"), 
+             beside=TRUE,
+             legend=T,
+             args.legend = list(x="top")
+)
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)*2]-mp[1]/2, 
+     labels=as.character(c(1, 10, 20, 30, 40))
+)
+# PAR
+par.mq = as.matrix(rbind(mq.par/sum(mq.par), mq.after.par/sum(mq.after.par)))
+rownames(par.mq) = c("before filtering", "after filtering")
+par(mar=c(5,2,2,0))
+mp = barplot(par.mq,
+             ylim=c(0,.3), 
+             xlab="mapping quality score",
+             #ylab="proportion of reads",
+             yaxt = "n",
+             main="mapping quality distribution for PAR",
+             col=c("orange", "blue"), 
+             beside=TRUE,
+             legend=T,
+             args.legend = list(x = "top")
+)
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)*2]-mp[1]/2, 
+     labels=as.character(c(1, 10, 20, 30, 40))
+)
+#----------------------------------
+
+
+
 ### ---- PCA ----
 covar = as.matrix(read.table("EryPar.covar.noSNPcall.unknownMinor", header=F))
 pca = prcomp(covar)
@@ -112,7 +159,7 @@ hist(perm.fst, breaks=20, border="springgreen", col="springgreen",
      freq=FALSE
 )
 legend("topleft", 
-       legend=c("100 permutations of population label", 
+       legend=c("100 random permutations of population label", 
                 paste("10,000 bootstrap resamples of ", length(levels(bhatia$contig)), " contigs")),
        col=c("springgreen", "navyblue"),
        cex=.7,
@@ -462,6 +509,13 @@ source("functions.R")
 # S:
 ery.nSites = sum(ery.sfs)
 S.ery = sum(ery.sfs[-1])
+#--
+#n = 36
+#a1 = sum(sapply(1:(n-1), function(x) x^(-1)))
+#theta_Watt_ery = S.ery/a1
+#Nery = theta_Watt_ery/(4*3e-9*ery.nSites)
+#Tery = 500000/(2*Nery) # 500ky in genetic units
+#--
 S_prop.ery = S.ery/ery.nSites
 # pi:
 pi.ery = PI( ery.sfs[-1] )
@@ -469,6 +523,11 @@ pi_sites.ery = pi.ery/ery.nSites
 # S:
 par.nSites = sum(par.sfs)
 S.par = sum(par.sfs[-1])
+#theta_Watt_par = S.par/a1
+#Npar = theta_Watt_par/(4*3e-9*par.nSites)
+#Tpar = 500000/(2*Npar)
+#--
+
 S_prop.par = S.par/par.nSites
 pi.par = PI( par.sfs[-1] )
 pi_sites.par = pi.par/par.nSites
