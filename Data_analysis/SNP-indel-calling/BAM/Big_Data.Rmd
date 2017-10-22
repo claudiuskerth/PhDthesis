@@ -141,11 +141,13 @@ sum(depths[[1]] > 101)/length(depths[[1]])
 ```
 
 
+
+
 ## Mapping quality distribution
 
 Note, after bowtie2 mapping, I discarded all mappings with quality 0.
 
-```{r mapping-qual-dist}
+```{r mapping-qual-dist, cache=TRUE}
 infiles = list.files(getwd(), pattern="*sorted.bam$")
 infiles
 mq = scan(pipe(paste("samtools view", infiles[1], "| cut -f 5"), open="r"))
@@ -170,3 +172,169 @@ sum(mq < 10)/length(mq)
 ```
 
 About 40% of reads have a mapping quality below 10.
+
+I would like to get the distribution of mapping qualities of all mapped reads before any filtering, for ERY and PAR separately. Then I would like to get the distribution of mapping qualities of all mapped reads after applying all filters (i. e. from those reads that overlap with keep.sites), for ERY and PAR separately. 
+
+```{r, eval=FALSE}
+# get get mapQ dist before filtering
+# PAR
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+pp = pipe("for BAM in par*sorted.bam; do samtools view $BAM | cut -f 5; done", open="r")
+mq.par = tabulate(scan(pp))
+close(pp)
+
+save(mq.par, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR.RData")
+```
+
+```{r, eval=FALSE}
+# get get mapQ dist before filtering
+# ERY
+pp = pipe("for BAM in ery*sorted.bam; do samtools view $BAM | cut -f 5; done", open="r")
+mq.ery = tabulate(scan(pp))
+close(pp)
+
+save(mq.ery, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY.RData")
+```
+
+
+```{r}
+opts_chunk$set(root.dir="/data3/claudius/Big_Data/ANGSD/Data")
+```
+
+```{r}
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR.RData")
+cbind(1:length(mq.par), mq.par, mq.par/sum(mq.par))
+mp = barplot(mq.par/sum(mq.par),
+        ylim=c(0,.3), 
+        col=c("blue"),
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for mapped reads of PAR"
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)], 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+
+
+
+
+```{r}
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY.RData")
+mp = barplot(mq.ery/sum(mq.ery),
+        ylim=c(0,.3), 
+        col=c("blue"),
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for mapped reads of ERY"
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)], 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+The file `ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.sites` lists all sites in the Big Data reference that have passed my filters (see line 1308 onwards in `assembly.sh`). With my script `sites2bed.pl` I have turned this file into bed format. I have created a symbolic link to this file with the name `keep.bed`.
+
+```{r, eval=FALSE}
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+# get get mapQ dist after filtering
+# PAR
+pp = pipe("for BAM in par*sorted.bam; do samtools view -L keep.bed $BAM | cut -f 5; done", open="r")
+mq.after.par = tabulate(scan(pp))
+close(pp)
+save(mq.after.par, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR_afterFiltering.RData")
+
+# get get mapQ dist after filtering
+# ERY
+pp = pipe("for BAM in ery*sorted.bam; do samtools view -L keep.bed $BAM | cut -f 5; done", open="r")
+mq.after.ery = tabulate(scan(pp))
+close(pp)
+save(mq.after.ery, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY_afterFiltering.RData")
+```
+
+
+```{r, fig.width=8}
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR_afterFiltering.RData")
+# PAR
+par.mq = as.matrix(rbind(mq.par/sum(mq.par), mq.after.par/sum(mq.after.par)))
+rownames(par.mq) = c("before filtering", "after filtering")
+
+mp = barplot(par.mq,
+        ylim=c(0,.3), 
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for PAR",
+        col=c("orange", "blue"), 
+        beside=TRUE,
+        legend=T,
+        args.legend = list(x = "top")
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)*2]-mp[1]/2, 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+```{r, fig.width=8}
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY_afterFiltering.RData")
+# ERY
+ery.mq = as.matrix(rbind(mq.ery/sum(mq.ery), mq.after.ery/sum(mq.after.ery)))
+rownames(ery.mq) = c("before filtering", "after filtering")
+
+mp = barplot(ery.mq,
+        ylim=c(0,.3), 
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for ERY",
+        col=c("orange", "blue"), 
+        beside=TRUE,
+        legend=T,
+        args.legend = list(x="top")
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)*2]-mp[1]/2, 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+Filtering the reference sequence has selected for contigs with more unique sequences as shown by the great reduction in the proportion of reads with a mapping quality of 1 that map to the filtered reference as compared to the unfiltered reference sequence. Only reads with mapQ $\ge$ 5 have been used for downstream analyses.
+
+
+## Contig length distribution
+
+I would like to see the distribution of contig lengths before and after filtering. For commands on how I extracted the contig lengths, see `assembly.sh` line 2865.
+
+```{r new setup options, cache=FALSE, include=FALSE}
+opts_knit$set(root.dir = "/data3/claudius/Big_Data/ANGSD/Data")
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+dir("/data3/claudius/Big_Data/ANGSD/Data")
+```
+
+```{r}
+# get contig lengths before filtering
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+before = read.delim("Big_Data_ref_contig_lengths", header=F)
+names(before) = list("contig", "length")
+head(before)
+```
+
+```{r}
+# contig lengths after filtering
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+after = read.delim("keep.contig_lengths", header=F, sep=" ")
+names(after) = list("contig", "length")
+head(after)
+```
+
+```{r contig-length-dist, fig.height=12, fig.width=10}
+par(mfrow=c(2,1))
+#hist(before$length)
+#hist(after$length)
+plot(tabulate(before$length), type="l", ylab="contig count", xlab="contig length", xaxt="n")
+axis(1, at=seq(0, 800, 100), label=seq(0, 800, 100))
+plot(tabulate(after$length), type="l", ylab="contig count", xlab="contig length", xaxt="n")
+axis(1, at=seq(0, 800, 100), label=seq(0, 800, 100))
+```

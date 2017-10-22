@@ -1,5 +1,1 @@
-MapQ	Mapped	falseMap
-40	177595	460
-3	183479	3524
-2	184971	4540
-1	187938	6999
+./Mason/yara/Mason_sim_Hmel_ref_concat_yara.roc

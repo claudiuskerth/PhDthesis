@@ -5,6 +5,9 @@
 # with ploymorphism rate of 0.01, 20% of which are indels;
 # indels are up to 20 bp long, length is randomly drawn from uniform distribution
 # put read info in fastq header
+#
+# Note, mason automatically maps simulated reads back to the reference !!! Simulation of reads takes only about 1 min. Then Interrupt mason !!!
+#
 #mason illumina -s 99 -N 200000 -o Mason_Hmel_sim.fq -sq -i -vv -n 50 -pi 0 -pd 0 -pmm 0 -pmmb 0 -pmme 0 -nN -hn 1 -hs 0.008 -hi 0.002 -hM 20 ../Hmel1-1_primary_contigs.fa 2> Mason_sim.log >> Mason_sim.log
 
 # make fastq header wgsim_eval.pl compatible
@@ -167,6 +170,38 @@
 # 
 # ../wgsim/wgsim_eval.pl alneval -apg 50 ./yara/Mason_sim_Hmel_ref_concat_yara.sam > ./yara/Mason_sim_Hmel_ref_concat_yara.roc 2> ./yara/Mason_sim_Hmel_ref_concat_yara.wrongAlign.sam
 
+# ----------------------------
+# sumulate from human genome
+# ----------------------------
+# # it is unfortunately necessary to decompress the reference sequence, since mason cannot even read a from a named pipe
+# mason illumina -s 99 -N 200000 -o Mason_Hsapiens_sim.fq -sq -i -v -n 50 -pi 0 -pd 0 -pmm 0 -pmmb 0 -pmme 0 -nN -hn 1 -hs 0.008 -hi 0.002 -hM 20 \
+# 	../human_ref/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa 2> Mason_human_sim.log >> Mason_human_sim.log
 
+# # make fastq header wgsim_eval.pl compatible
+# cat Mason_Hsapiens_sim.fq | perl -ne'unless (($.-1)%4==0){print; next;} /contig=(\w+).*orig_begin=(\d+).*orig_end=(\d+).*snps=(\d+).*indels=(\d+)/; print "\@$1_$2_$3_$4_$5\n";' \
+# 	> Mason_Hsapiens_sim_wgsimCompat.fq
 
+# ----------------------------
+# Bowtie2
+# ----------------------------
+# bowtie2-build can also not take any form of pipe to allow on-the-fly decompression of the reference sequence !!!
+# reference sequence needs to be decompressed for mason AND bowtie2-build !!!
+# re-compress afterwards!
+
+# There is a link for the bowtie2 website to pre-built indeces for some reference genomes, like human GRCh38
+
+# create bowtie index of human genome
+# this takes at least an hour to complete
+# # bowtie2-build -f ../human_ref/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa bowtie2/Homo_sapiens.GRCh38.dna_sm.primary_assembly_bowtie &
+
+# now re-compress the reference sequence fasta !!!
+
+# # 1
+# # bowtie2 in end-to-end alignment mode
+# bowtie2 -x ./bowtie2/Homo_sapiens.GRCh38.dna_sm.primary_assembly_bowtie -U Mason_Hsapiens_sim_wgsimCompat.fq -S ./bowtie2/Mason_Hsapiens_sim_bowtie2.sam \
+# 	-q --phred33 --very-sensitive --end-to-end -t -p 10
+# 
+# # count mapped and mismapped reads by alignment quality score bin
+# ../wgsim/wgsim_eval.pl alneval -apg 50 ./bowtie2/Mason_Hsapiens_sim_bowtie2.sam > ./bowtie2/Mason_sim_Hsapiens_sim_bowtie2.roc \
+# 	2> ./bowtie2/Mason_Hsapiens_sim_bowtie2.wrongAlign.sam
 

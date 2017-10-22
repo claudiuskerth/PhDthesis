@@ -1,2 +1,1 @@
-MapQ	Mapped	falseMap
-255	181220	739
+./Mason/razers3/Mason_Hmel_sim_razers3.roc

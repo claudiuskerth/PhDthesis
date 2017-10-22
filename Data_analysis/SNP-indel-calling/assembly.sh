@@ -925,9 +925,9 @@
 # # # line 271 onwards shows how I detected low complexity sequences in the Big Data reference with dustmasker and then turned those LC intervals
 # # # into BED format
 # # #
-# # #
+# # #------------------
 # # # EXCESS COVERAGE
-# # #
+# # #------------------
 # # # line 309 - 312 shows the command lines I used to determine the coverage of SE reads for each contig for each individual separately. They
 # # # created a .SE_depths file for each ind BAM file. However, in the following I am recalculating SE coverage counts for each individual and
 # # # streaming those into R to determine the 99th percentile of the coverage distribution for each individual:
@@ -985,9 +985,9 @@
 # # gawk '{sum+=($3-$2)}END{print sum}' Big_Data_Contigs.noSEgt2.nogtQ99Cov.noDUST.bed
 # # 88,097,045
 # # 
-# #
+# #------------------
 # # EVEN COVERAGE 
-# #
+# #------------------
 # # I want to filter individual sites for sufficiently even coverage across individuals. 
 # samtools depth -aa -b Big_Data_Contigs.noSEgt2.nogtQ99Cov.noDUST.bed -Q 5 *sorted.bam | bgzip > ParEry.noSEgt2.nogtQ99Cov.noDUST.depth.gz
 # # This will print out a line for each position within the BED intervals. First column is contig name, second is position, the remaining
@@ -1011,9 +1011,9 @@
 # wc -l ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.sorted.sites
 # # 1,829,329
 # #
-# #
+# #------------------
 # # HWE FILTERING
-# #
+# #------------------
 # cd /data3/claudius/Big_Data/ANGSD
 # # index sites to keep
 # angsd sites index ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.sorted.sites
@@ -1321,6 +1321,7 @@
 # 	-Q 5 Data/*sorted.slim.bam | \
 # 	bgzip > Quality_Control/ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.depths.gz 
 # #
+# See /data3/claudius/Big_Data/BOWTIE2/BAM/Big_Data.Rmd for an analysis of coverage and mapQ distribution.
 # #
 # # ------------------------------------- PCA ---------------------------------------------------------------------------------------------
 # #
@@ -2724,8 +2725,19 @@ cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
 # ----------------------------------------------------
 # this requires turning off the code in realSFS that checks for sorting
 # and determines overlapping sites
+# I have modified the realSFS source file `multisafreader.hpp` by adding `return 0;` at the beginning of the
+# function `set_intersect_pos`. This turns off determination of overlapping sites when realSFS is provided
+# with more than one SAF file and instead makes it read in all sites. See angsd issue thread #86:
+# https://github.com/ANGSD/angsd/issues/86
+# I have then submitted the job array submission script `run_2D_realSFS_array.sh` to iceberg. It used the 
+# hacked version of realSFS and estimated 2D SFS from bootstrapped SAF files with exhaustive search parameters
+# (the same as used above). This took about 1 week to complete on iceberg for the 200 bootstrap replicates.
+# I have copied the bootstrapped 2D SFS files from iceberg to huluvu in:
+# /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/bootstrap/2DSFS
 
-
+# create bootstrapped 2D SFS's in dadi format
+cd ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/bootstrap/2DSFS/
+for SFS in *2dsfs; do echo "37 37 unfolded" | cat - $SFS > $SFS.dadi; done
 
 # ------------------ END BOOTSTRAPPING OVER CONTIGS ---------------------------
 
@@ -2823,3 +2835,120 @@ cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
 # I have put the code for SAF file estimation into the script estimate_SAFs.py.
 # I had to modify the paths in this script: replaced "minInd9_overlapping" with "including_non-overlapping" and
 # "from_SAFs_minInd9_overlapping.sites" with "all.sites"
+
+
+# ----------------------------------------------------------------------------------------
+# count the number of reads used for this analysis
+# ----------------------------------------------------------------------------------------
+# these reads reads have been quality filtered with 'process_radtags' from the stacks package,
+# these are the reads that went into the assembly (see top of this file)
+cd /data3/claudius/Big_Data/data
+# note, the quality filtered read files are encrypted with encfs and need to be decrypted before running the following command
+sum=0; 
+for file in *fq_1.gz; 
+do 
+	echo -n "$file  " >> readPair.count; 
+	count=`zcat $file | awk '(NR-1)%4==0' |  wc -l`; 
+	sum=$[$sum + $count]; 
+	echo $count >> readPair.count; 
+done; 
+echo "sum  $sum" >> readPair.count;
+# The raw read count (regarding SE and PE read as one read) was 55,872,783.
+
+cd /data3/claudius/Big_Data/nonredundant
+paste <(tail -n 1 uniqseq.count | awk '{print $2}') <(tail -n 1 ../data/readPair.count | awk '{print $2}') | awk '{print $1/$2}'
+# 0.206898
+# Only ~20% of quality filtered reads are unique, meaning that ~80% of reads are PCR duplicates.
+
+
+# -----------------------------------------------
+# get length dist. of contigs after filtering
+# -----------------------------------------------
+cd /data3/claudius/Big_Data/ANGSD/Data
+# the length of each contig of the 583,312 contigs of the Big_Data_ref is recorded in the BAM header
+samtools view -H par_34-9.sorted.bam | grep "^@SQ" | sed 's/SN:\|LN:\|@SQ[^_[:alnum:]]//g' | sort -k1b,1 -T "." > Big_Data_ref_contig_lengths
+# note, the sort comand complained about not enough space in /tmp for a temporary file, so I specified the current
+# directory for the tmpdir
+
+# the keep.bed file is a symbolic link to the bed file containing all positive BED intervals after all filtering
+# it links to ../ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.bed
+cut -f 1 keep.bed | uniq | wc -l
+# there are 34,343 in the filtered reference
+
+# get the length of the contigs that are represented in the BED intervals after filtering
+join -j 1 Big_Data_ref_contig_lengths <(cut -f 1 keep.bed | sort | uniq) > keep.contig_lengths
+# see Big_Data.Rmd for the plots
+
+
+# --------------------------------------------------------
+# get mappability of reference before and after filtering
+# --------------------------------------------------------
+# GEM: http://algorithms.cnag.cat/wiki/The_GEM_library
+cd /data3/claudius/Big_Data/BOWTIE2
+# create GEM index of Big Data reference assembly
+gem-indexer.time gem-indexer -i Big_Data_ref.fa -o Big_Data_ref_index --complement no -T 12 --max-memory 94000000000 -s 8
+# this takes only 2 min and creates one index file called  Big_Data_ref_index.gem.
+
+# create mappability profile with kmer length of 40, approximation of number of mapping positions beyond 9 and allowed mismatch of 3
+/usr/bin/time -vo gem-mappability.time gem-mappability -I Big_Data_ref_index.gem -o Big_Data_ref_mappability.gem -l 40 -t 9 --mismatch-alphabet ACGNT -m 3 -e 3 -T 12
+# this took 21min:35sec and created one output file called Big_Data_ref_mappability.gem.mappability.
+
+# turn from GEM format into wig format
+gem-2-wig -I Big_Data_ref_index.gem -i Big_Data_ref_mappability.gem.mappability -o Big_Data_ref_mappability.wig
+
+# turn wig format into BED format with BEDOPS programme
+wig2bed < Big_Data_ref_mappability.wig.wig > Big_Data_ref_mappability.wig.bed
+
+# compute mappability profile, but do not consider positions that contain an N
+gem-mappability.time gem-mappability -I Big_Data_ref_index.gem -o Big_Data_ref_mappability.gem -l 40 -t 9 --mismatch-alphabet ACGT -m 3 -e 3 -T 12
+gem-2-wig -I Big_Data_ref_index.gem -i Big_Data_ref_noN.mappability -o Big_Data_ref_noN.mappability
+wig2bed < Big_Data_ref_noN.mappability.wig | sort-bed - > Big_Data_ref_noN.mappability.bed
+# the output intervals do still contain all positions, i. e. including positions that have an N in the reference as well as positions whose 40 bp
+# long kmer overlaps an N. The effect of --mismatch-alphabet is therefore not clear to me. I am going to use the version with N, i. e. the first.
+
+# remove temporary wig files, which are not needed anymore
+rm -f *wig 
+
+# I positions in each contig beyond end-kmersize always get mappability of 0. I therefore want to exclude them from analysis of mappability.
+# gem-mappability obviously needs to be able to extract a full lenght kmer from the reference (here 40 bp) in order to compute mappability and
+# if it cannot it assigns mappability of 0. BED uses half open intervals: [start, end), meaning that the base at coordinate "end" is not part of the interval.
+# The last coordinate in a contig from which a full length kmer can be extracted is end-kmersize+1. I am therefore going to subtract 39 from the end 
+# coordinates of each contig in the Big_Data_ref.fa.bed reference BED file.
+cat BAM/Big_Data_ref.fa.bed | awk 'BEGIN{OFS="\t"}{$3-=39; if($3>0 && $3>$2)print}' | sort-bed - > Big_Data_ref_minus39.fa.bed
+# Note, I need to take care that the end coordinate is greater than 0 and greater than the start coordinate. I am also using sort-bed to make
+# sure the bed file is sorted in a way that works with bedmap.
+
+# get average mappability per reference contig
+bedmap --echo --wmean --delim "\t" Big_Data_ref_minus39.fa.bed Big_Data_ref_mappability.wig.bed > Big_Data_ref_mappability.wmean.bed
+
+# The BED file that contains the intervals after filtering is:
+# ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.bed
+ln -s ../ANGSD/ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.bed keep.bed
+
+# I am now extracting from the comprehensive set of intervals spanning the whole Big Data reference (minus the last 40 bases)
+# the intervals that overlap with an interval in keep.bed, i. e. those intervals that were kept for further analysis after filtering:
+sort-bed keep.bed | bedops --element-of 1 Big_Data_ref_minus39.fa.bed - > Big_Data_ref_minus39.keep.bed
+# Note, that I am getting the whole reference contig even if only part of it has been kept for further analysis.
+# I would like to get the mappability for all kept contigs.
+bedmap --echo --wmean --delim "\t" Big_Data_ref_minus39.keep.bed Big_Data_ref_mappability.wig.bed > Big_Data_ref_kept_mappability.wmean.bed
+# I could also just have extracted those intervals from Big_Data_ref_mappability.wmean.bed:
+sort-bed keep.bed | bedops --element-of 1 Big_Data_ref_mappability.wmean.bed - | less
+# This extracts all reference intervals in Big_Data_ref_mappability.wmean.bed to which kept intervals map.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

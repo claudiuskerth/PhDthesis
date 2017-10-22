@@ -5,6 +5,7 @@ Claudius
 
 -   [Depth distribution over SE RAD tags](#depth-distribution-over-se-rad-tags)
 -   [Mapping quality distribution](#mapping-quality-distribution)
+-   [Contig length distribution](#contig-length-distribution)
 
 I have created two coverage files with `bamtools coverage` from the BAM files of two individuals that shall represent their respective population:
 
@@ -74,12 +75,7 @@ hist(ery,
      main="Distribution of coverage for ind ery_30-15",
      col="blue"
      )
-```
 
-    ## Warning: closing unused connection 5 (gzip -dc par_34-14.sorted.cov.gz |
-    ## cut -f 3)
-
-``` r
 ( Q = quantile(ery, probs=c(0.25, 0.5, 0.75, 0.95, 0.99, 0.999)) )
 ```
 
@@ -364,3 +360,230 @@ sum(mq < 10)/length(mq)
     ## [1] 0.4122924
 
 About 40% of reads have a mapping quality below 10.
+
+I would like to get the distribution of mapping qualities of all mapped reads before any filtering, for ERY and PAR separately. Then I would like to get the distribution of mapping qualities of all mapped reads after applying all filters (i. e. from those reads that overlap with keep.sites), for ERY and PAR separately.
+
+``` r
+# get get mapQ dist before filtering
+# PAR
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+pp = pipe("for BAM in par*sorted.bam; do samtools view $BAM | cut -f 5; done", open="r")
+mq.par = tabulate(scan(pp))
+close(pp)
+
+save(mq.par, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR.RData")
+```
+
+``` r
+# get get mapQ dist before filtering
+# ERY
+pp = pipe("for BAM in ery*sorted.bam; do samtools view $BAM | cut -f 5; done", open="r")
+mq.ery = tabulate(scan(pp))
+close(pp)
+
+save(mq.ery, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY.RData")
+```
+
+``` r
+opts_chunk$set(root.dir="/data3/claudius/Big_Data/ANGSD/Data")
+```
+
+``` r
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR.RData")
+cbind(1:length(mq.par), mq.par, mq.par/sum(mq.par))
+```
+
+    ##           mq.par             
+    ##  [1,]  1 7366463 2.492307e-01
+    ##  [2,]  2  901937 3.051538e-02
+    ##  [3,]  3  420186 1.421622e-02
+    ##  [4,]  4   68293 2.310568e-03
+    ##  [5,]  5   23436 7.929140e-04
+    ##  [6,]  6 2036391 6.889755e-02
+    ##  [7,]  7 1355190 4.585036e-02
+    ##  [8,]  8  386954 1.309188e-02
+    ##  [9,]  9       0 0.000000e+00
+    ## [10,] 10       0 0.000000e+00
+    ## [11,] 11  777826 2.631631e-02
+    ## [12,] 12  877132 2.967615e-02
+    ## [13,] 13       0 0.000000e+00
+    ## [14,] 14  176893 5.984850e-03
+    ## [15,] 15  392896 1.329291e-02
+    ## [16,] 16  107420 3.634358e-03
+    ## [17,] 17  482473 1.632359e-02
+    ## [18,] 18  295653 1.000288e-02
+    ## [19,] 19       0 0.000000e+00
+    ## [20,] 20       0 0.000000e+00
+    ## [21,] 21  177254 5.997063e-03
+    ## [22,] 22  131711 4.456200e-03
+    ## [23,] 23  569474 1.926711e-02
+    ## [24,] 24  839346 2.839773e-02
+    ## [25,] 25   98772 3.341769e-03
+    ## [26,] 26   64631 2.186671e-03
+    ## [27,] 27   18636 6.305148e-04
+    ## [28,] 28       0 0.000000e+00
+    ## [29,] 29       0 0.000000e+00
+    ## [30,] 30 1110516 3.757227e-02
+    ## [31,] 31  812039 2.747385e-02
+    ## [32,] 32  475244 1.607901e-02
+    ## [33,] 33     342 1.157094e-05
+    ## [34,] 34  363505 1.229852e-02
+    ## [35,] 35  250699 8.481940e-03
+    ## [36,] 36  184752 6.250744e-03
+    ## [37,] 37  126797 4.289943e-03
+    ## [38,] 38   97740 3.306853e-03
+    ## [39,] 39   39436 1.334245e-03
+    ## [40,] 40 1305847 4.418093e-02
+    ## [41,] 41       0 0.000000e+00
+    ## [42,] 42 7220916 2.443064e-01
+
+``` r
+mp = barplot(mq.par/sum(mq.par),
+        ylim=c(0,.3), 
+        col=c("blue"),
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for mapped reads of PAR"
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)], 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+![](Big_Data_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
+``` r
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY.RData")
+mp = barplot(mq.ery/sum(mq.ery),
+        ylim=c(0,.3), 
+        col=c("blue"),
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for mapped reads of ERY"
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)], 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+![](Big_Data_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+The file `ParEry.noSEgt2.nogtQ99Cov.noDUST.3.15.noTGCAGG.ANGSD_combinedNegFisFiltered.noGtQ99GlobalCov.sorted.sites` lists all sites in the Big Data reference that have passed my filters (see line 1308 onwards in `assembly.sh`). With my script `sites2bed.pl` I have turned this file into bed format. I have created a symbolic link to this file with the name `keep.bed`.
+
+``` r
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+# get get mapQ dist after filtering
+# PAR
+pp = pipe("for BAM in par*sorted.bam; do samtools view -L keep.bed $BAM | cut -f 5; done", open="r")
+mq.after.par = tabulate(scan(pp))
+close(pp)
+save(mq.after.par, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR_afterFiltering.RData")
+
+# get get mapQ dist after filtering
+# ERY
+pp = pipe("for BAM in ery*sorted.bam; do samtools view -L keep.bed $BAM | cut -f 5; done", open="r")
+mq.after.ery = tabulate(scan(pp))
+close(pp)
+save(mq.after.ery, file = "/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY_afterFiltering.RData")
+```
+
+``` r
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_PAR_afterFiltering.RData")
+# PAR
+par.mq = as.matrix(rbind(mq.par/sum(mq.par), mq.after.par/sum(mq.after.par)))
+rownames(par.mq) = c("before filtering", "after filtering")
+
+mp = barplot(par.mq,
+        ylim=c(0,.3), 
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for PAR",
+        col=c("orange", "blue"), 
+        beside=TRUE,
+        legend=T,
+        args.legend = list(x = "top")
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)*2]-mp[1]/2, 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+![](Big_Data_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+``` r
+load("/data3/claudius/Big_Data/ANGSD/Data/mapQ_ERY_afterFiltering.RData")
+# ERY
+ery.mq = as.matrix(rbind(mq.ery/sum(mq.ery), mq.after.ery/sum(mq.after.ery)))
+rownames(ery.mq) = c("before filtering", "after filtering")
+
+mp = barplot(ery.mq,
+        ylim=c(0,.3), 
+        xlab="mapping quality score",
+        ylab="proportion of reads",
+        main="mapping quality distribution for ERY",
+        col=c("orange", "blue"), 
+        beside=TRUE,
+        legend=T,
+        args.legend = list(x="top")
+        )
+axis(side=1, 
+     at=mp[c(1, 10, 20, 30, 40)*2]-mp[1]/2, 
+     labels=as.character(c(1, 10, 20, 30, 40))
+     )
+```
+
+![](Big_Data_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+Filtering the reference sequence has selected for contigs with more unique sequences as shown by the great reduction in the proportion of reads with a mapping quality of 1 that map to the filtered reference as compared to the unfiltered reference sequence. Only reads with mapQ ≥ 5 have been used for downstream analyses.
+
+Contig length distribution
+--------------------------
+
+I would like to see the distribution of contig lengths before and after filtering. For commands on how I extracted the contig lengths, see `assembly.sh` line 2865.
+
+``` r
+# get contig lengths before filtering
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+before = read.delim("Big_Data_ref_contig_lengths", header=F)
+names(before) = list("contig", "length")
+head(before)
+```
+
+    ##          contig length
+    ## 1      Contig_1    236
+    ## 2     Contig_10    198
+    ## 3   Contig_1000    249
+    ## 4 Contig_100000    215
+    ## 5 Contig_100001    146
+    ## 6 Contig_100004    204
+
+``` r
+# contig lengths after filtering
+setwd("/data3/claudius/Big_Data/ANGSD/Data")
+after = read.delim("keep.contig_lengths", header=F, sep=" ")
+names(after) = list("contig", "length")
+head(after)
+```
+
+    ##          contig length
+    ## 1  Contig_10001    372
+    ## 2 Contig_100013    163
+    ## 3 Contig_100028    581
+    ## 4  Contig_10006    322
+    ## 5 Contig_100060    166
+    ## 6 Contig_100072    263
+
+``` r
+par(mfrow=c(2,1))
+#hist(before$length)
+#hist(after$length)
+plot(tabulate(before$length), type="l", ylab="contig count", xlab="contig length", xaxt="n")
+axis(1, at=seq(0, 800, 100), label=seq(0, 800, 100))
+plot(tabulate(after$length), type="l", ylab="contig count", xlab="contig length", xaxt="n")
+axis(1, at=seq(0, 800, 100), label=seq(0, 800, 100))
+```
+
+![](Big_Data_files/figure-markdown_github/contig-length-dist-1.png)

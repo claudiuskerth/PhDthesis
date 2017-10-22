@@ -127,7 +127,7 @@ the regions of the genome that flank the recognition sites of restriction enzyme
 
 reduced rep- resentation libraries (RRL) have been used to subsample genomes in a repeatable manner\addcit{\cite{Andrews2016}}
 
-
+\cite{Catchen2017,Lowry2016,McKinney2017}
 
 %\begin{itemize}
 %\item QTL, association mapping \\

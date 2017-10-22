@@ -3,16 +3,19 @@ title: "Mapping Tool Test"
 author: "Claudius"
 date: "08/09/2014"
 output: 
-#  html_document:
-#    toc: True
-#    self_contained: False
-  github_document:
-    toc: yes
+  html_document:
+    toc: True
+    self_contained: False
+#  github_document:
+#    toc: yes
 ---
 
-```{r, echo=FALSE}
-setwd("/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Data_analysis/reference-mapping/data")
+```{r setup options, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(dev=c('png', 'pdf'))
+setwd("/data/claudius/Read_mapping/Schistocerca/mapping_standard_RAD_reads/with_stampy-1.0.23/large_insertsd/sensitive/PE-assembly/SSAKE/output/ssake_optimised_for_longest_contig/PFM/Primer3/mapping_against_primer3ready_seqs/alignment_tests/simulation")
 ```
+
 
 I simulated 200,000 50bp SE reads with [`wgsim`](https://github.com/lh3/wgsim) from the _Heliconius melpomene_ reference sequence (see sim.sh). I specified a substitution rate of 0.01, 20% of polymorphisms are indels with lengths randomly drawn from the geometric distribution $0.9^{(\text{length}-1)} \times 0.1$. No sequencing error specified.
 
@@ -660,10 +663,13 @@ abline(a=0, b=1)
 ```
 
 ```{r obs-vs-reported-FPR}
+par(mar=c(5,4,1,1))
 # replace 0's with 10^-10
 falsePos1[falsePos1 == 0] = 10^-10
 
-plot(falsePos1, 10^-(roc1$MapQ/10),
+figure = function ()
+{
+  plot(falsePos1, 10^-(roc1$MapQ/10),
   #xlim = range(c(bowtie2_ete_falsePos, bwa_mem_default.falsePos, falsePos1))+10^-9,
   xlim = c(10^-6, 10^-2),
   ylim = c(10^-9, 1),
@@ -711,12 +717,89 @@ text(x=bowtie2_ete_falsePos[seq(length(bowtie2_ete_falsePos), 1, -5)],
      offset=0.2, 
      cex=0.8
      )
+}
+figure()
 legend("bottomright",
        legend=c("stampy", "bowtie2", "bwa mem"),
        pch=c(20, 18, 4),
        col=c("red", "blue", "firebrick")
        )
 ```
+
+Bowtie2 greatly underestimates the true mapping quality of the simulated reads. Is this also true when simulating from a more repetitive genome, like the human genome?
+
+I have simulated reads in exactly the same way as above with Mason from the human genome version 38. I have then mapped those simulated reads back against the human reference with bowtie2 with exactly the same settings as above for end-to-end mode (see `Mason_sim.sh` for details).
+
+```{r}
+human_bowtie2.roc = read.delim("human_bowtie2_ete.roc")
+head(human_bowtie2.roc)
+tail(human_bowtie2.roc)
+```
+
+```{r}
+human_bowtie2_ete_falsePos = human_bowtie2.roc$falseMap / human_bowtie2.roc$Mapped
+```
+
+```{r obs-vs-reported-FPR-Hmel-Hsap}
+par(mar=c(5,4,1,1))
+plot(falsePos1, 10^-(roc1$MapQ/10),
+  #xlim = range(c(bowtie2_ete_falsePos, bwa_mem_default.falsePos, falsePos1))+10^-9,
+  xlim = c(10^-5, 10^-2),
+  ylim = c(10^-7, 1),
+  xlab="observed false positive rate (FPR)",
+  ylab="reported FPR (from mapQ score)",
+  log = "xy",
+  type="n",
+  xaxp=c(10^-7, 10^-2, 2)
+  ,xaxt="n"
+  #,main="comparison of observed and reported mapping qualities"
+)
+axis(1, 
+     at=c(seq(1e-6, 1e-5, 1e-6),seq(2e-5, 9e-5, 1e-5),seq(1e-4, 9e-4, 1e-4),seq(1e-3, 1e-2,1e-3)),
+     labels=FALSE,
+     tck=1,
+     lty="dashed",
+     col.ticks = "grey"
+    )
+axis(1, 
+     at=c(1e-6, 1e-5, 1e-4, 1e-3, 1e-2),
+     labels=TRUE
+    )
+abline(a=0, b=1)
+points(bowtie2_ete_falsePos, 10^-(bowtie2_ete.roc$MapQ/10),
+       col="blue",
+       pch=18,
+       type="o"
+)
+points(human_bowtie2_ete_falsePos, 10^-(human_bowtie2.roc$MapQ/10),
+       col="skyblue",
+       pch=17,
+       type="o"
+       )
+# bowtie2 end-to-end mapQ label
+text(x=bowtie2_ete_falsePos[seq(length(bowtie2_ete_falsePos), 1, -5)], 
+     y=10^-(bowtie2_ete.roc$MapQ[seq(length(bowtie2_ete.roc$MapQ), 1, -5)]/10), 
+     labels=bowtie2_ete.roc$MapQ[seq(length(bowtie2_ete.roc$MapQ), 1, -5)], # label every 4th point with its mapping quality
+     pos=4, 
+     offset=0.2, 
+     cex=0.8
+     )
+text(x=rev(human_bowtie2_ete_falsePos)[seq(2, length(human_bowtie2_ete_falsePos), 5)], 
+     y=10^-(rev(human_bowtie2.roc$MapQ)[seq(2, length(human_bowtie2.roc$MapQ), 5)]/10), 
+     labels=rev(human_bowtie2.roc$MapQ)[seq(2, length(human_bowtie2.roc$MapQ), 5)], # label every 4th point with its mapping quality
+     pos=4, 
+     offset=0.2, 
+     cex=0.8
+     )
+legend("bottomright",
+       legend=c("H. melpomene", "H. sapiens"),
+       pch=c(18, 17),
+       col=c("blue", "skyblue")
+       )
+```
+
+With a much more repetitive reference sequence like the human genome, the bowtie2 mapping quality scores are not so much underestimating the true mapping quality as with the H. melpomene genome, but quality scores below 25 are still underestimating the true mapping quality.
+
 
 **************************************************
 
@@ -740,7 +823,7 @@ barplot(table(wgsim_default_indel_dist),
 ```
 
 ```{r}
-human_roc <- read.delim("human_sim.roc", header=T)
+human_roc <- read.delim("human_wgsim_default.roc", header=T)
 head(human_roc)
 tail(human_roc)
 ```

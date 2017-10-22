@@ -144,7 +144,7 @@
     {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Appendix1/}
     }
 
-\chapter{Double-Digest sRAD protocol}
+\section{Double-Digest sRAD protocol}
 
 \subsection{ingredients}
 
@@ -180,15 +180,18 @@
 \end{itemize}
 }
 
+%
+%
 \subsection{protocol}
+%
+%
 
-\subsubsection{isolate DNA from grasshopper hindleg}
+\subsection{isolate DNA from grasshopper hindleg}
 \begin{itemize}
 \item with Qiagen Dneasy Blood and Tissue Kit (spin columns)
 \end{itemize}
 
-\subsubsection
-{check the quality of the isolations}
+\subsection{check the quality of the isolations}
 \begin{itemize}
 \item by running each isolation on a 1.0\% gel
 \end{itemize}
@@ -201,7 +204,7 @@
 %\end{center}
 %\end{figure}
 
-\subsubsection
+\subsection
 {quantify DNA samples with fluorometer twice}
 \begin{itemize}
 \item produce at least three replicates of calf thymus standard serial dilutions for the standard curve
@@ -210,7 +213,7 @@
 \item get at least two concentration measurements per DNA isolation
 \end{itemize}
 
-\subsubsection
+\subsection
 {digest 132 ng of DNA from each individual with SbfI HF and XhoI}
 \begin{itemize}
 \item make master mix of 40$\times$:
@@ -231,7 +234,7 @@
 \item heat-inactivate in thermal cycler at 65$^{\circ}$C for 20 min, then ramp down to room temperature at no more than 2$^{\circ}$C/min \footnote{adhesive films for qPCR plates only seal tight after heating via a heated lid beyond 70$^{\circ}$C}
 \end{itemize}
 
-\subsubsection
+\subsection
 {calculate the molar amount of sticky ends in the restriction digest}
 \begin{itemize}
 \item Parameters:
@@ -265,7 +268,7 @@
 \item in order to provide adapters in $\sim10-20 \times$ excess toward sticky ends, use 100fmol (=0.1pmol) P1 adapter per sample and 2pmole of P2 adapter per sample
 \end{itemize}
 
-\subsubsection
+\subsection
 {set up a 10$\mu$M P2Y-XhoI adapter stock solution from oligos}
 \begin{itemize}
 \item set up annealing buffer (AB) as shown in table \ref{AB} \marginal{{\color{red}does this buffer contain a high enough salt concentration?!}}
@@ -318,7 +321,7 @@ AB					& 	80$\mu$l	\ML
 
 \end{itemize}
 
-\subsubsection
+\subsection
 {ligate adapters to each restriction digest}
 \begin{itemize}
 \item put the sample plate on ice
@@ -343,7 +346,7 @@ AB					& 	80$\mu$l	\ML
 \item heat-inactivate at 65$^{\circ}$C for 20 min in thermal cycler, then ramp down to RT at 2$^{\circ}$C/min
 \end{itemize}
 
-\subsubsection
+\subsection
 {combine samples}
 \begin{itemize}
 \item pool the 38 individual ligation mixes, making up $\sim$1,520$\mu$l and $\sim$5 $\mu$g DNA 
@@ -382,7 +385,7 @@ AB					& 	80$\mu$l	\ML
 %\end{itemize}
 
 
-\subsubsection
+\subsection
 {clean up and concentrate the adapter ligated library}
 \begin{itemize}
 \item with one Qiagen MinElute reaction cleanup column (Cat. no. 28204), capacity each 5$\mu$g DNA\footnote{ignore what the kit manual says about the maximum amount of enzymatic reaction that can be cleaned up per column}
@@ -390,7 +393,7 @@ AB					& 	80$\mu$l	\ML
 \item elute with 15 $\mu$l EB
 \end{itemize}
 
-\subsubsection
+\subsection
 {size selection on agarose gel}\label{sizeSelection}
 \begin{itemize}
 \item rinse the gel tank and use fresh buffer before running the gel\footnote{if you have run a gel from a different library before, otherwise not necessary} 
@@ -427,7 +430,7 @@ AB					& 	80$\mu$l	\ML
 %\end{center}
 %\end{figure}
 
-\subsubsection
+\subsection
 {selective amplification}
 \label{selAmp}
 \begin{itemize}
@@ -467,7 +470,7 @@ AB					& 	80$\mu$l	\ML
 }
 \end{itemize}
 
-\subsubsection
+\subsection
 {purifcation and concentration of the selective PCR product}
 \begin{itemize}
 \item {\color{red}use filter-tips or different pipettes for anything post-PCR !}
@@ -476,7 +479,7 @@ AB					& 	80$\mu$l	\ML
 \item purify the rest of the PCR product over a MinElute column eluting with 10$\mu$l EB
 \end{itemize}
 
-\subsubsection
+\subsection
 {determination of template amount used for selective PCR by qPCR}
 \begin{itemize}
 \item {\color{red}use filter-tips}
@@ -491,7 +494,7 @@ AB					& 	80$\mu$l	\ML
 \end{itemize}
 
 
-\subsubsection
+\subsection
 {normalisation of the library}
 Unless the library looks like a homogeneous smear on the gel, it is advisable to normalise it.
 \begin{itemize}
@@ -511,7 +514,7 @@ Unless the library looks like a homogeneous smear on the gel, it is advisable to
 \item add 10$\mu$l DSN stop solution, mix and spin \footnote{the reaction mixture contains 5mM MgCl$_{2}$ and the stop solution contains 5mM EDTA to neutralise it. Figure 4(B) in the TRIMMER kit manual suggests that inactivation of DSN by heating is not guaranteed to be complete.}
 \end{itemize}
 
-\subsubsection
+\subsection
 {test PCR of normalisation}
 \begin{itemize}
 \item {\color{red}use filter-tips}
@@ -530,7 +533,7 @@ Unless the library looks like a homogeneous smear on the gel, it is advisable to
 \item decide which DSN dissolution produced the better result
 \end{itemize}
 
-\subsubsection
+\subsection
 {amplification of normalised library}
 \begin{itemize}
 \item {\color{red}use filter-tips}
@@ -545,7 +548,7 @@ Unless the library looks like a homogeneous smear on the gel, it is advisable to
 \item run the PCR programme in table \ref{selPCR} for 5-7 cycles, depending on the outcome of the test PCR \footnote{These additional PCR cycles do not further bias the library's representation of the pre-normalisation template since this PCR starts with a lot of template molecules as indicated by the few cycles necessary to create a visible PCR product.}
 \end{itemize}
 
-\subsubsection
+\subsection
 {purification of the library}
 \begin{itemize}
 \item {\color{red}use filter-tips}
@@ -614,7 +617,7 @@ Unless the library looks like a homogeneous smear on the gel, it is advisable to
 %\item divide the DNA concentration of the library [g/$\mu$l] by it's molecular weight to get the molar concentration [nmole/L] of RAD tags in the library
 %\end{itemize}
 %
-\subsubsection
+\subsection
 {validate library \protect \footnote{optional because of the cost and effort involved with cloning, but recommended before spending a lot of money on Solexa sequencing}}
 \begin{itemize}
 \item A-tail PCR product

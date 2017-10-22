@@ -708,3 +708,79 @@ hist(thetas.par$Tajima, breaks=40,
 legend("topright", legend=paste(nrow(thetas.par), " contigs"), bty="n")
 par(mfrow=c(1,1))
 par(mar=c(5, 4, 4, 2) + 0.1)
+
+
+
+# ---- contig-length-dist ----
+before = read.delim("Big_Data_ref_contig_lengths", header=F)
+names(before) = list("contig", "length")
+after = read.delim("keep.contig_lengths", header=F, sep=" ")
+names(after) = list("contig", "length")
+par(mfrow=c(2,1), mar=c(5,4,1,0))
+plot(tabulate(before$length), type="l", ylab="contig count", xlab="contig length", xaxt="n")
+axis(1, at=seq(0, 800, 100), label=seq(0, 800, 100))
+plot(tabulate(after$length), type="l", ylab="contig count", xlab="contig length", xaxt="n")
+axis(1, at=seq(0, 800, 100), label=seq(0, 800, 100))
+
+
+
+
+# ---- mappability-dist ----
+pp = pipe("cut -f 4 ../MAPPABILITY/Big_Data_ref_kept_mappability.wmean.bed")
+after = as.numeric(scan(pp))
+close(pp)
+
+pp = pipe("cut -f 4 ../MAPPABILITY/Big_Data_ref_mappability.wmean.bed", "r")
+before = as.numeric(scan(pp))
+close(pp)
+
+par(mfrow=c(2,1), mar=c(5,4,1,0))
+# tabulate with decimal numbers into specified bins
+h1 = hist(before, breaks=seq(0, 1, length=100), plot=F)
+h2 = hist(after, breaks=seq(0, 1, length=100), plot=F)
+# determine common ymax
+ymax = max(h1$counts/sum(h1$counts), h2$counts/sum(h2$counts))
+# plot "before"
+mp = barplot(h1$counts/sum(h1$counts),
+        ylim=c(0, ymax*1.1),
+        col="black", border="black",
+        space=0,
+        xlab="mappability",
+        ylab="proportion of contigs"
+        )
+axis(side=1, 
+     label=round(h1$mids[c(seq(1,99,by=11),99)],2),
+     at=mp[c(seq(1,99,by=11),99)]
+)
+legend("topleft", legend="before filtering", bty="n")
+# plot "after"
+mp = barplot(h2$counts/sum(h2$counts),
+             ylim=c(0, ymax*1.1),
+             col="black", border="black",
+             space=0,
+             xlab="mappability",
+             ylab="proportion of contigs"
+)
+axis(side=1, 
+     label=round(h2$mids[c(seq(1,99,by=11),99)],2),
+     at=mp[c(seq(1,99,by=11),99)]
+)
+legend("topleft", legend="after filtering", bty="n")
+
+# mean(before)
+# mean(after)
+# median(before)
+# median(after)
+
+if(!file.exists("../MAPPABILITY/Utest.RData")){
+  u = wilcox.test(before, after, conf.int = T)
+  save(u, file="../MAPPABILITY/Utest.RData")
+}else{
+  load(file="../MAPPABILITY/Utest.RData")
+}
+
+
+
+
+
+
