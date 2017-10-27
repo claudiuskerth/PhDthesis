@@ -16,7 +16,7 @@ This notebook documents the analysis the *Big Data* set after removing PCR dupli
 
 ## SE read coverage distribution before coverage filtering
 
-```{r setup options, cache=FALSE, include=TRUE}
+```{r setup options, cache=FALSE, include=FALSE}
 library(knitr)
 opts_chunk$set(
   dev=c("png", "pdf"), 
@@ -109,7 +109,7 @@ generally ignoring that category, also for coverage filtering.
 
 ## Global coverage distribution after coverage filtering
 
-Filtering against excess coverage above the 99th percentile with `excess_coverage_filter.py` and minimum coverage for 1x in 15 ind.'s with `minimum_coverage_filter.py` has produced a new depth file (`samtools depth` format): `ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.depth.gz`. The excess coverage filtering was based on SE read coverage only. Minimum coverage filtering was based on all reads.
+Filtering against excess coverage above the 99th percentile with `excess_coverage_filter.py` and minimum coverage for 1x in 15 ind.'s with `minimum_coverage_filter.py` has produced a new depth file (`samtools depth` format): `ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.depth.gz`. The excess coverage filtering was based on SE read coverage only. Minimum coverage filtering was based on all reads. Note that this is before HWE filtering.
 
 ```{r, cache=TRUE, eval=FALSE}
 # get connection to gzipped file
@@ -127,6 +127,11 @@ load("filt_depth_tab.RData")
 
 # peek at table
 filt_depth_tab[1:10,1:5]
+setwd("/data3/claudius/Big_Data/BOWTIE2/BAM_dedup")
+names(filt_depth_tab)[1:2] = c("contig_ID", "position")
+filenames = dir(pattern = "*dedup.bam")
+names(filt_depth_tab)[3:ncol(filt_depth_tab)] = gsub("_dedup.bam*", "", filenames)
+names(filt_depth_tab)
 ```
 
 ```{r}
@@ -152,7 +157,7 @@ names(across_sample_cov.dist) = as.character(1:length(across_sample_cov.dist))
 quantile(across_sample_cov, probs=c(0.99))
 ```
 
-```{r}
+```{r dedup-across-sample-cov-dist}
 par(mfrow=c(1,1))
 
 # capture x-coord. of bars in mp
@@ -181,5 +186,26 @@ abline(v=mp[modal], col="red", lwd=2, lty=2)
 # m = across_sample_cov.dist[which(across_sample_cov.dist == max(across_sample_cov.dist))]
 # modal = as.numeric( names(m) )
 # abline(v=modal, col="red", lwd=2, lty=2)
+```
+
+
+## Average per-site, per-individual coverage
+
+```{r}
+cov = sum(across_sample_cov.dist*1:length(across_sample_cov.dist))/(sum(across_sample_cov.dist)*36)
+cov
+```
+
+So the average coverage per site and per individual for the filtered sites is `r round(cov, 1)`.
+
+
+
+## Individual coverage distributions
+
+
+```{r dedup-ind-cov-dist, cache=TRUE}
+z = boxplot(filt_depth_tab[,3:38], outline=F, plot=F)
+bxp(z, outline=F, boxfill=c(rep("red", 18), rep("green", 18)), xaxt="n", ylab="coverage", main="Individual coverage distributions")
+axis(side=1, at=1:36, labels=names(filt_depth_tab)[3:38], cex.axis=.6, las=2)
 ```
 

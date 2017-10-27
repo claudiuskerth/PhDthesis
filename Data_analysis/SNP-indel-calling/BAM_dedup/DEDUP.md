@@ -5,22 +5,13 @@ Claudius
 
 -   [SE read coverage distribution before coverage filtering](#se-read-coverage-distribution-before-coverage-filtering)
 -   [Global coverage distribution after coverage filtering](#global-coverage-distribution-after-coverage-filtering)
+-   [Average per-site, per-individual coverage](#average-per-site-per-individual-coverage)
+-   [Individual coverage distributions](#individual-coverage-distributions)
 
-This analyses the *Big Data* set after removing PCR duplicates with `starcode`.
+This notebook documents the analysis the *Big Data* set after removing PCR duplicates with `starcode`.
 
 SE read coverage distribution before coverage filtering
 -------------------------------------------------------
-
-``` r
-library(knitr)
-opts_chunk$set(
-  dev=c("png", "pdf"), 
-  eval=TRUE, 
-  fig.width=10, fig.height=8
-  )
-options(digits=10)
-setwd("/data3/claudius/Big_Data/BOWTIE2/BAM_dedup")
-```
 
 ``` r
 # get BAM file names in current directory
@@ -127,7 +118,7 @@ Unsurprisingly, the SE read coverage is generally very low with PCR deduplicated
 Global coverage distribution after coverage filtering
 -----------------------------------------------------
 
-Filtering against excess coverage above the 99th percentile with `excess_coverage_filter.py` and minimum coverage for 1x in 15 ind.'s with `minimum_coverage_filter.py` has produced a new depth file (`samtools depth` format): `ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.depth.gz`. The excess coverage filtering was based on SE read coverage only. Minimum coverage filtering was based on all reads.
+Filtering against excess coverage above the 99th percentile with `excess_coverage_filter.py` and minimum coverage for 1x in 15 ind.'s with `minimum_coverage_filter.py` has produced a new depth file (`samtools depth` format): `ParEry.noSEgt2.noDUST.COVfiltered.noTGCAGG.1.15.depth.gz`. The excess coverage filtering was based on SE read coverage only. Minimum coverage filtering was based on all reads. Note that this is before HWE filtering.
 
 ``` r
 # get connection to gzipped file
@@ -158,6 +149,23 @@ filt_depth_tab[1:10,1:5]
     ## 8  Contig_41949 15  1  3  0
     ## 9  Contig_41949 16  1  3  0
     ## 10 Contig_41949 17  1  3  0
+
+``` r
+setwd("/data3/claudius/Big_Data/BOWTIE2/BAM_dedup")
+names(filt_depth_tab)[1:2] = c("contig_ID", "position")
+filenames = dir(pattern = "*dedup.bam")
+names(filt_depth_tab)[3:ncol(filt_depth_tab)] = gsub("_dedup.bam*", "", filenames)
+names(filt_depth_tab)
+```
+
+    ##  [1] "contig_ID" "position"  "ery_30-10" "ery_30-11" "ery_30-12"
+    ##  [6] "ery_30-13" "ery_30-14" "ery_30-15" "ery_30-16" "ery_30-17"
+    ## [11] "ery_30-18" "ery_30-1"  "ery_30-2"  "ery_30-3"  "ery_30-4" 
+    ## [16] "ery_30-5"  "ery_30-6"  "ery_30-7"  "ery_30-8"  "ery_30-9" 
+    ## [21] "par_34-10" "par_34-11" "par_34-12" "par_34-13" "par_34-14"
+    ## [26] "par_34-15" "par_34-16" "par_34-17" "par_34-18" "par_34-1" 
+    ## [31] "par_34-2"  "par_34-3"  "par_34-4"  "par_34-5"  "par_34-6" 
+    ## [36] "par_34-7"  "par_34-8"  "par_34-9"
 
 ``` r
 # get across sample coverages for each site
@@ -205,4 +213,27 @@ modal = as.numeric( names(m) )
 abline(v=mp[modal], col="red", lwd=2, lty=2)
 ```
 
-![](DEDUP_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](DEDUP_files/figure-markdown_github/dedup-across-sample-cov-dist-1.png)
+
+Average per-site, per-individual coverage
+-----------------------------------------
+
+``` r
+cov = sum(across_sample_cov.dist*1:length(across_sample_cov.dist))/(sum(across_sample_cov.dist)*36)
+cov
+```
+
+    ## [1] 1.138546537
+
+So the average coverage per site and per individual for the filtered sites is 1.1.
+
+Individual coverage distributions
+---------------------------------
+
+``` r
+z = boxplot(filt_depth_tab[,3:38], outline=F, plot=F)
+bxp(z, outline=F, boxfill=c(rep("red", 18), rep("green", 18)), xaxt="n", ylab="coverage", main="Individual coverage distributions")
+axis(side=1, at=1:36, labels=names(filt_depth_tab)[3:38], cex.axis=.6, las=2)
+```
+
+![](DEDUP_files/figure-markdown_github/dedup-ind-cov-dist-1.png)
