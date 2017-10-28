@@ -1362,6 +1362,7 @@
 # 	-doGeno 32 -doPost 1"
 # # Note, merging of *saf files with 'realSFS cat' doesn't work on huluvu (see https://github.com/ANGSD/angsd/issues/60).
 # # So, I have to run SAF calculation without GNU parallel.
+# # no -minInd required, MAF's are calculated for (practically) all filtered sites
 # #
 # # 2) calculate SAF posterior probabilities
 # #
@@ -1380,7 +1381,7 @@
 # #
 # # 3) determine global unfolded SFS
 # #
-# # GLOBAL UNFOLDED SFS:
+# # GLOBAL UNFOLDED 1D SFS:
 # cd /data3/claudius/Big_Data/ANGSD/SAFs/EryPar
 # realSFS EryPar.unfolded.saf.idx > EryPar.unfolded.sfs
 # #
@@ -1412,6 +1413,8 @@
 # # There are 68,590 sites reported in the *mafs files, i. e. that many were called as variant. 
 # ngsCovar -probfile EryPar.geno -nsites 68590 -nind 36 -call 0 -norm 0 -outfile EryPar.covar
 # #
+# # apply normalisation to covariances by dividing by p_j(1-p_j) (see eq. 3 in Patterson2006):
+# ngsCovar -probfile EryPar.geno -nsites 68590 -nind 36 -call 0 -norm 1 -outfile EryPar_norm1.covar
 # #
 # # PCA with unknown minor allele (-doMaf 2) and SNP calling and genotype calling:
 # #
@@ -1420,6 +1423,8 @@
 # # probability is called:
 # ngsCovar -probfile EryPar.geno -nsites 68590 -nind 36 -call 1 -norm 0 -outfile EryPar.covar.GC
 # 
+# # with normalisation
+# ngsCovar -probfile EryPar.geno -nsites 68590 -nind 36 -call 1 -norm 1 -outfile EryPar_norm1.covar.GC
 # 
 # 
 # # ------------------------------------- FST ---------------------------------------------------------------------------------------------
@@ -2111,6 +2116,7 @@
 # # This takes 2h:35min to finish.
 # # The new sites file contains 2,683,395 sites from 85,488,084 sites (3.14%).
 # # The filtered sites lie on 52,042 contigs.
+# # see /data3/claudius/Big_Data/BOWTIE2/BAM_dedup/DEDUP.Rmd
 
 
 # # --------------------
@@ -2240,6 +2246,7 @@
 # realSFS -P 12  Saf/Par/Par.unfolded.saf.idx 2>/dev/null > sfs/par/Par.unfolded.sfs
 # # # this takes less than 15 min to finish
 # # # === the spectra are as unusable as with previous filtering ===
+# see /data3/claudius/Big_Data/DADI/DEDUPLICATED/deduplicated_spectra.ipynb
 
 
 # # ===> try with filtering for higher coverage <===
@@ -2395,6 +2402,8 @@
 # realSFS -P 10 -maxIter 50000 -tole 1e-6 -m 0 saf/par/par.unfolded.15.saf.idx 2>/dev/null > afs/par/par.unfolded.15.sfs &
 # # ===> END with filtering for higher coverage <===
 
+# ========================= END DEDUPLICATION ANALYSIS ===================================
+
 
 # --------------------------
 # check `realSFS -sites`
@@ -2502,12 +2511,22 @@
 # echo "p-value    avg MAF #SNP" > MAF_by_pval_par;
 # for i in 1 10 100 500 1000 5000 10000 50000 100000;
 # do 
-# 	tail -n +2 PAR.hwe | gawk -v p=$i '$7>0 && $9<=1/p' | cut -f 6 | gawk -v p=$i 'BEGIN{ORS="\t"; printf("%1.00e\t", 1/p)}{s+=$1}END{ORS="\n"; OFS="\t";print s/NR, NR}' >> MAF_by_pval_par;
+# 	tail -n +2 PAR.hwe | gawk -v p=$i '$7>0 && $9<=1/p' | cut -f 6 | \
+# 	gawk -v p=$i 'BEGIN{ORS="\t"; printf("%1.00e\t", 1/p)}{s+=$1}END{ORS="\n"; OFS="\t";print s/NR, NR}' >> MAF_by_pval_par;
 # done
 # This creates a table with three columns. The first column is the p-value threshold for a positive deviation of F from 0.
 # The second column contains the average minor allele frequency (MAF) for all SNP's with positive F and p-value below the threshold.
 # The third column contains the number of SNP's with pos. F and p-value below the threshold.
 # I have plotted these tables in the IPython notebook MAF_by_pval.ipynb in the SnpStat directory.
+# I think it is also necessary to investigate the MAF by p-value correlation for SNP's with negative F, which I filtered out
+# using a p-value cutoff of 0.05.
+# echo "p-value    avg MAF #SNP" > MAF_by_pval_negFis_par;
+# for i in 1 10 100 500 1000 5000 10000 50000 100000;
+# do 
+# 	tail -n +2 PAR.hwe | gawk -v p=$i '$7<0 && $9<=1/p' | cut -f 6 | \
+# 	gawk -v p=$i 'BEGIN{ORS="\t"; printf("%1.00e\t", 1/p)}{s+=$1}END{ORS="\n"; OFS="\t";print s/NR, NR}' >> MAF_by_pval_negFis_par;
+# done
+# I have done the same with ERY.hwe.
 # -------------------------------------------------------------------------------------------------------------
 
 

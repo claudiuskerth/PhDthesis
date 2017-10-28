@@ -105,15 +105,15 @@ pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
 pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
 par(mfrow=c(1,1))
 plot(pca$rot[,1], pca$rot[,2], xlim=c(-0.3, 0.3), 
-     xlab=paste("PC1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
-     ylab=paste("PC2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     xlab=paste("eigenvector 1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("eigenvector 2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
      type="n",
     main="1,730,389 sites\n unknown minor allele + weighting by p(var)",
      cex.main=.9
 )
 points(pca$rot[,1], pca$rot[,2], 
      col=c(rep("red", 18), rep("green", 18)), 
-     pch=c(rep(17, 18), rep(19, 18)), 
+     pch=c(rep(17, 18), rep(19, 18)) 
 )
 legend("topleft", 
        legend=c("ERY", "PAR"),
@@ -136,6 +136,96 @@ pc2_sd = (pca$rot[,2] - mu2)^2
 index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3]))
 # label outliers:
 text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+
+
+
+
+### ---- PCA-with-SNP-calling-and-normalisation ----
+# PCA with unknown minor allele (-doMaf 2) and SNP calling
+# SNP pval: 1e-3
+# normalisation with p(1-p) as in Patterson2006
+covar = as.matrix(read.table("EryPar_norm1.covar", header=F))
+pca = prcomp(covar)
+pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
+pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,2], xlim=c(-0.4, 0.4), ylim=c(-1, 0.4), 
+     xlab=paste("eigenvector 1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("eigenvector 2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     type="n",
+     main="68,590 SNP's\n unknown minor allele + SNP pval: 1e-03",
+     cex.main=.9
+)
+points(pca$rot[,1], pca$rot[,2], 
+       col=c(rep("red", 18), rep("green", 18)), 
+       pch=c(rep(17, 18), rep(19, 18)) 
+)
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=c(17,19),
+       col=c("red", "green"),
+       bty="n"
+)
+filenames = scan("slim.bamfile.list", what="character")
+Names = gsub("Data/", "", gsub(".sorted.*", "", filenames))
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,2])
+pc2_sd = (pca$rot[,2] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+
+
+### ---- PCA-with-SNP-calling-and-normalisation-and-genotype-calling ----
+# PCA with unknown minor allele (-doMaf 2) and SNP calling and genotype calling
+# based on max. posterior probability
+# SNP pval: 1e-3
+# normalisation with p(1-p) as in Patterson2006
+covar = as.matrix(read.table("EryPar_norm1.covar.GC", header=F))
+pca = prcomp(covar)
+pc1_prop_var = (pca$sdev[1]^2)/sum((pca$sdev)^2)
+pc2_prop_var = (pca$sdev[2]^2)/sum((pca$sdev)^2)
+par(mfrow=c(1,1))
+plot(pca$rot[,1], pca$rot[,2], xlim=c(-.25, .3), ylim=c(-.8, .7), 
+     xlab=paste("eigenvector 1 (", signif(pc1_prop_var, digits=2)*100, "%)", sep=""), 
+     ylab=paste("eigenvector 2 (", signif(pc2_prop_var, digits=2)*100, "%)", sep=""), 
+     type="n",
+     main="68,590 SNP's\n unknown minor allele + SNP pval: 1e-03\n with genotype calling",
+     cex.main=.9
+)
+points(pca$rot[,1], pca$rot[,2], 
+       col=c(rep("red", 18), rep("green", 18)), 
+       pch=c(rep(17, 18), rep(19, 18)) 
+)
+legend("topleft", 
+       legend=c("ERY", "PAR"),
+       pch=c(17,19),
+       col=c("red", "green"),
+       bty="n"
+)
+filenames = scan("slim.bamfile.list", what="character")
+Names = gsub("Data/", "", gsub(".sorted.*", "", filenames))
+# get indeces for outliers:
+mu = mean(pca$rot[,1])
+pc1_sd = (pca$rot[,1] - mu)^2
+#Names[order(pc1_sd)]
+#Names[which(pc1_sd <= sort(pc1_sd)[2])] # two closest closest inds on PC1
+index = which(pc1_sd <= sort(pc1_sd)[2]) 
+mu2 = mean(pca$rot[,2])
+pc2_sd = (pca$rot[,2] - mu2)^2
+#Names[order(pc2_sd, decreasing=TRUE)]
+#Names[which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3])] # three most distant inds to mean of PC2
+index = c(index, which(pc2_sd >= sort(pc2_sd, dec=TRUE)[3]))
+# label outliers:
+text(pca$rot[,1][index], pca$rot[,2][index], labels=Names[index], cex=0.7, adj=c(0,0))
+
 
 
 

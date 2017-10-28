@@ -223,7 +223,7 @@ An extensive documentation about the assembly procedure as well further downstre
 %
 I mapped all quality filtered reads against the Big Data reference with the programme~\href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}{\texttt{bowtie2}} version 2.2.9 (downloaded on 29th October 2016) \citep{Langmead2012}. I ran \texttt{bowtie2} in end--to--end mode, i. e. without soft--clipping of query sequences. Further, I specified "very--sensitive" search mode with a seed length of 20. I allowed gaps to be up to 10 bp long, but I disallowed gaps within 4 bp of either end of the read. In addition I specified a high penalty of 10 for alignments against ambiguous characters in the reference. In each reference contig, \gls{se} RAD tag and \gls{pe} contig were separated by 10 N's. This high penalty therefore makes successful read alignments across the gap between \gls{se} RAD tag and \gls{pe} read contig very unlikely. Further, I specified a minimum fragment length of 60 for \gls{proper pair} read alignments, thus allowing some overlap between reads in a pair. 
 
-Although standard RAD data from paired-end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so, since \texttt{ANGSD} could not estimate a \gls{SFS} from a de-duplicated data set (see section \vref{Sec:Deduplication} in the supplementary material). The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype.\todo[color=green]{I have removed PCR duplicates with starcode and tried to estimate 1D SFS but without success. See \texttt{deduplicated\_spectra.ipynb}.}~Due to the PCR duplicates I expect the genotype likelihoods to be generally biased against heterozygote genotypes.
+Although standard RAD data from paired-end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so, since \texttt{ANGSD} could not estimate a \gls{SFS} from a de-duplicated data set (see section \vref{Sec:Deduplication} in the supplementary material). The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype. Due to the PCR duplicates I expect the genotype likelihoods to be generally biased against heterozygote genotypes.
 
 %
 %
@@ -299,10 +299,20 @@ The average per site, per individual coverage across the 1.7M filtered sites is 
 \subsection{PCA}
 %
 %
-I have used \texttt{ANGSD}  \citep{Korneliussen2014} to estimate posterior genotype probabilities across all sites using as prior a \gls{ML} estimate of the \gls{population minor allele frequency} (MAF) per site across all individuals from the two populations and the assumption of \gls{HWE} \citep{Kim2011}. Although the assumption of \gls{HWE} may well be violated, it should only make genotype probability estimates more similar between divergent individuals. Therefore, any major divergence detected between individuals based on these genotype probabilities cannot be an artifact of this prior. At low coverage, the identification of the minor allele can be uncertain. The estimation of the minor allele frequency incorporated this uncertainty \cite[suppl. mat.]{Skotte2012}. I have then estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{sample allele frequency} likelihoods (SAF), again across all individuals, using \texttt{ANGSD}'s subprogramme \texttt{realSFS} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{sample allele frequency} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of all individuals sequenced). Finally, I estimated a covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals by summing over genotype probabilities and weighting each site by its probability of being variable \citep[eq. 19 and 20]{Fumagalli2013}.\todo{in the same way it should be possible to calculate the covariance matrix between all SNP's, thereby getting composite LD estimates}~ I then performed an eigen--decomposition on the resulting covariance matrix with the \texttt{R} function \texttt{prcomp}.
+I have used \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) \citep{Korneliussen2014} to estimate posterior genotype probabilities across all sites using as prior a \gls{ML} estimate of the \gls{population minor allele frequency} (MAF) per site across all individuals from the two populations and the assumption of \gls{HWE} \citep{Kim2011}. Although the assumption of \gls{HWE} may well be violated, it should only make genotype probability estimates more similar between divergent individuals. Therefore, any major divergence detected between individuals based on these genotype probabilities cannot be an artefact of this prior. At low coverage, the identification of the minor allele can be uncertain. The estimation of the minor allele frequency incorporated this uncertainty \cite[suppl. mat.]{Skotte2012}. 
+
+Next, I estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{SAF} likelihoods (SAF), again across all individuals, using \texttt{ANGSD}'s subprogramme \texttt{realSFS} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{SAF} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of all individuals sequenced). 
+
+I have then estimated a genotype covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals. \todo{in the same way it should be possible to calculate the covariance matrix between all SNP's, thereby getting composite LD estimates}~ At each site the posterior expectation of the genotype covariance is computed by summing over all 9 genotype combinations and weighting each combination by the respective two posterior genotype probabilities. Each cell of the matrix contains the genotype covariance between two individuals averaged over all sites and each site weighted by its probability of being variable using the \gls{SAF} posterior probabilities \citep[eq. 19 and 20]{Fumagalli2013}.
+
+During the estimation of genotype and \gls{SAF} probabilities I have applied \emph{standard} (not extended) BAQ to cap the base quality by the calculated per-base alignment quality \citep{Li2011c}. This is in order to reduce false-positive variant detection caused by misalignment around \glspl{indel}.
+
+I then performed an eigen--decomposition on the resulting covariance matrix with the \texttt{R} function \texttt{prcomp}.
+%
 %
 %
 \subsection{$F_{ST}$}
+%
 %
 %
 Using \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}, I have determined a ML estimate of the global \emph{unfolded} 2D--\gls{SFS} that contains the joint sample allele frequencies of the non--reference allele from \textit{erythropus} and \textit{parallelus}. I required a nucleotide site to have sequence reads from at least 9 individuals in each population. The 2D--SFS contains the joint frequencies from approximately 1.13 million sites. This global unfolded 2D--\gls{SFS} was then used as (empirical) prior for posterior sample allele frequency probabilities from which the posterior expectation of $F_{ST}$ per site is calculated using \texttt{realSFS} from ANGSD \citep{Fumagalli2013}. This programme reports the numerator and denominator for either Reynolds' \citep[eq. 3]{Fumagalli2013} or Hudson/Bhatia's $F_{ST}$ \citep[eq. 9 and 10]{Bhatia2013} for each site. I am not reporting estimates of $F_{ST}$ per site due to their large variance \citep{Weir2005}. Instead I am reporting \emph{average} $F_{ST}$ across sites within a contig or the global average $F_{ST}$ across all sites. This average is always calculated by summing nominator and denominator across sites and then taking the ratio \citep{Bhatia2013}.
@@ -361,13 +371,13 @@ The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimate
 \subsection{Genetic differention between \textit{erythropus} and \textit{parallelus}}
 %
 %
-Figure \ref{Fig:PCA} shows a principal component analysis of genotypic covariances between all 36 individuals of \textit{erythropus} and \textit{parallelus} taking SNP and genotype uncertainty into account. Almost $^1/_4$ of the total genotypic variance is explained by the first principal component which clearly separates the two subspecies. The second component captures only 3\% of the total genotypic variance. This confirms estimates of genetic differentiation by \cite{Cooper1995} -- based on sequence variation at a single nuclear locus -- that the two subspecies are genetically distinct. Individual \texttt{par\_34-1} seems to be considerably less differentiated from \textit{erythropus} than the other \textit{parallelus} individuals. This may be due to insufficient information because of extremely low coverage (see fig. \ref{Fig:individual-coverage-dist})
+Figure \ref{Fig:PCA} shows a principal component analysis of genotypic covariances between all 36 individuals of \textit{erythropus} and \textit{parallelus} taking SNP and genotype uncertainty into account. Almost $^1/_4$ of the total genotypic variance is explained by the first principal component which clearly separates two clusters of individuals that correspond to the two subspecies. The second principal component captures only 3\% of the total genotypic variance. This confirms estimates of genetic differentiation by \cite{Cooper1995} based on sequence variation at a single nuclear locus that the two subspecies are genetically distinct. Individual \texttt{par\_34-1} seems to be considerably less differentiated from \textit{erythropus} than the other \textit{parallelus} individuals. This may be due to insufficient information because of extremely low coverage (see fig. \ref{Fig:individual-coverage-dist} and \citealt{Patterson2006}). See section \vref{Sec:PCA_supp} for the effect of SNP calling, genotype calling and normalisation of covariances on PCA.
 %
-\begin{figure}[htb!]
+\begin{figure}[htb]
 \centering
 << PCA, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
 @
-\caption{Principal component analysis with genotype probabilities across 1.7 million sites from all 36 individuals of \textit{erythropus} and \textit{parallelus}. Each site was weighted by its probability of being variable during the estimation of genotypic covariances between individuals.}
+\caption{Principal component analysis with genotype probabilities across 1.7 million sites from all 36 individuals of \textit{erythropus} and \textit{parallelus}. Numbers in brackets indicate the percentage of total variance explained by this axis.}
 \label{Fig:PCA}
 \end{figure}
 %
@@ -711,7 +721,7 @@ I have removed PCR duplicates by collapsing read pairs into unique representativ
 \label{Fig:dedup_cov_dist}
 \end{figure}
 %
-The individual coverage distributions show a median coverage of $1\times$ for all \textit{erythropus} individuals and a median of $0\times$ for most \textit{parallelus} individuals (fig. \ref{Fig:dedup_cov_dist}).
+The individual coverage distributions show a median coverage of $1\times$ for all \textit{erythropus} individuals and a median of $0\times$ for most \textit{parallelus} individuals (fig. \ref{Fig:dedup_cov_dist}). For some more details see the notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/BAM_dedup/DEDUP.md}{DEDUP}.
 %
 \begin{figure}[htb]
 \centering
@@ -730,6 +740,43 @@ As before, for the estimation of 1D site frequency spectra I required read data 
 \label{Fig:EryPar_1DSFS_dedup}
 \end{figure}
 %
+
+%
+%
+%
+\subsection{PCA with SNP calling, normalisation and genotype calling}
+\label{Sec:PCA_supp}
+%
+%
+%
+%
+The PCA in figure \vref{Fig:PCA} has been done on a covariance matrix that has been estimated from genotype likelihoods without SNP and without genotype calling. Additionally, no normalisation of the genotypic covariances by the binomial variance of the \gls{maf} has been applied. 
+In the following I am going to show PCA's from covariance matrices that have been estimated with SNP calling, normalisation and genotype calling.
+SNP's were called with a LRT of the \gls{maf} being 0 at a p-value threshold of 0.001. Genotypic covariances were normalised by $p_i(1-p_i)$ as in eq. 19 in \citealt{Fumagalli2013}.
+
+Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} shows the plot of the first two eigenvectors of a PCA with SNP calling and normalisation. SNP calling finds 68,590 SNP's. When comparing with the PCA from figure \vref{Fig:PCA} a general similarity in the relative coordinates between individuals is apparent. However, the first eigenvector in figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} explains only 13\% of the total genotypic variation in the data compared to 23\% in the PCA without SNP calling (fig. \ref{Fig:PCA}).
+%
+\begin{figure}[htb]
+\centering
+<< PCA-with-SNP-calling-and-normalisation, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
+@
+\caption{PCA with SNP calling and normalisation.}
+\label{Fig:PCA-with-SNP-calling-and-normalisation}
+\end{figure}
+%
+\\
+Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation-and-genotype-calling} shows the plot of the first two eigenvectors of a PCA with genotype calling. The genotype with the maximum posterior probability was called. Again, when compared to the PCA plot in figure \ref{Fig:PCA} a general similarity of the relative coordinates between individuals is apparent (except for the switch in sign on the second axis, which is chosen randomly by the \texttt{prcomp} function in \texttt{R}). With genotype calling, the proportion of total variance explained by the first eigenvector is reduced even further to just 11\%.
+%
+\begin{figure}[htb]
+\centering
+<< PCA-with-SNP-calling-and-normalisation-and-genotype-calling, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
+@
+\caption{PCA with SNP calling, normalisation and genotype calling.}
+\label{Fig:PCA-with-SNP-calling-and-normalisation-and-genotype-calling}
+\end{figure}
+%
+\\
+These different PCA's all reveal two clusters of individuals on the first two axes of variation. These clusters coincide with population label and are clearly separated on the first axis which explains from 11\% to 23\% of the total genotypic variation among individuals. The clear genotypic distinction of \textit{erythropus} and \textit{parallelus} is therefore robust to the way the covariance matrix has been computed. 
 
 % ----------------------------
 
@@ -769,9 +816,9 @@ As before, for the estimation of 1D site frequency spectra I required read data 
 \item[\ding{52}] included plot of distribution of average mappability per contig before and after filtering
 \item[\ding{52}] specified ANGSD version for HWE filtering, no BAQ was applied
 \item[\ding{52}] summarized and documented positive Fis estimates (see \texttt{assembly.sh, line 2461} and \texttt{MAF\_by\_pval.ipynb})
-\item add deduplication analysis, show coverage distribution
-\item redo PCA with new version of ANGSD and extended BAQ
-\item redo Fst analysis with new version of ANGSD and extended BAQ
+\item[\ding{52}] added deduplication analysis, showed coverage distribution
+\item[\ding{52}] added PCA with SNP calling and normalisation to suppl. mat.
+\item review redo Fst analysis
 \item document bootstrapping over contigs in genetic diversity section
 \item document determination of overlapping sites and estimation of statistics from those
 \item add subsection brief description of dadi analysis with links to IPython notebooks, should include a brief description of how it works
