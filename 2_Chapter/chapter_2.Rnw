@@ -257,7 +257,7 @@ Inspection of the global, i. e. across sample, coverage distribution revealed th
 \end{figure}
 %
 \\
-The above filters have selected for contigs with more unique sequences as shown by the great reduction in the proportion of reads with a mapping quality score of 1 that map to the filtered reference as compared to the unfiltered reference sequence (see fig. \ref{Fig:mapQ-dist}). Only reads with a mapping quality score of $\ge$ 5 have been used for downstream analyses. A Phred score of 5 for the mapping quality should indicate a probability of about 1/3 that the read truly originated elsewhere in the \textsl{reference sequence} (mapping uncertainty does not incorporate assembly uncertainty). However, as figure \vref{Fig:obs-vs-reported-FPR} shows, \texttt{bowtie2} generally greatly underestimates the true mapping quality, given the reference sequence, particularly for very low mapping quality scores. A more stringent filtering of read mappings is therefore not necessary. Note that in the following analyses mapping quality information is incorporated into the calculation of genotype likelihoods by capping base quality by the mapping quality of the read\footnote{This claim has not been fully verified but is very likely: I have used the genotype likelihood version from \texttt{samtools} throughout (and \texttt{ANGSD} directly incorporates code from \texttt{samtools}), which should be based on \texttt{MAQ} \cite[section Methods: Consensus genotype calling]{Li2008}.}. A different mapping programme will therefore result in different genotype likelihoods as mapping quality scores are computed with different heuristics by the different mapping programmes (see fig. \vref{Fig:obs-vs-reported-FPR-a}). 
+The above filters have selected for contigs with more unique sequences as shown by the great reduction in the proportion of reads with a mapping quality score of 1 that map to the filtered reference as compared to the unfiltered reference sequence (see fig. \ref{Fig:mapQ-dist}). Only reads with a mapping quality score of $\ge$ 5 have been used for downstream analyses. A Phred score of 5 for the mapping quality should indicate a probability of about 1/3 that the read truly originated elsewhere in the \textsl{reference sequence} (mapping uncertainty does not incorporate assembly uncertainty). However, as figure \vref{Fig:obs-vs-reported-FPR} shows, \texttt{bowtie2} generally greatly underestimates the true mapping quality, given the reference sequence, particularly for very low mapping quality scores. A more stringent filtering of read mappings is therefore not necessary. Note that \emph{all} in the following analyses mapping quality information is incorporated into the calculation of genotype likelihoods by capping base quality by the mapping quality of the read\footnote{This claim has not been fully verified but is very likely: I have used the genotype likelihood version from \texttt{samtools} throughout (and \texttt{ANGSD} directly incorporates code from \texttt{samtools}), which should be based on \texttt{MAQ} \cite[section Methods: Consensus genotype calling]{Li2008}.}. A different mapping programme will therefore result in different genotype likelihoods as mapping quality scores are computed with different heuristics by the different mapping programmes (see fig. \vref{Fig:obs-vs-reported-FPR-a}). 
 %
 \begin{figure}[htb]
 \centering
@@ -315,8 +315,22 @@ I then performed an eigen--decomposition on the resulting covariance matrix with
 %
 %
 %
-Using \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}, I have determined a ML estimate of the global \emph{unfolded} 2D--\gls{SFS} that contains the joint sample allele frequencies of the non--reference allele from \textit{erythropus} and \textit{parallelus}. I required a nucleotide site to have sequence reads from at least 9 individuals in each population. The 2D--SFS contains the joint frequencies from approximately 1.13 million sites. This global unfolded 2D--\gls{SFS} was then used as (empirical) prior for posterior sample allele frequency probabilities from which the posterior expectation of $F_{ST}$ per site is calculated using \texttt{realSFS} from ANGSD \citep{Fumagalli2013}. This programme reports the numerator and denominator for either Reynolds' \citep[eq. 3]{Fumagalli2013} or Hudson/Bhatia's $F_{ST}$ \citep[eq. 9 and 10]{Bhatia2013} for each site. I am not reporting estimates of $F_{ST}$ per site due to their large variance \citep{Weir2005}. Instead I am reporting \emph{average} $F_{ST}$ across sites within a contig or the global average $F_{ST}$ across all sites. This average is always calculated by summing nominator and denominator across sites and then taking the ratio \citep{Bhatia2013}.
-In order to investigate the dependence of $F_{ST}$ on SNP ascertainment in one or the other population, I have calculated ML estimates of \gls{population minor allele frequency} (MAF) with \texttt{ANGSD} \citep{Kim2011}. I have then used these allele frequencies to subset sites into minor allele frequency classes and estimated average $F_{ST}$ for each class as before.\todo{these analyses are also documented in assembly.sh. It may be good to create a separate script for analyses with ANGSD/realSFS and then provide a link to it here.}
+Using \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) and its subprogramme \texttt{realSFS} \citep{Korneliussen2014} I have determined a ML estimate of the global \emph{unfolded} 2D--\gls{SFS} that contains the joint sample allele frequencies of the non--reference allele from \textit{erythropus} and \textit{parallelus} (figure \ref{Fig:unfolded-2D-SFS}). I applied standard BAQ \citep{Li2011c} and required a nucleotide site to have sequence reads from at least 9 individuals in each population. The 2D-SFS contains the joint frequencies from approximately 1,130,775 sites of which 60,573 (5\%) are variable in \textit{erythropus}, \textit{parallelus} or both. This global unfolded 2D--\gls{SFS} was then used as (empirical) prior for posterior probabilities of all possible sample allele frequencies from which the posterior expectation of $F_{ST}$ per site is calculated using \texttt{realSFS} from ANGSD \citep[eq. 3 and 16]{Fumagalli2013}. This programme reports the numerator and denominator for either Reynolds' $F_{ST}$ \citep[eq. 1--3]{Fumagalli2013} or Hudson/Bhatia's $F_{ST}$ \citep[eq. 9 and 10]{Bhatia2013} for each site. I am not reporting estimates of $F_{ST}$ per site due to their large variance \citep{Weir2005}. Instead I am reporting the global average $F_{ST}$ across all sites. This average is always calculated by summing nominator and denominator across sites and then taking the ratio \citep{Bhatia2013}. Note, that all estimates of $F_{ST}$ calculated here assume within-population HWE.
+%
+\begin{figure}[H]
+\centering
+<< unfolded-2D-SFS, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warnings=FALSE>>=
+@
+\caption{ML estimate of the joint sample allele frequencies of the non--reference allele for \textit{parallelus} (PAR) and \textit{erythropus} (ERY). The joint frequency class (0,0) has been set to zero for the purpose of better visualisation.}
+\label{Fig:unfolded-2D-SFS}
+\end{figure}
+%
+In order to investigate the dependence of $F_{ST}$ on SNP ascertainment (i. e. simulated SNP discovery) in one or the other population, I have calculated ML estimates of \gls{population minor allele frequency} (MAF) with \texttt{ANGSD} \citep{Kim2011} for each population. I have then used these allele frequencies to subset sites into minor allele frequency classes and estimated average $F_{ST}$ for each class as before. For further details of the analysis please consult \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/assembly.sh}{\texttt{assembly.sh}} and the notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/FST/Fst.md}{Fst}.
+
+I have also determined the distribution of $F_{ST}$ over \gls{maf} in either \textit{erythropus} or \textit{parallelus} with the function \texttt{Fst} of $\delta a \delta i$ \citep{Gutenkunst2009} on the observed 2D SFS as shown in figure \ref{Fig:unfolded-2D-SFS}. This calculates Weir \& Cockerham's $F_{ST}$ \citep[eq. for $\hat{\theta}$ at top of p. 1363]{Weir1984}. I then simulated site frequency spectra with $\delta a \delta i$ for four different demographic models and generated expected distributions of $F_{ST}$ over \gls{maf} for these demographic scenarios\todo{add table with parameters for the four demographic models}. Two models included a recent bottleneck for one of the two populations, the other two included a recent population size expansion. Further details can be found in the IPython notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/dadi/05_2D_models.ipynb}{05\_2D\_models}, section "Fst".
+
+
+
 %
 %
 \subsection{Genetic diversity estimates}
@@ -373,7 +387,7 @@ The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimate
 %
 Figure \ref{Fig:PCA} shows a principal component analysis of genotypic covariances between all 36 individuals of \textit{erythropus} and \textit{parallelus} taking SNP and genotype uncertainty into account. Almost $^1/_4$ of the total genotypic variance is explained by the first principal component which clearly separates two clusters of individuals that correspond to the two subspecies. The second principal component captures only 3\% of the total genotypic variance. This confirms estimates of genetic differentiation by \cite{Cooper1995} based on sequence variation at a single nuclear locus that the two subspecies are genetically distinct. Individual \texttt{par\_34-1} seems to be considerably less differentiated from \textit{erythropus} than the other \textit{parallelus} individuals. This may be due to insufficient information because of extremely low coverage (see fig. \ref{Fig:individual-coverage-dist} and \citealt{Patterson2006}). See section \vref{Sec:PCA_supp} for the effect of SNP calling, genotype calling and normalisation of covariances on PCA.
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 << PCA, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
 @
@@ -388,48 +402,55 @@ I estimated posterior expectations of $F_{ST}$ from 1.6 million sites across 32,
 \centering
 << permut-global-fst-hist, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
-\caption{Resampling based estimation of the variance of global $F_{ST}$ (blue) and distribution of global $F_{ST}$ when randomly permuting individuals into two populations (green).}
+\caption{Resampling based estimation of the variance of global $F_{ST}$ (blue) and the empirical null distribution of global $F_{ST}$ by randomly permuting population labels of individuals (green).}
 \label{Fig:global-fst}
 \end{figure}
 %
-The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} with a bootstrap 95\% \gls{CI} between \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)} (see fig. \ref{Fig:global-fst}).\todo{mention how you did the bootstrapping, documented in Fst.Rmd} ~Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \cite{Weir1996}, p. 161), not the variance due to sampling individuals from the population. The latter could be estimated by bootstrapping individuals from each population. \todo{read \cite{Holsinger2009}}~Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, \emph{two} RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the null distribution of global $F_{ST}$, estimated by randomly permuting individuals into two populations, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}.\todo{what about Reynold's Fst? Does it show the same bias? estimate Fst from 2D SFS.}
+The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} (95\% bootstrap \gls{CI}: \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)}) (see fig. \ref{Fig:global-fst}). Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \citealt[p. 161]{Weir1996}), not the variance due to sampling individuals from the population (statistical sampling). The latter could be estimated by bootstrapping individuals from each population. Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, \emph{two} RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the empirical null distribution of global $F_{ST}$, estimated by randomly permuting the population label of individuals, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}. See section \vref{Sec:FST_supp} of the supplementary material for different estimates of global $F_{ST}$.
 
-Figure \ref{Fig:fst-by-ascert-class} shows the dependence of average $F_{ST}$ on the minor allele frequency when only sites are included that are polymorphic in the ascertainment population. Not surprisingly, SNP ascertainment in one of the two populations lowers average $F_{ST}$ estimates since it also excludes highly differentiated sites where the ascertainment population is fixed for one allele.
+Figure \ref{Fig:fst-by-maf-class} shows the dependence of average $F_{ST}$ on the minor allele frequency when only sites are included that are polymorphic in the ascertainment population. Not surprisingly, SNP ascertainment in one of the two populations lowers average $F_{ST}$ estimates since it also excludes highly differentiated sites where the ascertainment population is fixed for one allele.
 %
 \begin{figure}[htb]
 \centering
-<< fst-by-ascertainment-class, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>= %out.height='.4\\textheight', 
+<< fst-by-maf-class, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>= %out.height='.4\\textheight', 
 @
-\caption{$F_{ST}$ by ascertainment class. The global average $F_{ST}$ when using all sites, i. e. without SNP ascertainment, is shown as a grey line.}
-\label{Fig:fst-by-ascert-class}
+\caption{$F_{ST}$ by \gls{maf} class for different ascertainment schemes. The global average $F_{ST}$ when using all sites, i. e. without SNP ascertainment, is shown as a grey line. For the subset of sites in each MAF class the median and the 95\% \gls{CI} of 10,000 bootstrap resamples are shown.}
+\label{Fig:fst-by-maf-class}
 \end{figure}
 %
-When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This is consistent with both populations having undergone a recent population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. \todo{Richard has suggested an alternative explanation, which is due to the higher variance of $F_{ST}$ for loci with low total heterozygosity (which is equivalent to low minor allele frequency in the total sample). He suggested using simulated 2D spectra under models of population expansion and constant population size to verify my claims. \cite{Albrechtsen2010}}
-Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates \citep{Bhatia2013}.\todo{see also \cite{Roesti2012a}}
+When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This would be consistent with both populations having undergone a population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates (see fig. \ref{Fig:fst-by-maf-dadi-4Models}) \citep{Bhatia2013}. According to these predictions, the sudden increase in $F_{ST}$ for the lowest \gls{maf} when ascertaining in \textit{erythropus} (fig. \ref{Fig:fst-by-maf-class}) would therefore indicate a very recent bottleneck, whereas the sudden decrease in $F_{ST}$ when ascertaining in \textit{parallelus} would indicate a very recent population expansion. However, the observed distribution of $F_{ST}$ over \gls{maf} as calculated with $\delta a \delta i$ from the 2D SFS in figure \vref{Fig:unfolded-2D-SFS} does not show the same tendency to decrease with minor allele frequency (figure \ref{Fig:fst-by-maf-dadi-WC}). 
 %
-\begin{figure}[H]
+\begin{figure}
 \centering
-<< unfolded-2D-SFS, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warnings=FALSE>>=
-@
-\caption{ML estimate of the joint sample allele frequencies of the non--reference allele for \textit{parallelus} (PAR) and \textit{erythropus} (ERY). The joint frequency class (0,0) has been set to zero for the purpose of better visualisation.}
-\label{Fig:unfolded-2D-SFS}
+\includegraphics[width=.9\textwidth]{Fst_by_MAF}
+\caption{Distributions of $F_{ST}$ by \gls{maf} as estimated from the 2D SFS in figure \vref{Fig:unfolded-2D-SFS} with the function \texttt{Fst} in $\delta a \delta i$. SNP's were subset by minor allele frequency in either \textit{erythropus} (ERY) or \textit{parallelus} (PAR).}
+\label{Fig:fst-by-maf-dadi-WC}
 \end{figure}
 %
 
+%
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{Fst_by_MAF_4Models}
+\caption{Distributions of $F_{ST}$ by \gls{maf} for four different demographic models. Distributions were computed from model spectra in the same way as for figure \ref{Fig:fst-by-maf-dadi-WC}.}
+\label{Fig:fst-by-maf-dadi-4Models}
+\end{figure}
+%
 A ML estimate of the number of nucleotide sites with fixed differences between these two samples of 18 individuals each of \textit{erythropus} and \textit{parallelus} can also be extracted from the unfolded 2D--\gls{SFS}: \Sexpr{signif(sfs2d[1,37] + sfs2d[37,1], 3)} or \Sexpr{signif((sfs2d[1,37] + sfs2d[37,1])/sum(sfs2d)*100, 2)}\% of polymorphic sites. 
-{\itshape
-\cite{Whitlock2015} have recently described a method to detect loci likely under spatially heterogeneous selection by modelling the neutral distribution of $F_{ST}$ for specific demographic scenarios. Figure \ref{Fig:fst-by-contig-hist} shows the observed distribution of $F_{ST}$ across all contigs. The method of \cite{Whitlock2015} could be applied to this distribution for inference of likely demographic scenarios.
-}\todo{This could be moved to the section Future directions on page \pageref{sec:future_directions}.}
-%
-\begin{figure}[htb]
-\centering
-<< fst-by-contig-hist, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
-@
-\caption{Distribution of $F_{ST}$ across contigs.}
-\label{Fig:fst-by-contig-hist}
-\end{figure}
-%
-\clearpage
+%%
+%{\itshape
+%\cite{Whitlock2015} have recently described a method to detect loci likely under spatially heterogeneous selection by modelling the neutral distribution of $F_{ST}$ for specific demographic scenarios. Figure \ref{Fig:fst-by-contig-hist} shows the observed distribution of $F_{ST}$ across all contigs. The method of \cite{Whitlock2015} could be applied to this distribution for inference of likely demographic scenarios.
+%}\todo{This could be moved to the section Future directions on page \pageref{sec:future_directions}.}
+%%%
+%\begin{figure}[htb]
+%\centering
+%<< fst-by-contig-hist, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
+%@
+%\caption{Distribution of $F_{ST}$ across contigs.}
+%\label{Fig:fst-by-contig-hist}
+%\end{figure}
+%%
+%\clearpage
 %
 %
 %
@@ -613,11 +634,14 @@ In this study, all sequenced grasshoppers were male. There is no male sex chromo
 
 It may be possible to find patterns of LD in the data \cite{Kemppainen2015}.
 
+Downsample reads from \textit{erythropus} to the median coverage of \textit{parallelus} and redo PCA, etc \citep{Patterson2006}.
+
+Effective density of informative RAD markers for Fst-outlier scans may be too low to safely detect all regions under divergent selection \citep{Roesti2012a} from population samples. Second generation hybrid populations provide much extended LD and therefore are much greater chance to detect regions under selection in hybrids. 
 
 %
 %
 %
-\section{Supplementary Material \& Methods}
+\section{Supplementary Material}
 \label{sec:suppl_material_methods}
 %
 %
@@ -733,7 +757,7 @@ The individual coverage distributions show a median coverage of $1\times$ for al
 \\
 As before, for the estimation of 1D site frequency spectra I required read data from at least 9 (of 18) individuals to include a reference position. Unfortunately, the \emph{Big Data} set without PCR duplicates does not provide enough information for the estimation of allele frequency spectra (fig. \ref{Fig:EryPar_1DSFS_dedup}). Different minimum coverage filtering for at least $3\times$ in 10 or 15 individuals did not lead to improved results. It could be that there simply is not enough information in the de-duplicated read data to distinguish alleles from sequencing errors.
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{EryPar_1DSFS_dedup}
 \caption{Folded 1D site frequency spectra for \textit{erythropus} and \textit{parallelus} from de-duplicated read data.}
@@ -750,13 +774,13 @@ As before, for the estimation of 1D site frequency spectra I required read data 
 %
 %
 %
-The PCA in figure \vref{Fig:PCA} has been done on a covariance matrix that has been estimated from genotype likelihoods without SNP and without genotype calling. Additionally, no normalisation of the genotypic covariances by the binomial variance of the \gls{maf} has been applied. 
+The PCA in figure \vref{Fig:PCA} has been done on a covariance matrix that has been estimated from genotype likelihoods without SNP and without genotype calling. Additionally, no normalisation of the genotypic covariances by the binomial variance of allele frequency has been applied. 
 In the following I am going to show PCA's from covariance matrices that have been estimated with SNP calling, normalisation and genotype calling.
 SNP's were called with a LRT of the \gls{maf} being 0 at a p-value threshold of 0.001. Genotypic covariances were normalised by $p_i(1-p_i)$ as in eq. 19 in \citealt{Fumagalli2013}.
 
 Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} shows the plot of the first two eigenvectors of a PCA with SNP calling and normalisation. SNP calling finds 68,590 SNP's. When comparing with the PCA from figure \vref{Fig:PCA} a general similarity in the relative coordinates between individuals is apparent. However, the first eigenvector in figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} explains only 13\% of the total genotypic variation in the data compared to 23\% in the PCA without SNP calling (fig. \ref{Fig:PCA}).
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 << PCA-with-SNP-calling-and-normalisation, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -776,7 +800,35 @@ Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation-and-genotype-calling} sho
 \end{figure}
 %
 \\
-These different PCA's all reveal two clusters of individuals on the first two axes of variation. These clusters coincide with population label and are clearly separated on the first axis which explains from 11\% to 23\% of the total genotypic variation among individuals. The clear genotypic distinction of \textit{erythropus} and \textit{parallelus} is therefore robust to the way the covariance matrix has been computed. 
+These different PCA's all reveal two clusters of individuals on the first axis of variation. These clusters coincide with population label and are clearly separated on the first axis which explains from 11\% to 23\% of the total genotypic variation among individuals. The clear genotypic distinction of \textit{erythropus} and \textit{parallelus} is therefore robust to the way the genotype covariance matrix is computed. 
+%
+%
+%
+\subsection{$F_{ST}$}
+\label{Sec:FST_supp}
+%
+%
+%
+\texttt{realSFS} can also estimate Reynolds' $F_{ST}$ \cite[eq. 1--3]{Fumagalli2013}. Reynolds' $F_{ST}$ includes a weighting by sample size. The genome-wide Reynolds' $F_{ST}$ is \Sexpr{signif(Fst.reynolds.global, digits=3)}. That is \Sexpr{signif(Fst.reynolds.global-Fst.bhatia.global, digits=1)} higher than Hudson/Bhatia's version of $F_{ST}$.
+
+$F_{ST}$ is a summary statistic of the joint \gls{SFS} from two or more populations. The 2D-SFS in figure \vref{Fig:unfolded-2D-SFS} has been estimated from the 1,130,775 sites that are overlapping, i. e. sites with sequence reads from at least 9 individuals in each population. I have used the function \texttt{Fst} in $\delta a \delta i$ \citep{Gutenkunst2009} to calculate Weir \& Cockerham's $F_{ST}$ \citep[eq. for $\hat{\theta}$ at top of p. 1363]{Weir1984} from this 2D-SFS. This version of $F_{ST}$ should be very similar to Reynolds $F_{ST}$\footnote{this has not been fully  verified due to the complexity of the formulas}. Both assume equal amounts of drift experienced by both populations and if this assumption is violated, they become dependent on the ratio of sample sizes. In contrast, Hudson/Bhatia's $F_{ST}$ does not make this assumption and is independent of sample sizes \citep{Bhatia2013}. Here, however, sample sizes are the same (18). So I do not expect both versions of $F_{ST}$ to differ because of weighting by sample size. The genome-wide $F_{ST}$ as calculated from this 2D-SFS is 0.265 (see section "Fst" in \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/dadi/05_2D_models.ipynb}{\texttt{05\_2D\_models.ipynb}}). This is \Sexpr{signif(Fst.reynolds.global-0.26527944085739236, 2)} below Reynolds' $F_{ST}$ as estimated from 1.6 million sites with \texttt{realSFS}.
+
+Hudson/Bhatia's genome-wide $F_{ST}$ has shown a bias of \Sexpr{signif(perm.fst.CI95[2], 2)} as determined by the median of the empirical null distribution estimated by 100 permutations of population label. I have also estimated the empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated from the 2D site frequency spectra estimated from \gls{SAF} files with permuted population labels. The median of this distribution indicates a bias in the genome-wide $F_{ST}$ estimate of 0.037 (fig. \ref{Fig:Fst_dadi_perm_null_dist}).
+%
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.9\textwidth]{Fst_dadi_perm_null_dist}
+\caption{Empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated in $\delta a \delta i$ from the 2D-SFS's of 100 permutations of population label.}
+\label{Fig:Fst_dadi_perm_null_dist}
+\end{figure}
+%
+\\
+\cite{Weir1984}, p. 1366, propose a correction of bias based on jackknife resampling of loci. I have created all delete--1 jackknife resamples over 32,706 contigs and used them for bias correction with the following formula: 
+$$
+F_{{ST}_{corr}} = nF_{ST} - \frac{n-1}{n} \sum_{i=1}^{n} F_{{ST}_i}
+$$ 
+$F_{{ST}_i}$ is the $F_{ST}$ from the i-th jackknife resample. This leads to only a negligible bias correction of -3.5e-06.
+
 
 % ----------------------------
 
@@ -818,7 +870,7 @@ These different PCA's all reveal two clusters of individuals on the first two ax
 \item[\ding{52}] summarized and documented positive Fis estimates (see \texttt{assembly.sh, line 2461} and \texttt{MAF\_by\_pval.ipynb})
 \item[\ding{52}] added deduplication analysis, showed coverage distribution
 \item[\ding{52}] added PCA with SNP calling and normalisation to suppl. mat.
-\item review redo Fst analysis
+\item review Fst analysis
 \item document bootstrapping over contigs in genetic diversity section
 \item document determination of overlapping sites and estimation of statistics from those
 \item add subsection brief description of dadi analysis with links to IPython notebooks, should include a brief description of how it works

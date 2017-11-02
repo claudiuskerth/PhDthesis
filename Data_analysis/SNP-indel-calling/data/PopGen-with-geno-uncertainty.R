@@ -255,6 +255,9 @@ legend("topleft",
        cex=.7,
        fill=c("springgreen", "navyblue")
 )
+#
+load("reynolds.RData")
+Fst.reynolds.global = sum(reynolds$a)/sum(reynolds[["a.plus.b"]])
 
 
 
@@ -290,6 +293,85 @@ par(mar=c(5, 4, 4, 2) + 0.1)
 
 
 
+
+# ---- fst-by-maf-class ----
+load("fst.by.PAR.ascert.bootQ.RData")
+load("fst.by.ERY.ascert.bootQ.RData")
+load("fst.by.EryPar.ascert.bootQ.RData")
+n=36
+plot(1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$med, 
+     ylim=c(0,.65), 
+     ylab=expression(paste("average Bhatia's ", F[ST])),
+     xlab="minor allele frequency",
+     pch=18, col="blue",
+     type="b",
+     main="Allele frequency dependence of FST"
+)
+arrows(1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$high,
+       angle=90,
+       length=.05,
+       col="blue"
+)
+arrows(1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$low,
+       angle=90,
+       length=.05,
+       col="blue"
+)
+#
+#
+#
+n=18
+lines(1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$med, 
+      pch=17, col="red",
+      type="b"
+)
+arrows(1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$high,
+       angle=90,
+       length=.05,
+       col="red"
+)
+arrows(1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$low,
+       angle=90,
+       length=.05,
+       col="red"
+)
+#
+#
+#
+lines(1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$med, 
+      pch=19, col="green",
+      type="b"
+)
+arrows(1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$high,
+       angle=90,
+       length=.05,
+       col="green"
+)
+arrows(1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$low,
+       angle=90,
+       length=.05,
+       col="green"
+)
+#
+#
+#
+legend("topleft",
+       legend=c("ascertainment in PAR", "ascertainment in ERY", "ascertainment across ERY and PAR", "all sites"),
+       col=c("green", "red", "blue", "darkgrey"),
+       pch=c(19, 17, 18, NA),
+       lty=c(NA, NA, NA, 1),
+       lwd=c(NA, NA, NA, 3),
+       bty="n"
+)
+abline(h=Fst.bhatia.global, lwd=2, col="darkgrey")
+
+
 # ---- fst-by-contig-hist ----
 load("Fst.by.contig.bhatia.RData")
 hist(Fst.by.contig$FST, xlab=expression(paste("average Bhatia's ", F[ST])), 
@@ -306,8 +388,14 @@ sfs2d = scan("EryPar.unfolded.2dsfs")
 sfs2d = matrix(sfs2d, nrow=37, ncol=37) # rows should be PAR, columns should be ERY
 sfs2d[1,1] = 0
 library(fields)
+ticks = c(1, 10, 100, 500, 1000, 5000, 10000)
 # rows in the matrix are on the x-axis, columns are on the y-axis:
-image.plot(0:37, 0:37, sfs2d, xlab="PAR", ylab="ERY", main="global unfolded 2D-SFS")
+image.plot(0:37, 0:37, log10(sfs2d+1), xlab="minor sample allele frequency in PAR", 
+           ylab="minor sample allele frequency in ERY", main="global unfolded 2D-SFS",
+           axis.args = list(at=log10(ticks), labels=ticks), legend.lab="number of SNP's",
+           legend.line = 3,
+           graphics.reset=TRUE
+           )
 
 
 

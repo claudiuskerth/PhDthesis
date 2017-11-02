@@ -10,6 +10,7 @@ Claudius
         -   [Reynolds](#reynolds)
         -   [2D-SFS](#d-sfs)
     -   [Permutation test of global *F*<sub>*S**T*</sub>](#permutation-test-of-global-f_st)
+    -   [Jackknife correction of *F*<sub>*S**T*</sub>](#jackknife-correction-of-f_st)
     -   [*F*<sub>*S**T*</sub> by ascertainment class](#f_st-by-ascertainment-class)
         -   [Ascertainment in PAR](#ascertainment-in-par)
         -   [Ascertainment in ERY](#ascertainment-in-ery)
@@ -27,27 +28,39 @@ Unfolded SAF's
 I have created unfolded SAF's and used an unfolded 2D-SFS to calculate posterior expectations of per-site *F*<sub>*S**T*</sub>. `realSFS` allows the calculation from two different formula's. One according to Reynolds (Fumagalli et al. 2013) and the other accroding to Hudson/Bhatia (Bhatia et al. 2013).
 
 ``` r
-bhatia = read.delim("EryPar.Bhatia.fst.tab", header=F)
-names(bhatia) = c("contig", "pos", "Hb.minus.Hw", "Hb") 
-nrow(bhatia)
+if(!file.exists("bhatia.RData")){
+  bhatia = read.delim("EryPar.Bhatia.fst.tab", header=F)
+  names(bhatia) = c("contig", "pos", "Hb.minus.Hw", "Hb") 
+  #nrow(bhatia)
+  #str(bhatia)
+  save(bhatia, file="bhatia.RData")
+}else{
+  load("bhatia.RData")
+}
+#
+if(!file.exists("reynolds.RData")){
+  reynolds = read.delim("EryPar.Reynolds.fst.tab", header=F)
+  names(reynolds) = c("contig", "pos", "a", "a.plus.b")
+  #head(reynolds)
+  save(reynolds, file="reynolds.RData")
+}else{
+  load("reynolds.RData")
+}
 ```
 
-    ## [1] 1629161
-
 ``` r
-str(bhatia)
+head(bhatia)
 ```
 
-    ## 'data.frame':    1629161 obs. of  4 variables:
-    ##  $ contig     : Factor w/ 32706 levels "Contig_10001",..: 1 1 1 1 1 1 1 1 1 1 ...
-    ##  $ pos        : int  8 9 10 11 12 13 14 15 16 17 ...
-    ##  $ Hb.minus.Hw: num  0 0 0 0 0 0 0 0 0 0 ...
-    ##  $ Hb         : num  4e-06 4e-06 4e-06 6e-06 4e-06 4e-06 4e-06 4e-06 6e-06 4e-06 ...
+    ##         contig pos Hb.minus.Hw    Hb
+    ## 1 Contig_10001   8           0 4e-06
+    ## 2 Contig_10001   9           0 4e-06
+    ## 3 Contig_10001  10           0 4e-06
+    ## 4 Contig_10001  11           0 6e-06
+    ## 5 Contig_10001  12           0 4e-06
+    ## 6 Contig_10001  13           0 4e-06
 
 ``` r
-save(bhatia, file="bhatia.RData")
-reynolds = read.delim("EryPar.Reynolds.fst.tab", header=F)
-names(reynolds) = c("contig", "pos", "a", "a.plus.b")
 head(reynolds)
 ```
 
@@ -167,7 +180,7 @@ I have now average *F*<sub>*S**T*</sub> estimates for 32706 contigs.
 
 ``` r
 hist(Fst.by.contig$FST, xlab=expression(paste("average Bhatia's ", F[ST])), 
-     breaks=100,
+     breaks=seq(-0.05, 1, 0.01), # note, there are also some slightly negative Fst estimates
      main=bquote(paste(F[ST], "'s from ", .(nrow(Fst.by.contig)), " contigs")),
      col="black",
      # xlim=c(0, .3),
@@ -191,24 +204,12 @@ It would be nice to get an estimate of uncertainty in the estimate of the global
 1.  sampling variation of individuals from populations
 2.  sampling variation of loci from the genome
 
-In order to approximate the first source of variation, I could bootstrap resample individuals', but that requires many re-stimations of SAF's which will be quite compute and data intensive. I am therefore only going to approximate the second source of variation for the moment.
+In order to approximate the first source of variation, I could bootstrap resample individuals', but that requires many re-estimations of SAF's which will be quite compute and data intensive. I am therefore only going to approximate the second source of variation for the moment.
 
 ``` r
+# only needs to be run once
+
 library(dplyr) # for 'sample_n'
-```
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
 library(parallel) # for 'mclapply'
 #
 boot = function(x){
@@ -232,14 +233,12 @@ boot.resample.Fst.by.contig = simplify2array(
 stopTime = proc.time()
 elapsedTime = stopTime - startTime
 show(elapsedTime)
-```
-
-    ##    user  system elapsed 
-    ## 281.528   5.945  16.119
-
-``` r
 # save bootstrap resample for later:
 save(boot.resample.Fst.by.contig, file="Bootstrap/boot.resample.Fst.by.contig.RData")
+```
+
+``` r
+load("Bootstrap/boot.resample.Fst.by.contig.RData")
 #
 d = density(boot.resample.Fst.by.contig)
 plot(d,
@@ -259,7 +258,7 @@ lines(d$x[d$x>CI95[1] & d$x<CI95[2]],
 legend("topright", legend=c("real sample", "95% CI"), pch=c(3,15), pt.cex=1.5, col=c("black", "grey"), bty="n")
 ```
 
-![](Fst_files/figure-markdown_github/bhatia-boot-global-Fst-unfolded-1.png)
+![](Fst_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ### Reynolds
 
@@ -299,7 +298,7 @@ hist(Fst.reynolds.by.contig$FST, xlab=expression(paste("Reynolds ", F[ST])),
 boxplot(data.frame(Bhatia=Fst.by.contig$FST, Reynolds=Fst.reynolds.by.contig$FST), outline=FALSE, ylab=expression(F[ST]))
 ```
 
-![](Fst_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](Fst_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 Reynolds' formula produces slightly higher *F*<sub>*S**T*</sub> values.
 
@@ -325,7 +324,7 @@ ery_marginal_sfs = colSums(sfs2d)
 plot(1:(length(par_marginal_sfs)-1), par_marginal_sfs[2:length(par_marginal_sfs)], type="l")
 ```
 
-![](Fst_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](Fst_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 sum(par_marginal_sfs)
@@ -346,30 +345,12 @@ fixed.diff/sum(sfs2d)
 
 ``` r
 library(fields)
-```
-
-    ## Loading required package: spam
-
-    ## Loading required package: grid
-
-    ## Spam version 1.4-0 (2016-08-29) is loaded.
-    ## Type 'help( Spam)' or 'demo( spam)' for a short introduction 
-    ## and overview of this package.
-    ## Help for individual functions is also obtained by adding the
-    ## suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
-
-    ## 
-    ## Attaching package: 'spam'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     backsolve, forwardsolve
-
-    ## Loading required package: maps
-
-``` r
+ticks = c(1, 10, 100, 500, 1000, 5000, 10000)
 # rows in the matrix are on the x-axis, columns are on the y-axis:
-image.plot(0:37, 0:37, sfs2d, xlab="PAR", ylab="ERY", main="unfolded 2D-SFS")
+image.plot(0:37, 0:37, log10(sfs2d+1), xlab="minor sample allele frequency in PAR", ylab="minor sample allele frequency in ERY", main="unfolded 2D-SFS",
+           axis.args = list(at=log10(ticks), labels=ticks), legend.lab="number of SNP's",
+           legend.line = 3
+           )
 ```
 
 ![](Fst_files/figure-markdown_github/2D-SFS-unfolded-1.png)
@@ -381,23 +362,23 @@ I have randomly permutated the 36 individuals into a population 1 and population
 
 ``` r
 # only needs to be run once:
-# fst.tabs = list.files("Bootstrap/", "*tab")
-# perm = function(x){
-#   bhatia = read.delim(fst.tabs[x], header=F)
-#   return( sum(bhatia[,3])/sum(bhatia[,4]) )
-# }
-# startTime = proc.time()
-# perm.fst = vector("double", len=length(fst.tabs))
-# perm.fst = simplify2array(
-#   mclapply(1:length(perm.fst),
-#           FUN=perm,
-#           mc.cores=20
-#            )
-#   )
-# stopTime = proc.time()
-# elapsedTime = stopTime - startTime
-# show(elapsedTime)
-# save(perm.fst, file="Bootstrapperm.global.fst.RData")
+fst.tabs = list.files("Bootstrap/", "*tab")
+perm = function(x){
+  bhatia = read.delim(fst.tabs[x], header=F)
+  return( sum(bhatia[,3])/sum(bhatia[,4]) )
+}
+startTime = proc.time()
+perm.fst = vector("double", len=length(fst.tabs))
+perm.fst = simplify2array(
+  mclapply(1:length(perm.fst),
+          FUN=perm,
+          mc.cores=20
+           )
+  )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+save(perm.fst, file="Bootstrapperm.global.fst.RData")
 ```
 
 ``` r
@@ -423,6 +404,60 @@ legend("topleft",
 ```
 
 ![](Fst_files/figure-markdown_github/permut-global-fst-hist-1.png)
+
+Jackknife correction of *F*<sub>*S**T*</sub>
+--------------------------------------------
+
+The distribution of *F*<sub>*S**T*</sub> from permutation of population labels has shown that there is a positive bias in the global *F*<sub>*S**T*</sub> estimate of about 0.025. (Weir and Cockerham 1984), page 1366, propose a bias correction based on jackknife resampling loci.
+
+``` r
+# only needs to be run once
+
+library(parallel) # for 'mclapply'
+#
+jack = function(x){
+  # creates delete-1 jackknife resample of the rows in Fst.by.contig
+  # and returns the global Fst from that
+  rs = Fst.by.contig[-x,]
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+# serial:
+#boot.resample.Fst.by.contig = replicate(10000, boot())
+# parallel:
+startTime = proc.time()
+jack.resample.Fst.by.contig = vector("double", length=nrow(Fst.by.contig))
+jack.resample.Fst.by.contig = simplify2array(
+  mclapply(1:length(jack.resample.Fst.by.contig),
+          FUN=jack,
+          mc.cores=20
+           )
+  )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+
+# save jackknife resample for later:
+save(jack.resample.Fst.by.contig, file="Bootstrap/jack.resample.Fst.by.contig.RData")
+```
+
+``` r
+load("Bootstrap/jack.resample.Fst.by.contig.RData")
+
+# get bias corrected Fst:
+n = nrow(Fst.by.contig)
+( Fst.bhatia.global.bias.corrected = n*Fst.bhatia.global - (n-1)/n * sum(jack.resample.Fst.by.contig) )
+```
+
+    ## [1] 0.2982732
+
+``` r
+Fst.bhatia.global - Fst.bhatia.global.bias.corrected
+```
+
+    ## [1] -3.530952e-06
+
+The jackknife applies only a negligible bias correction.
 
 *F*<sub>*S**T*</sub> by ascertainment class
 -------------------------------------------
@@ -830,5 +865,7 @@ Bhatia, Gaurav, Nick Patterson, Sriram Sankararaman, and Alkes L. Price. 2013. �
 Fumagalli, Matteo, Filipe G. Vieira, Thorfinn Sand Korneliussen, Tyler Linderoth, Emilia Huerta-Sánchez, Anders Albrechtsen, and Rasmus Nielsen. 2013. “Quantifying Population Genetic Differentiation from Next-Generation Sequencing Data.” *Genetics* 195 (3). Department of Integrative Biology, University of California, Berkeley, California 94720.: 979–92. doi:[10.1534/genetics.113.154740](https://doi.org/10.1534/genetics.113.154740).
 
 Gautier, Mathieu, Karim Gharbi, Timothee Cezard, Julien Foucaud, Carole Kerdelhué, Pierre Pudlo, Jean-Marie Cornuet, and Arnaud Estoup. 2012. “The Effect of Rad Allele Dropout on the Estimation of Genetic Variation Within and Between Populations.” *Mol Ecol*, October. Inra, UMR CBGP (INRA - IRD - Cirad - Montpellier SupAgro), Campus international de Baillarguet, CS 30016, F-34988, Montferrier-sur-Lez, France. doi:[10.1111/mec.12089](https://doi.org/10.1111/mec.12089).
+
+Weir, Bruce S, and C Clark Cockerham. 1984. “Estimating F-Statistics for the Analysis of Population Structure.” *Evolution*. JSTOR, 1358–70.
 
 Whitlock, Michael C., and Katie E. Lotterhos. 2015. “Reliable Detection of Loci Responsible for Local Adaptation: Inference of a Null Model Through Trimming the Distribution of F(ST).” *Am Nat* 186 Suppl 1 (October). Department of Zoology, University of British Columbia, Vancouver, British Columbia V6T 1Z4, Canada.: S24–S36. doi:[10.1086/682949](https://doi.org/10.1086/682949).

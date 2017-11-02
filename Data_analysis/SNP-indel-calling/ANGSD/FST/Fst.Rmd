@@ -3,12 +3,12 @@ title: "Fst"
 author: "Claudius"
 date: "17/12/2016"
 output: 
-  github_document:
-    toc: yes
-#  html_document:
-#    self_contained: true
-#    theme: cosmo
-#    toc: true
+#  github_document:
+#    toc: yes
+  html_document:
+    self_contained: true
+    theme: cosmo
+    toc: true
 bibliography: Literature.bib
 ---
 
@@ -23,15 +23,31 @@ setwd("/data3/claudius/Big_Data/ANGSD/FST")
 I have created unfolded SAF's and used an unfolded 2D-SFS to calculate posterior expectations of per-site $F_{ST}$. `realSFS` allows the calculation from two different formula's. One according to Reynolds [@Fumagalli2013] and the other accroding to Hudson/Bhatia [@Bhatia2013].
 
 ```{r, cache=TRUE}
-bhatia = read.delim("EryPar.Bhatia.fst.tab", header=F)
-names(bhatia) = c("contig", "pos", "Hb.minus.Hw", "Hb") 
-nrow(bhatia)
-str(bhatia)
-save(bhatia, file="bhatia.RData")
-reynolds = read.delim("EryPar.Reynolds.fst.tab", header=F)
-names(reynolds) = c("contig", "pos", "a", "a.plus.b")
+if(!file.exists("bhatia.RData")){
+  bhatia = read.delim("EryPar.Bhatia.fst.tab", header=F)
+  names(bhatia) = c("contig", "pos", "Hb.minus.Hw", "Hb") 
+  #nrow(bhatia)
+  #str(bhatia)
+  save(bhatia, file="bhatia.RData")
+}else{
+  load("bhatia.RData")
+}
+#
+if(!file.exists("reynolds.RData")){
+  reynolds = read.delim("EryPar.Reynolds.fst.tab", header=F)
+  names(reynolds) = c("contig", "pos", "a", "a.plus.b")
+  #head(reynolds)
+  save(reynolds, file="reynolds.RData")
+}else{
+  load("reynolds.RData")
+}
+```
+
+```{r}
+head(bhatia)
 head(reynolds)
 ```
+
 
 
 ## Global average $F_{ST}$ between ERY and PAR
@@ -78,7 +94,7 @@ I have now average $F_{ST}$ estimates for `r nrow(Fst.by.contig)` contigs.
 
 ```{r bhatia-fst-by-contig-hist-unfolded}
 hist(Fst.by.contig$FST, xlab=expression(paste("average Bhatia's ", F[ST])), 
-     breaks=100,
+     breaks=seq(-0.05, 1, 0.01), # note, there are also some slightly negative Fst estimates
      main=bquote(paste(F[ST], "'s from ", .(nrow(Fst.by.contig)), " contigs")),
      col="black",
      # xlim=c(0, .3),
@@ -99,9 +115,11 @@ It would be nice to get an estimate of uncertainty in the estimate of the global
 1. sampling variation of individuals from populations
 2. sampling variation of loci from the genome
 
-In order to approximate the first source of variation, I could bootstrap resample individuals', but that requires many re-stimations of SAF's which will be quite compute and data intensive. I am therefore only going to approximate the second source of variation for the moment.
+In order to approximate the first source of variation, I could bootstrap resample individuals', but that requires many re-estimations of SAF's which will be quite compute and data intensive. I am therefore only going to approximate the second source of variation for the moment.
 
-```{r bhatia-boot-global-Fst-unfolded, cache=TRUE}
+```{r bhatia-boot-global-Fst-unfolded, eval=FALSE}
+# only needs to be run once
+
 library(dplyr) # for 'sample_n'
 library(parallel) # for 'mclapply'
 #
@@ -128,6 +146,10 @@ elapsedTime = stopTime - startTime
 show(elapsedTime)
 # save bootstrap resample for later:
 save(boot.resample.Fst.by.contig, file="Bootstrap/boot.resample.Fst.by.contig.RData")
+```
+
+```{r}
+load("Bootstrap/boot.resample.Fst.by.contig.RData")
 #
 d = density(boot.resample.Fst.by.contig)
 plot(d,
@@ -195,10 +217,14 @@ fixed.diff = sfs2d[1,37] + sfs2d[37,1]
 fixed.diff/sum(sfs2d)
 ```
 
-```{r 2D-SFS-unfolded}
+```{r 2D-SFS-unfolded, fig.height=6, fig.width=7}
 library(fields)
+ticks = c(1, 10, 100, 500, 1000, 5000, 10000)
 # rows in the matrix are on the x-axis, columns are on the y-axis:
-image.plot(0:37, 0:37, sfs2d, xlab="PAR", ylab="ERY", main="unfolded 2D-SFS")
+image.plot(0:37, 0:37, log10(sfs2d+1), xlab="minor sample allele frequency in PAR", ylab="minor sample allele frequency in ERY", main="unfolded 2D-SFS",
+           axis.args = list(at=log10(ticks), labels=ticks), legend.lab="number of SNP's",
+           legend.line = 3
+           )
 ```
 
 
@@ -207,25 +233,25 @@ image.plot(0:37, 0:37, sfs2d, xlab="PAR", ylab="ERY", main="unfolded 2D-SFS")
 I have randomly permutated the 36 individuals into a population 1 and population 2. I have then estimated SAF's, 2D-SFS's and $F_{ST}$ for each permutation.
 
 
-```{r}
+```{r, eval=FALSE}
 # only needs to be run once:
-# fst.tabs = list.files("Bootstrap/", "*tab")
-# perm = function(x){
-#   bhatia = read.delim(fst.tabs[x], header=F)
-#   return( sum(bhatia[,3])/sum(bhatia[,4]) )
-# }
-# startTime = proc.time()
-# perm.fst = vector("double", len=length(fst.tabs))
-# perm.fst = simplify2array(
-#   mclapply(1:length(perm.fst),
-#           FUN=perm,
-#           mc.cores=20
-#            )
-#   )
-# stopTime = proc.time()
-# elapsedTime = stopTime - startTime
-# show(elapsedTime)
-# save(perm.fst, file="Bootstrapperm.global.fst.RData")
+fst.tabs = list.files("Bootstrap/", "*tab")
+perm = function(x){
+  bhatia = read.delim(fst.tabs[x], header=F)
+  return( sum(bhatia[,3])/sum(bhatia[,4]) )
+}
+startTime = proc.time()
+perm.fst = vector("double", len=length(fst.tabs))
+perm.fst = simplify2array(
+  mclapply(1:length(perm.fst),
+          FUN=perm,
+          mc.cores=20
+           )
+  )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+save(perm.fst, file="Bootstrapperm.global.fst.RData")
 ```
 
 ```{r permut-global-fst-hist}
@@ -251,6 +277,54 @@ legend("topleft",
 ```
 
 
+## Jackknife correction of $F_{ST}$
+
+The distribution of $F_{ST}$ from permutation of population labels has shown that there is a positive bias in the global $F_{ST}$ estimate of about `r round(median(perm.fst), 3)`. [@Weir1984], page 1366, propose a bias correction based on jackknife resampling loci.
+
+```{r, eval=FALSE}
+# only needs to be run once
+
+library(parallel) # for 'mclapply'
+#
+jack = function(x){
+  # creates delete-1 jackknife resample of the rows in Fst.by.contig
+  # and returns the global Fst from that
+  rs = Fst.by.contig[-x,]
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+# serial:
+#boot.resample.Fst.by.contig = replicate(10000, boot())
+# parallel:
+startTime = proc.time()
+jack.resample.Fst.by.contig = vector("double", length=nrow(Fst.by.contig))
+jack.resample.Fst.by.contig = simplify2array(
+  mclapply(1:length(jack.resample.Fst.by.contig),
+          FUN=jack,
+          mc.cores=20
+           )
+  )
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+
+# save jackknife resample for later:
+save(jack.resample.Fst.by.contig, file="Bootstrap/jack.resample.Fst.by.contig.RData")
+```
+
+
+```{r}
+load("Bootstrap/jack.resample.Fst.by.contig.RData")
+
+# get bias corrected Fst:
+n = nrow(Fst.by.contig)
+( Fst.bhatia.global.bias.corrected = n*Fst.bhatia.global - (n-1)/n * sum(jack.resample.Fst.by.contig) )
+Fst.bhatia.global - Fst.bhatia.global.bias.corrected
+```
+
+The jackknife applies only a negligible bias correction. 
+
+
 ## $F_{ST}$ by ascertainment class
 
 I have calculated ML estimates of minor allele frequencies for each population, ERY and PAR. I have then created joint tables of each MAF file with `/data3/claudius/Big_Data/ANGSD/FST/EryPar.Bhatia.fst.tab`. I have now MAF's and $F_{ST}$ for 1,513,856 sites in ERY and
@@ -270,11 +344,12 @@ j = 0
 for(i in 1:(n-1)){
   #print(i)
   j = j+1
-  tab = par.mafs.withFST[par.mafs.withFST$MAF > i/(2*n) & par.mafs.withFST$MAF < (i+1)/(2*n),]
+  tab = par.mafs.withFST[par.mafs.withFST$MAF >= i/(2*n) & par.mafs.withFST$MAF < (i+1)/(2*n),]
   global.fst.by.PAR.ascert[j] = sum(tab["Hb.minus.Hw"])/sum(tab["Hb"])
 }
 save(global.fst.by.PAR.ascert, file="global.fst.by.PAR.ascert.RData")
 ```
+
 
 
 ### Ascertainment in ERY
@@ -291,36 +366,296 @@ j = 0
 for(i in 1:(n-1)){
   #print(i)
   j = j+1
-  tab = ery.mafs.withFST[ery.mafs.withFST$MAF > i/(2*n) & ery.mafs.withFST$MAF < (i+1)/(2*n),]
+  tab = ery.mafs.withFST[ery.mafs.withFST$MAF >= i/(2*n) & ery.mafs.withFST$MAF < (i+1)/(2*n),]
   global.fst.by.ERY.ascert[j] = sum(tab["Hb.minus.Hw"])/sum(tab["Hb"])
 }
 save(global.fst.by.ERY.ascert, file="global.fst.by.ERY.ascert.RData")
 ```
 
+### Ascertainment in either ERY or PAR
+
+```{r}
+pp = pipe("cut -f1,2,7,8,11,12 /data3/claudius/Big_Data/ANGSD/FST/MAFs/EryPar/EryPar.mafs.withFST", open="r")
+EryPar.mafs.withFST = read.delim(pp, header=F)
+close(pp)
+names(EryPar.mafs.withFST) = c("contig", "pos", "MAF", "nind", "Hb.minus.Hw", "Hb")
+#head(ery.mafs.withFST)
+n = 36 # 18 individuals
+global.fst.by.EryPar.ascert = vector("double", n-1)
+j = 0
+for(i in 1:(n-1)){
+  #print(i)
+  j = j+1
+  tab = EryPar.mafs.withFST[EryPar.mafs.withFST$MAF >= i/(2*n) & EryPar.mafs.withFST$MAF < (i+1)/(2*n),]
+  global.fst.by.EryPar.ascert[j] = sum(tab["Hb.minus.Hw"])/sum(tab["Hb"])
+}
+save(global.fst.by.EryPar.ascert, file="global.fst.by.EryPar.ascert.RData")
+```
+
 I am trying to produce a plot analogous to figure 1 in [@Bhatia2013].
 
-```{r global-Fst-by-ascertainment}
+```{r global-Fst-by-ascertainment, fig.height=6}
+n=18
 plot(1:(n-1)/(2*n), global.fst.by.PAR.ascert, 
-     ylim=c(0,.4), ylab=expression(paste("average Bhatia's ", F[ST])),
+     ylim=c(0,.6), ylab=expression(paste("average Bhatia's ", F[ST])),
      xlab="minor allele frequency",
-     pch=16, col="green",
+     pch=19, col="green",
      type="b",
      main="Allele frequency dependence of FST"
      )
 lines(1:(n-1)/(2*n), global.fst.by.ERY.ascert, 
-     ylim=c(0,1), ylab=expression(paste("average Bhatia's ", F[ST])),
-     xlab="minor allele frequency",
-     pch=16, col="red",
+     pch=17, col="red",
      type="b"
      )
-legend("topright", 
-       legend=c("ascertainment in PAR", "ascertainment in ERY", "without ascertainment"),
-       col=c("green", "red", "grey"),
-       fill=c("green", "red", "grey"),
+n=36
+lines(1:(n-1)/(2*n), global.fst.by.EryPar.ascert, 
+     pch=18, col="blue",
+     type="b"
+     )
+legend("topleft",
+       legend=c("ascertainment in PAR", "ascertainment in ERY", "ascertainment in ERY or PAR", "without ascertainment"),
+       col=c("green", "red", "blue", "darkgrey"),
+       pch=c(19, 17, 18, NA),
+       lty=c(NA, NA, NA, 1),
+       lwd=c(NA, NA, NA, 3),
        bty="n"
        )
-abline(h=Fst.bhatia.global, lwd=2)
+abline(h=Fst.bhatia.global, lwd=2, col="darkgrey")
 ```
+
+Now, I am going to add 95% bootstrap confidence intervals to these points.
+
+```{r, eval=FALSE}
+# get 95% bootstrap confidence intervals for the Fst by MAF in PAR
+
+library(dplyr)
+library(parallel)
+
+# check that data frame is loaded
+#head(par.mafs.withFST)
+
+# take resample over sites (not contigs -> there is no MAF for a contig):
+resample = function(x, tab){
+  # creates bootstrap resamples of the rows in x
+  # and returns the global Fst from that
+  rs = sample_n(tab, size=nrow(tab), replace=TRUE)
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+boot = function (tab){
+  # get 10,000 bootstrap resamples of Fst
+  boot.Fst.tab = vector("double", 10000)
+  boot.Fst.tab = simplify2array(
+  mclapply(X=1:length(boot.Fst.tab),
+          FUN=resample, tab=tab,
+          mc.cores=20
+           )
+  )
+  return(boot.Fst.tab)
+  }
+#
+n = 18
+fst.by.PAR.ascert.bootQ = data.frame(
+  low=vector("double", n-1), 
+  med=vector("double", n-1), 
+  high=vector("double", n-1)
+  )
+#
+startTime = proc.time()
+for(i in 1:(n-1)){
+  tab = par.mafs.withFST[par.mafs.withFST$MAF >= i/(2*n) & par.mafs.withFST$MAF < (i+1)/(2*n), c("Hb.minus.Hw", "Hb")]
+  fst.by.PAR.ascert.bootQ[i,] = quantile(boot(tab), probs=c(0.025, 0.5, 0.975))
+}
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+#
+save(fst.by.PAR.ascert.bootQ, file="fst.by.PAR.ascert.bootQ.RData")
+```
+
+```{r, eval=FALSE}
+# get 95% confidence intervals for the Fst by MAF in ERY
+
+library(dplyr)
+library(parallel)
+
+# check that data frame is loaded
+#head(ery.mafs.withFST)
+
+# take resample over sites (not contigs -> there is no MAF for a contig):
+resample = function(x, tab){
+  # creates bootstrap resamples of the rows in x
+  # and returns the global Fst from that
+  rs = sample_n(tab, size=nrow(tab), replace=TRUE)
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+boot = function (tab){
+  # get 10,000 bootstrap resamples of Fst
+  boot.Fst.tab = vector("double", 10000)
+  boot.Fst.tab = simplify2array(
+  mclapply(X=1:length(boot.Fst.tab),
+          FUN=resample, tab=tab,
+          mc.cores=20
+           )
+  )
+  return(boot.Fst.tab)
+  }
+#
+n = 18
+fst.by.ERY.ascert.bootQ = data.frame(
+  low=vector("double", n-1), 
+  med=vector("double", n-1), 
+  high=vector("double", n-1)
+  )
+#
+startTime = proc.time()
+for(i in 1:(n-1)){
+  tab = ery.mafs.withFST[ery.mafs.withFST$MAF >= i/(2*n) & ery.mafs.withFST$MAF < (i+1)/(2*n), c("Hb.minus.Hw", "Hb")]
+  fst.by.ERY.ascert.bootQ[i,] = quantile(boot(tab), probs=c(0.025, 0.5, 0.975))
+}
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+#
+save(fst.by.ERY.ascert.bootQ, file="fst.by.ERY.ascert.bootQ.RData")
+```
+
+```{r, eval=FALSE}
+# get 95% confidence intervals for the Fst by global MAF(across ERY and PAR) 
+
+library(dplyr)
+library(parallel)
+
+# check that data frame is loaded
+head(EryPar.mafs.withFST)
+
+# take resample over sites (not contigs -> there is no MAF for a contig):
+resample = function(x, tab){
+  # creates bootstrap resamples of the rows in x
+  # and returns the global Fst from that
+  rs = sample_n(tab, size=nrow(tab), replace=TRUE)
+  sum(rs$Hb.minus.Hw)/sum(rs$Hb)
+  }
+#
+boot = function (tab){
+  # get 10,000 bootstrap resamples of Fst
+  boot.Fst.tab = vector("double", 10000)
+  boot.Fst.tab = simplify2array(
+  mclapply(X=1:length(boot.Fst.tab),
+          FUN=resample, tab=tab,
+          mc.cores=20
+           )
+  )
+  return(boot.Fst.tab)
+  }
+#
+n = 36
+fst.by.EryPar.ascert.bootQ = data.frame(
+  low=vector("double", n-1), 
+  med=vector("double", n-1), 
+  high=vector("double", n-1)
+  )
+#
+startTime = proc.time()
+for(i in 1:(n-1)){
+  tab = EryPar.mafs.withFST[EryPar.mafs.withFST$MAF >= i/(2*n) & EryPar.mafs.withFST$MAF < (i+1)/(2*n), c("Hb.minus.Hw", "Hb")]
+  fst.by.EryPar.ascert.bootQ[i,] = quantile(boot(tab), probs=c(0.025, 0.5, 0.975))
+}
+stopTime = proc.time()
+elapsedTime = stopTime - startTime
+show(elapsedTime)
+#
+save(fst.by.EryPar.ascert.bootQ, file="fst.by.EryPar.ascert.bootQ.RData")
+```
+
+
+```{r}
+load("fst.by.PAR.ascert.bootQ.RData")
+load("fst.by.ERY.ascert.bootQ.RData")
+load("fst.by.EryPar.ascert.bootQ.RData")
+#fst.by.PAR.ascert.bootQ
+#fst.by.ERY.ascert.bootQ
+#fst.by.EryPar.ascert.bootQ
+```
+```{r Fst-by-ascertainment-with-CI, fig.height=6}
+n=36
+plot(1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$med, 
+     ylim=c(0,.65), 
+     ylab=expression(paste("average Bhatia's ", F[ST])),
+     xlab="minor allele frequency",
+     pch=18, col="blue",
+     type="b",
+     main="Allele frequency dependence of FST"
+     )
+arrows(1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$high,
+       angle=90,
+       length=.05,
+       col="blue"
+       )
+arrows(1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.EryPar.ascert.bootQ$low,
+       angle=90,
+       length=.05,
+       col="blue"
+       )
+#
+#
+#
+n=18
+lines(1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$med, 
+     pch=17, col="red",
+     type="b"
+     )
+arrows(1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$high,
+       angle=90,
+       length=.05,
+       col="red"
+       )
+arrows(1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.ERY.ascert.bootQ$low,
+       angle=90,
+       length=.05,
+       col="red"
+       )
+#
+#
+#
+lines(1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$med, 
+     pch=19, col="green",
+     type="b"
+     )
+arrows(1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$high,
+       angle=90,
+       length=.05,
+       col="green"
+       )
+arrows(1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$med, 
+       1:(n-1)/(2*n), fst.by.PAR.ascert.bootQ$low,
+       angle=90,
+       length=.05,
+       col="green"
+       )
+#
+#
+#
+legend("topleft",
+       legend=c("ascertainment in PAR", "ascertainment in ERY", "ascertainment across ERY and PAR", "all sites"),
+       col=c("green", "red", "blue", "darkgrey"),
+       pch=c(19, 17, 18, NA),
+       lty=c(NA, NA, NA, 1),
+       lwd=c(NA, NA, NA, 3),
+       bty="n"
+       )
+abline(h=Fst.bhatia.global, lwd=2, col="darkgrey")
+```
+
+
+
+
 
 
 ## $F_{ST}$ distributions

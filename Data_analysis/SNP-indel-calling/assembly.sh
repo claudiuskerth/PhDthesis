@@ -1416,6 +1416,7 @@
 # # apply normalisation to covariances by dividing by p_j(1-p_j) (see eq. 3 in Patterson2006):
 # ngsCovar -probfile EryPar.geno -nsites 68590 -nind 36 -call 0 -norm 1 -outfile EryPar_norm1.covar
 # #
+# #
 # # PCA with unknown minor allele (-doMaf 2) and SNP calling and genotype calling:
 # #
 # # I am using the same output as from the previous section and use ngsCovar to do the genotype calling
@@ -1573,7 +1574,7 @@
 # 	> PAR.mafs.withFST
 # # There are 1,496,271 sites with PAR mafs and Fst.
 # #
-# # Both *withFST files can be read into R for analysis.
+# # Both *withFST files can be read into R for analysis. see /data3/claudius/Big_Data/ANGSD/FST/Fst.Rmd
 # #
 # #
 # #
