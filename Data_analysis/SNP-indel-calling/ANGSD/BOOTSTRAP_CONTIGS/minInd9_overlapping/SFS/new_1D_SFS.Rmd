@@ -3,14 +3,16 @@ title: "new 1D SFS"
 author: "Claudius"
 date: "19/08/2017"
 output: 
-#   github_document:
-#     toc: yes
-  html_document:
-    self_contained: true
-    theme: yeti
-    toc: true
-    toc_depth: 4
-    fig_caption: true
+  github_document:
+    toc: yes
+#      toc_depth: 4
+#    fig_caption: true
+#  html_document:
+#    self_contained: true
+#    theme: yeti
+#    toc: true
+#    toc_depth: 4
+#    fig_caption: true
 bibliography: Literature.bib
 ---
 
@@ -46,6 +48,13 @@ sum(ery.sfs)
 sum(par.sfs)
 ```
 As expected, both spectra are based on the same number of sites.
+
+```{r}
+# get total number of *segregating* sites in the spectra
+
+sum(ery.sfs[-1])
+sum(par.sfs[-1])
+```
 
 # Plot the data
 
@@ -190,7 +199,7 @@ arrows(1:length(snm_par), snm_par,
 
 # Add bootstrap confidence intervals
 
-I have bootstrapped the (ANGSD) _regions_ file and estimated SAF's and SFS' from it (see line 2676 onwards in `assembly.sh`). These are therefore bootstraps over contigs, not over sites as done by the `bootstrap` function of `realSFS`.
+I have bootstrapped the (ANGSD) _regions_ file and estimated SAF's and SFS' from it (see line 2715 onwards in `assembly.sh`). These are therefore bootstraps over contigs, not over sites as done by the `bootstrap` function of `realSFS`.
 
 ```{r}
 pp = pipe("cat bootstrap/ERY/*.unfolded.sfs.folded", "r")
@@ -849,18 +858,18 @@ ERY, uncorrected:
 
 |                | only overlapping sites       | including non-overlapping sites |
 | -------------- | ---------------------------- | ------------------------------- |
-| $S_{prop}$     |   0.0326 (0.0320, 0.0331)    |  0.0325                         |
-| $\pi_{sites}$  |   0.00715 (0.00704, 0.00726) |  0.00735                        |
-| Tajima's D     |  -0.345 (-0.386, -0.308)     |  -0.242                         |
+| $S_{prop}$     |   0.0326 (0.0320, 0.0331)    |  0.0325  (0.0321, 0.0330)       |
+| $\pi_{sites}$  |   0.00715 (0.00704, 0.00726) |  0.00735 (0.00726, 0.00745)     |
+| Tajima's D     |  -0.345 (-0.386, -0.308)     |  -0.242  (-0.282, -0.210)       |
 
 
 PAR, uncorrected:
 
 |                | only overlapping sites       | including non-overlapping sites |
 | -------------- | ---------------------------- | ------------------------------- |
-| $S_{prop}$     |   0.0442 (0.0435, 0.0450)    |  0.0451                         |
-| $\pi_{sites}$  |   0.00804 (0.00794, 0.00815) |  0.00832                        |
-| Tajima's D     |  -0.936  (-0.965, -0.908)    | -0.897                          |
+| $S_{prop}$     |   0.0442 (0.0435, 0.0450)    |  0.0451 (0.0445, 0.0457)        |
+| $\pi_{sites}$  |   0.00804 (0.00794, 0.00815) |  0.00832 (0.00820, 0.00845)     |
+| Tajima's D     |  -0.936  (-0.965, -0.908)    | -0.897  (-0.927, -0.868)        |
 
 
 
@@ -869,18 +878,18 @@ ERY, corrected:
 
 |                | only overlapping sites      | including non-overlapping sites |
 | -------------- | --------------------------- | ------------------------------- |
-| $S_{prop}$     |  0.0326  (0.0320, 0.0331)   |  0.0325                         |
-| $\pi_{sites}$  |  0.00704 (0.00689, 0.00717) |  0.00716                        |
-| Tajima's D     |  -0.399  (-0.446, -0.353)   |  -0.334                         |
+| $S_{prop}$     |  0.0326  (0.0320, 0.0331)   |                                 |
+| $\pi_{sites}$  |  0.00704 (0.00689, 0.00717) |                                 |
+| Tajima's D     |  -0.399  (-0.446, -0.353)   |                                 |
 
 
 PAR, corrected:
 
 |                | only overlapping sites      | including non-overlapping sites |
 | -------------- | --------------------------- | ------------------------------- |
-| $S_{prop}$     |  0.0442  (0.0435, 0.0450)   |   0.0451                        |
-| $\pi_{sites}$  |  0.00773 (0.00760, 0.00792) |   0.00797                       |
-| Tajima's D     |  -1.049  (-1.080, -0.997)   |  -1.020                         |
+| $S_{prop}$     |  0.0442  (0.0435, 0.0450)   |                                 |
+| $\pi_{sites}$  |  0.00773 (0.00760, 0.00792) |                                 |
+| Tajima's D     |  -1.049  (-1.080, -0.997)   |                                 |
 
 
 
