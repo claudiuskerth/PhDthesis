@@ -35,6 +35,10 @@
 
 %\usepackage{comment}
 
+\usepackage{pifont}
+
+\usepackage[overlay]{textpos}
+
 % ************************** Custom Floats **********************************
 \usepackage{float}
 \floatstyle{ruled}
@@ -102,11 +106,10 @@
 % Captions: This makes captions of figures use a boldfaced small font.
 %\RequirePackage[small,bf]{caption}
 
-\RequirePackage[labelsep=space,font=small,labelfont=bf,tableposition=top]{caption}
+\RequirePackage[labelsep=space,font=footnotesize,labelfont=bf,tableposition=top]{caption}
 \DeclareCaptionLabelFormat{continued}{#1 #2 continued} 
 \captionsetup[ContinuedFloat]{labelformat=continued}
 \renewcommand{\figurename}{Fig.} %to support older versions of captions.sty
-\usepackage{varioref}
 
 \hypersetup{%
 colorlinks=true,% 
@@ -115,11 +118,13 @@ linkcolor=OliveGreen,
 urlcolor=blue% 
 }
 
+\usepackage{varioref}
+
 
 
 % *************************** Graphics and figures *****************************
 
-%\usepackage{subfigure}
+%\usepackage{subfigure} % note, may clash with subcaption package, so if problems then use one or the other
 
 %\usepackage{rotating}
 %\usepackage{wrapfig}
@@ -140,6 +145,9 @@ urlcolor=blue%
 \usepackage{multirow}
 \usepackage{ctable}
 \usepackage{colortbl}
+% set the default font size for all the tables:
+\let\oldtabular\tabular 
+\renewcommand{\tabular}{\scriptsize\oldtabular}
 
 %\usepackage{multicol}
 %\usepackage{longtable}

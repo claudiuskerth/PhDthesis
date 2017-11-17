@@ -178,7 +178,7 @@ Individuals from each of the two distal populations of a transect through the ea
 \begin{figure}[htb]
 \centering
 \includegraphics[width=.9\linewidth]{map-1}
-\caption{Map of sampling locations. \textsc{jh34-AU}: \textit{parallelus}; \textsc{jh30-GR}: \textit{erythropus}. \textsc{sterility centre}: marks the centre of the cline of sterility as determined by \cite{Shuker2005}. Details about the creation of this map are provided in the \nameref{sec:suppl_material_methods.}
+\caption{Map of sampling locations. \textsc{jh34-AU}: \textit{parallelus}; \textsc{jh30-GR}: \textit{erythropus}. \textsc{sterility centre}: marks the centre of the cline of sterility as determined by \cite{Shuker2005}. Details about the creation of this map are provided in the \nameref{Sec:suppl_material_methods.}
 }
 \label{Fig:sampling-sites-map}
 \end{figure}
@@ -301,11 +301,11 @@ The average per site, per individual coverage across the 1.7M filtered sites is 
 %
 I have used \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) \citep{Korneliussen2014} to estimate posterior genotype probabilities across all sites using as prior a \gls{ML} estimate of the \gls{population minor allele frequency} (MAF) per site across all individuals from the two populations and the assumption of \gls{HWE} \citep{Kim2011}. Although the assumption of \gls{HWE} may well be violated, it should only make genotype probability estimates more similar between divergent individuals. Therefore, any major divergence detected between individuals based on these genotype probabilities cannot be an artefact of this prior. At low coverage, the identification of the minor allele can be uncertain. The estimation of the minor allele frequency incorporated this uncertainty \cite[suppl. mat.]{Skotte2012}. 
 
-Next, I estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{SAF} likelihoods (SAF), again across all individuals, using \texttt{ANGSD}'s subprogramme \texttt{realSFS} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{SAF} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of all individuals sequenced). 
+Next, I estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{saf} likelihoods (SAF), again across all individuals, using \texttt{ANGSD}'s subprogramme \texttt{realSFS} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{saf} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of all individuals sequenced). 
 
-I have then estimated a genotype covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals. \todo{in the same way it should be possible to calculate the covariance matrix between all SNP's, thereby getting composite LD estimates}~ At each site the posterior expectation of the genotype covariance is computed by summing over all 9 genotype combinations and weighting each combination by the respective two posterior genotype probabilities. Each cell of the matrix contains the genotype covariance between two individuals averaged over all sites and each site weighted by its probability of being variable using the \gls{SAF} posterior probabilities \citep[eq. 19 and 20]{Fumagalli2013}.
+I have then estimated a genotype covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals. \todo{in the same way it should be possible to calculate the covariance matrix between all SNP's, thereby getting composite LD estimates}~ At each site the posterior expectation of the genotype covariance is computed by summing over all 9 genotype combinations and weighting each combination by the respective two posterior genotype probabilities. Each cell of the matrix contains the genotype covariance between two individuals averaged over all sites and each site weighted by its probability of being variable using the \gls{saf} posterior probabilities \citep[eq. 19 and 20]{Fumagalli2013}.
 
-During the estimation of genotype and \gls{SAF} probabilities I have applied \emph{standard} (not extended) BAQ to cap the base quality by the calculated per-base alignment quality \citep{Li2011c}. This is in order to reduce false-positive variant detection caused by misalignment around \glspl{indel}.
+During the estimation of genotype and \gls{saf} probabilities I have applied \emph{standard} (not extended) BAQ to cap the base quality by the calculated per-base alignment quality \citep{Li2011c}. This is in order to reduce false-positive variant detection caused by misalignment around \glspl{indel}.
 
 I then performed an eigen--decomposition on the resulting covariance matrix with the \texttt{R} function \texttt{prcomp}.
 %
@@ -321,7 +321,7 @@ Using \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, No
 \centering
 << unfolded-2D-SFS, out.width='.9\\linewidth', echo=FALSE, cache=TRUE, warnings=FALSE>>=
 @
-\caption{ML estimate of the joint sample allele frequencies of the non--reference allele for \textit{parallelus} (PAR) and \textit{erythropus} (ERY). The joint frequency class (0,0) has been set to zero for the purpose of better visualisation.}
+\caption{ML estimate of the joint sample allele frequencies of the non--reference allele for \textit{parallelus} (PAR) and \textit{erythropus} (ERY). The count for the joint frequency class (0,0) has been set to zero for the purpose of better visualisation.}
 \label{Fig:unfolded-2D-SFS}
 \end{figure}
 %
@@ -334,16 +334,25 @@ I have also determined the distribution of $F_{ST}$ over \gls{maf} in either \te
 %
 %
 \subsection{Genetic diversity estimates}
-%
-%
-I have calculated ML estimates of the \emph{unfolded} global \gls{SFS}, i. e. including all sites across contigs, for \textit{erythropus} and \textit{parallelus} separately with \texttt{ANGSD} and its subprogramme \texttt{realSFS}\todo{which version? note that I folded myself. link to \texttt{assembly.sh}} ~\citep{Korneliussen2014}. 
-I required 9 individuals to have read data in order to include a site into the estimation. Since I noticed a considerable amount of variability in the ML estimates of SFS from repeated runs of the programme \texttt{realSFS}, I turned off its accelerated \gls{EM} algorithm, extended the maximum number of \gls{EM} iterations to 50,000 and specified a \textit{tolerance} of 1e-06, which is the minimum difference in likelihood between two successive \gls{EM} iterations and therefore a stopping criterium. These modifications completely removed the variability in SFS estimates, but also greatly extended running time, particularly for the \gls{SFS} of \textit{parallelus}. The programme \texttt{realSFS} allows bootstrapping the \gls{SFS}, i. e. re--estimation of the \gls{SFS} from nucleotide sites resampled with replacement. However, \gls{CI} estimated from these bootstraps will be too narrow, since it ignores that sites in the same contig are not independent and the SFS estimated is a \emph{composite} maximum likelihood estimate. I have therefore created 200 bootstrap replicates of contigs and estimated site frequency spectra for these as before.\todo{document bootstrapping over contigs.}
+\label{Sec:Genetic-diversity-estimates}
 
-I fitted standard-neutral-model site frequency spectra to the observed folded single-population spectra by optimising $\theta$ in the following equation \citep[eq. 4.21]{Wakeley2009}:
- \begin{equation}
+%
+%
+I have calculated ML estimates of the \emph{unfolded} global \gls{SFS}, i. e. including all sites across contigs, for \textit{erythropus} and \textit{parallelus} separately with \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}. I used a different version of \texttt{ANGSD} -- 0.917-142, \texttt{git} commit ge3dbeaa, 20 June 2017 -- than for the previous analyses described above. The main difference is that this version applies \emph{extended} instead of standard BAQ (for more details see this \href{https://github.com/ANGSD/angsd/issues/97}{\texttt{ANGSD} issue thread}). Extended BAQ is a more sensitive and less conservative algorithm than standard BAQ allowing for the detection of more polymorphic sites at the cost of slightly increased number of false positives.
+I folded these single-population (1D) site frequency spectra with my Python script \texttt{fold\_1D\_spectrum.py}. 
+
+I required at least 9 individuals to have read data in order to include a site into the estimation. For so-called \textsl{overlapping sites} I required sequence read data from at least 9 individuals in \emph{each} population. So-called \textsl{non-overlapping sites} have sequence read data from at least 9 individuals in only one of the two populations.
+
+Since I noticed a considerable amount of variability in the ML estimates of SFS from repeated runs of the programme \texttt{realSFS}, I turned off its accelerated \gls{EM} algorithm, extended the maximum number of \gls{EM} iterations to 50,000 and specified a \textit{tolerance} of 1e-06, which is the minimum difference in likelihood between two successive \gls{EM} iterations and therefore a stopping criterium. These modifications completely removed the variability in SFS estimates, but also greatly extended running time, particularly for the \gls{SFS} of \textit{parallelus}. 
+
+The programme \texttt{realSFS} allows bootstrapping the \gls{SFS}, i. e. re-estimation of the \gls{SFS} from nucleotide sites resampled with replacement. However, \gls{CI}'s estimated from these bootstraps will be too narrow, since it ignores that sites in the same contig are not independent and the SFS estimated is therefore a \emph{composite} maximum likelihood estimate. Although, most of the contigs should not contain
+more than 1 SNP, I think it is best to resample over whole contigs instead of sites. Contigs, except for those coming from the same restriction site, should generally be unlinked. Bootstrapping over contigs is not implemented in \texttt{ANGSD/realSFS}. I have therefore created 200 bootstrap replicates of contigs (see \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/BOOTSTRAP_CONTIGS/bootstrap_contigs.ipynb}{bootstrap\_contigs.ipynb}) and specified them as so-called \textsl{regions} for the estimation of \gls{saf} files. I have then estimated site frequency spectra from these SAF files as before.
+
+I fitted standard neutral coalescent model site frequency spectra to the observed folded single-population spectra by optimising $\theta$ in the following equation \citep[eq. 4.21]{Wakeley2009}:
+\begin{equation}
 E[\eta_i] = \theta \frac{\frac{1}{i} + \frac{1}{n-i}}{1+\delta_{i,n-i}} \qquad 1 \le i \le \big[n/2\big]
 \end{equation}
-This formula gives the neutral expectation of counts ($\eta$) in each frequency class (i) in a folded spectrum. I used the R\todo{cite R, add link to Rmd file}~function \texttt{optimize} to find the value of $\theta$ that minimizes the deviation of the above equation from all observed counts $\eta_i$. 
+This formula gives the equilibrium neutral expectation of counts ($\eta$) in each frequency class (i) in a folded spectrum. I used the \texttt{R}\todo{cite R, add link to Rmd file}~function \texttt{optimize} to find the value of $\theta$ that minimises the squared deviation of the above equation from all observed counts $\eta_i$. 
 %According to \cite{Fu1995}, p. 192, for large sample sizes (i. e. large $n$) the counts in neutral spectra can be approximated by a Poisson distribution. I therefore added 95\% \gls{CI} limits from Poisson distributions with parameters equal to $E[\eta_i]$ to the fitted neutral spectra.
 
 I derived the global estimates of the number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) from the global folded \gls{SFS} according to equations 1.3 and 1.4 in \cite{Wakeley2009}, respectively:
@@ -364,13 +373,54 @@ D_{T} = \frac{\pi - \theta_{W}}{C}
 \end{equation}
 $\theta_{W}$ is Watterson's $\theta$ and is calculated with:
 \begin{equation}
-\theta_{W} = \sfrac{S}{\sum_{i=1}^{n-1} \frac{1}{i}}
+\theta_{W} = \sfrac{S}{\sum_{i=1}^{n-1} \frac{1}{i}} \label{Eq:Wattersons-theta}
 \end{equation}
-Details of the above calculations are documented in the Rmarkdown notebook \href{https://bitbucket.org/claudiuskerth/phdthesis/src/fc097ea0cfc02ee2ed3d2d53a6c6ec40deef433a/Data_analysis/SNP-indel-calling/ANGSD/SFS/SFS.Rmd?at=master}{\texttt{SFS.Rmd}}.
-
-The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimates for \textit{erythropus} are based on 1,638,468 sites.\todo{I also determined these statistics from only overlapping sites.} 
+Details of the above calculations are documented in the \texttt{Rmarkdown} notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/SFS/new_1D_SFS.md}{\texttt{new\_1D\_SFS}}.
 
 %I have also estimated Tajima's D per contig with the empirical Bayes method described in \cite{Korneliussen2014}. This uses the ML estimate of the global folded \gls{SFS} as prior for posterior sample allele frequency probabilities that are then summed across the sites in each contig to get the per--contig estimate of \gls{SFS}.
+
+%
+%
+%
+\subsection{Inference of population demographic history}
+%
+%
+%
+
+%
+%
+%
+\subsubsection{\texttt{stairway-plot}}
+%
+%
+%
+I have used the programme \href{https://sites.google.com/site/jpopgen/stairway-plot}{\texttt{stairway-plot}} version 2 beta \citep{Liu2015} to infer the history of effective population sizes for \textit{erythropus} and \textit{parallelus}. It is a model-flexible approach, which means that it does not require the prior specification of a demographic model whose parameters shall be estimated. It can only be used on a single-population (1D) \gls{SFS}. With a specified mutation rate ($\mu$) and generation time, it estimates the diploid effective population size ($N_e$) over time in the past by searching for the $\theta$ ($4N_e\mu$) values that maximise the composite likelihood of the given \gls{SFS}. The programme also infers the optimal number of time intervals (each with its own optimal value of $\theta$) with different population sizes. With the number of chromosomes sampled being $n$, there can be from 1 up to $n-1$ time intervals with different population sizes. For the addition of another $\theta$ parameter it needs to improve the likelihood of the model significantly as determined by a \gls{LRT}. The method has an intrinsically decreasing resolution going back in time. That is because the time intervals of the plot are proportional to expected coalescence time $E[T_i]$:
+$$
+E[T_i] = \frac{{4N_e}}{{i(i-1)}}
+$$
+with $i$ being the number of lineages left in the genealogy and $N_e$ being the diploid effective population size during the interval $T_i$ between two coalescent events (\citealt[see eq. 2.13]{Gillespie2004}). 
+
+I used a custom version of \texttt{stairway-plot}. I replaced the java class file \\ \texttt{Stairway\_fold\_training\_testing5.class} with \\
+\texttt{Stairway\_fold\_random\_break5.class}, kindly provided by Xiaoming Liu. This was necessary to allow for the construction of bootstrap \gls{CI}'s for the stairway plots with version 2 and folded site frequency spectra. Usually, version 2 for folded spectra only allows the construction of pseudo \gls{CI}'s by random subsample of polymorphic sites and random breakpoints. I used my own bootstrap-over-contigs replicates of SFS, not a parametric bootstrap as implemented in version 1 of \texttt{stairway-plot}. I specified a mutation rate per base pair and generation of $3 \times 10^{-9}$ and a single number of breakpoints (steps), 34, effectively turning off random breakpoints.
+
+%
+%
+%
+\subsubsection{$\delta a \delta i$}
+%
+%
+%
+As for the one-dimensional site frequency spectra (see section \ref{Sec:Genetic-diversity-estimates}), I have used \texttt{ANGSD/realSFS} version 0.917-142  (\texttt{git} commit ge3dbeaa, downloaded on 20 June 2017) for the estimation of an unfolded two-dimensional (2D) joint \gls{SFS} from only overlapping sites. I have used the same exhaustive search parameters for two-dimensional \gls{SFS} estimation with \texttt{realSFS} as for one-dimensional SFS estimation (see section \vref{Sec:Genetic-diversity-estimates}).
+
+For the creation of 200 bootstrap resampled 2D site frequency spectra (resampled over contigs), I have used bootstrap resampled lists of contig id's and specified them as \textsl{regions} for SAF file creation with \texttt{ANGSD} (see \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/BOOTSTRAP_CONTIGS/bootstrap_contigs.ipynb}{\texttt{bootstrap\_contigs.ipynb}}). I used my script \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/BOOTSTRAP_CONTIGS/estimate_SAFs.py}{\texttt{estimate\_SAFs.py}} to compute SAF files in parallel. Importantly, I made sure that sample allele frequency likelihood calculation was restricted to only overlapping sites. Usually, \texttt{realSFS} when provided with two or more SAF files (from two or more populations) would automatically estimate the joint \gls{SFS} from only overlapping sites even if the SAF files would also include non-overlapping sites. However, the algorithm for determining overlapping sites in \texttt{realSFS} does not allow repetitions of the same sites (here sites from whole contigs) in the input SAF files. I have therefore modified the \texttt{realSFS} source file \texttt{multisafreader.hpp} by adding \texttt{return 0;} at the beginning of the function \texttt{set\_intersect\_pos}. This turns off determination of overlapping sites when \texttt{realSFS} is provided with more than one SAF file and instead makes it read in all sites, including repetitions of the same site. See \texttt{ANGSD} issue thread \href{https://github.com/ANGSD/angsd/issues/86}{\#86} for some more details. 
+
+I have used $\delta a \delta i$ (Diffusion Approximations for Demographic Inference) version 1.7.0 (\texttt{git} commit b8e89915c, downloaded on 17 February 2017) for demographic modelling and inference \citep{Gutenkunst2009}. I have used its function \texttt{fold} to fold the two-dimensional unfolded spectrum from \texttt{ANGSD/realSFS}.
+
+$\delta a \delta i$ provides a numerical solution of a diffusion equation that models the probability distribution of population allele frequencies over time. It is a continuous approximation to the bi-allelic Wright-Fisher process with a discrete number of individuals and a discrete number of populations \citep{Kimura1986}. It can model random genetic drift, population splits, directional migration and selection. It requires the specification of a demographic model with a set of parameters. It computes the expected population allele frequency spectrum under a certain set of parameter values and then computes the product of Poisson likelihoods over the entries in the observed \gls{SFS} with rates equal to the expected allele frequency from the optimally scaled model spectrum. The set of parameter values is optimised with one of several optimisation algorithms provided by \texttt{SciPy} \citep{SciPy2001}. For the conversion of parameters from genetic to absolute units, I have assumed one generation per year and a mutation rate per nucleotide site and generation of $3 \times 10^{-9}$\todo{add citation}. For details of the demographic model fitting with $\delta a \delta i$, see the Jupyter notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/DADI/01_newAngsd_2D_models.ipynb}{01\_newAngsd\_2D\_models}. For graphical representations of inferred best-fitting models, I have used functions provided by a derivative of $\delta a \delta i$ called \texttt{moments} \citep{Jouganous2017}.
+
+When performing \gls{LRT}'s to test the significance of more complex models compared to simpler, nested models, I have applied an adjustment factor to the \gls{LRT} test statistic (D). This adjustment is required when performing \gls{LRT}'s with composite likelihoods \citep{Coffman2016}. This adjustment factor can be computed with $\delta a \delta i$'s \texttt{LRT\_adjust} function and a set of bootstrap data sets (i. e. site frequency spectra). I have used my 200 bootstrap resampled 2D site frequency spectra for this, generated as described above. The adjustment factor can be extremely different depending on whether it was calculated by evaluating \texttt{LRT\_adjust} at the simple or complex model optimal parameterisation. Evaluating with the complex model optimal parameters is more powerful, while evaluating at the simple model optimal parameters provides a more conservative adjustment. P-values for mixtures of $\chi^2_x$ distributions have been calculated with $\delta a \delta i$'s \texttt{sum\_chi2\_ppf} function. 
+
+For the estimation of 95\% \gls{CI}'s, I have used the function \texttt{GIM\_uncert} in $\delta a \delta i$, which accounts for linkage in the data \citep{Coffman2016}. \texttt{GIM\_uncert} calculates the Godambe Information Matrix (GIM), which requires the provision of bootstrap resampled site frequency spectra. Note that the GIM method for estimation of parameter variances and covariances is still an imperfect approximation. This is made evident by comparison to parameter variances and covariances calculated with a Fisher Information matrix (FIM), which assumes completely independent data, that are sometimes \emph{larger} than those derived from the GIM. Also note that all \gls{CI}'s reported here assume a normal distribution of errors. Further details about the estimation of parameter uncertainties can be found in section 13 of the  IPython notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/ANGSD/BOOTSTRAP_CONTIGS/minInd9_overlapping/DADI/01_newAngsd_2D_models.ipynb}{01\_newAngsd\_2D\_models.ipynb}.
 
 %
 %
@@ -387,7 +437,7 @@ The estimates for \textit{parallelus} are based on 1,214,939 sites, the estimate
 %
 Figure \ref{Fig:PCA} shows a principal component analysis of genotypic covariances between all 36 individuals of \textit{erythropus} and \textit{parallelus} taking SNP and genotype uncertainty into account. Almost $^1/_4$ of the total genotypic variance is explained by the first principal component which clearly separates two clusters of individuals that correspond to the two subspecies. The second principal component captures only 3\% of the total genotypic variance. This confirms estimates of genetic differentiation by \cite{Cooper1995} based on sequence variation at a single nuclear locus that the two subspecies are genetically distinct. Individual \texttt{par\_34-1} seems to be considerably less differentiated from \textit{erythropus} than the other \textit{parallelus} individuals. This may be due to insufficient information because of extremely low coverage (see fig. \ref{Fig:individual-coverage-dist} and \citealt{Patterson2006}). See section \vref{Sec:PCA_supp} for the effect of SNP calling, genotype calling and normalisation of covariances on PCA.
 %
-\begin{figure}
+\begin{figure}[!hbt]
 \centering
 << PCA, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
 @
@@ -418,7 +468,7 @@ Figure \ref{Fig:fst-by-maf-class} shows the dependence of average $F_{ST}$ on th
 \label{Fig:fst-by-maf-class}
 \end{figure}
 %
-When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This would be consistent with both populations having undergone a population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates (see fig. \ref{Fig:fst-by-maf-dadi-4Models}) \citep{Bhatia2013}. According to these predictions, the sudden increase in $F_{ST}$ for the lowest \gls{maf} when ascertaining in \textit{erythropus} (fig. \ref{Fig:fst-by-maf-class}) would therefore indicate a very recent bottleneck, whereas the sudden decrease in $F_{ST}$ when ascertaining in \textit{parallelus} would indicate a very recent population expansion. However, the observed distribution of $F_{ST}$ over \gls{maf} as calculated with $\delta a \delta i$ from the 2D SFS in figure \vref{Fig:unfolded-2D-SFS} does not show the same tendency to decrease with minor allele frequency (figure \ref{Fig:fst-by-maf-dadi-WC}). 
+When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This would be consistent with both populations having undergone a population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates (see fig. \ref{Fig:fst-by-maf-dadi-4Models}) \citep{Bhatia2013}. According to these predictions, the sudden increase in $F_{ST}$ for the lowest \gls{maf} when ascertaining in \textit{erythropus} (fig. \ref{Fig:fst-by-maf-class}) would therefore indicate a very recent bottleneck, whereas the sudden decrease in $F_{ST}$ when ascertaining in \textit{parallelus} would indicate a very recent population expansion. However, the observed distribution of $F_{ST}$ over \gls{maf} as calculated with $\delta a \delta i$ from the 2D SFS of figure \vref{Fig:unfolded-2D-SFS} does not show the same tendency to decrease with minor allele frequency (figure \ref{Fig:fst-by-maf-dadi-WC}). 
 %
 \begin{figure}
 \centering
@@ -429,7 +479,7 @@ When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in ea
 %
 
 %
-\begin{figure}
+\begin{figure}[!hbt]
 \centering
 \includegraphics[width=\textwidth]{Fst_by_MAF_4Models}
 \caption{Distributions of $F_{ST}$ by \gls{maf} for four different demographic models. Distributions were computed from model spectra in the same way as for figure \ref{Fig:fst-by-maf-dadi-WC}.}
@@ -458,9 +508,11 @@ A ML estimate of the number of nucleotide sites with fixed differences between t
 %
 %
 %
-Figure \ref{Fig:folded-sfs} shows the \gls{ML} estimate of the global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 in \textit{parallelus} is not compatible with any demographic scenario.\todo[color=green]{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.} ~However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right--skewed, that is having a greater proportion of low-frequency variants, than \textit{erythropus}. 
+Figure \ref{Fig:folded-sfs} shows the \gls{ML} estimate of the global folded \gls{SFS} for \textit{erythropus} and \textit{parallelus}. The conspicuous spike in frequency for the minor allele count of 2 as compared to standard neutral expectations, particularly in \textit{parallelus}, is not compatible with any demographic scenario.
+\todo[color=green]{add expected neutral SFS with optimized $\theta$. See eq. 4.21 in \cite{Wakeley2009} and \texttt{dadi\_exercises.ipynb} as well as \cite{Fu1995, Fu1994}.}
+However, even when disregarding frequency class 2, the folded \gls{SFS} of \textit{parallelus} seems to be more right-skewed, that is having a greater proportion of low-frequency variants, than \textit{erythropus}. There is apparently not a big difference between spectra estimated from only overlapping sites and spectra including non-overlapping sites.
 %
-\begin{figure}[htb]
+\begin{figure}[!hbt]
 \centering
 << folded-sfs, out.width='\\textwidth', echo=FALSE, cache=TRUE>>=
 @
@@ -468,11 +520,10 @@ Figure \ref{Fig:folded-sfs} shows the \gls{ML} estimate of the global folded \gl
 \label{Fig:folded-sfs}
 \end{figure}
 %
-\todo{what means \textsl{overlapping sites}?}
 Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is based on per-site sample allele frequency likelihoods (SAF) that incorporate the genotype uncertainty of each individual due to binomial sampling of alleles from a diploid genotype -- as happens during next generation sequencing -- as well as sequencing and read alignment error\todo[color=green]{really? Also read alignment error? Yes! see cite{Li2008}} ~\citep{Li2008, Li2011, Nielsen2012, Nielsen2011}.
 \todo[inline]{Could the inflated $\eta_2$ in both populations be due to singletons on the haploid X chromosome of these male grasshoppers? How big is the X chromosome with respect to the rest of the genome? $\rightarrow$ fourth largest of 9 chromosomes (see Gosalvez1988, fig. 2);  How does ANGSD deal with haploid loci? $\rightarrow$ the genotype likelihoods refer to diploid loci; Does ANGSD's ML estimation of SFS include HWE expectation? $\rightarrow$ yes, SAF likelihood calculation includes the assumption of HWE;  Is there a way to specifically detect contigs from the X chromosom? $\rightarrow$ see \texttt{1D\_model\_synthesis.ipynb}, section 2.2 "reducing noise and bias"} 
 
-~It does not therefore suffer from the ascertainment bias observed in previous studies that were based on sites detected as polymorphic in a specific sample \citep{Han2014,Albrechtsen2010, Korneliussen2013}. This ascertainment bias has led to a relative excess of intermediate versus low frequency classes\todo{and genotype calling generally leads to an excess of low frequency variants, see fig. 1 in \cite{Nielsen2012}}. 
+~It does not therefore suffer from the ascertainment bias observed in previous studies that were based on sites detected as polymorphic in a specific sample \citep{Han2014,Albrechtsen2010, Korneliussen2013}. This ascertainment bias has led to a relative excess of intermediate versus low frequency classes\todo{and genotype calling generally leads to an excess of low frequency variants, see fig. 1 in \cite{Nielsen2012}, but others report a deficiency, e. g. \cite{Liu2015}}. 
 
 The \gls{SFS} has however not yet been corrected for bias due to allele--drop--out \citep{Luca2011, Cariou2016}. 
 \begin{quotation}
@@ -501,7 +552,7 @@ The allele--drop--out problem is a missing data problem and to some extent simil
 \centering
 << folded-sfs-boot, out.width='.49\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
 @
-\caption{The global folded \gls{SFS} of \textit{erythropus} and \textit{parallelus} with absolute counts and 95\% \gls{CI} limits from 200 bootstrap resamples of contigs. A standard neutral model spectrum was fit to each observed spectrum for comparison.}
+\caption{The global folded \gls{SFS} of \textit{erythropus} and \textit{parallelus} with absolute counts from only overlapping sites and 95\% \gls{CI} limits from 200 bootstrap resamples of contigs. A standard neutral model spectrum was fit to each observed spectrum for comparison.}
 \label{Fig:folded-sfs-boot-exh}
 \end{figure}
 %
@@ -520,45 +571,70 @@ Figure \ref{Fig:folded-sfs-boot-exh} shows that despite the large amount of site
 \begin{table}
 \centering\scriptsize
 \setlength{\tabcolsep}{7pt}
-\caption{Comparison of the proportion of segregating sites $S_{prop}$, the average number of pairwise differences per site $\pi_{site}$ and Tajima's D for the \gls{SFS} of \textit{erythropus} and \textit{parallelus}. Numbers in brackets are 95\% bootstrap confidence intervals.}
+\caption{Comparison of the proportion of segregating sites $S_{prop}$, the average number of pairwise differences per site $\pi_{site}$ and Tajima's D for the global \gls{SFS} of \textit{erythropus} and \textit{parallelus}. Numbers in brackets are 95\% bootstrap confidence intervals. Diversity statistics are calculated from only overlapping sites or including non-overlapping sites. There are 1,130,775 overlapping sites. When including non-overlapping sites, estimates are based on 1,214,939 sites for \textit{parallelus} and 1,638,468 sites for \textit{erythropus}.}
 \label{Tab:diversity_parameters}
 \vspace{5pt}
-\begin{tabular}{lllll}
+\begin{tabular}{>{\raggedleft}p{2.8cm}ccc}
 %\begin{tabularx}{\textwidth}{XXXXX}
 \toprule
-\multirow{2}{*}{parameter} & \multicolumn{2}{c}{\textbf{only overlapping sites}} & \multicolumn{2}{c}{\textbf{including non-overlapping sites}} \\[5pt]
-                                    & \textit{erythropus} & \textit{parallelus} & \textit{erythropus} & \textit{parallelus} \\
+& \multicolumn{3}{c}{\textbf{statistic}} \\[5pt]
+& $S_{prop}$ & $\pi_{site}$ & Tajima's D \\
 \midrule
-$S_{prop}$ & \Sexpr{formatC(S_prop.ery, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.par, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.ery.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.par.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot.nonO, probs=c(.025, .975)), format="f", digits=4)})\\[3pt]
-%\rowcolor[gray]{0.9} 
-$\pi_{site}$ & \Sexpr{formatC(pi_sites.ery, format="f", digits=5)}  (\Sexpr{formatC(quantile(pi_sites.ery.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.par, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.ery.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.par.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot.nonO, probs=c(.025, .975)), format="f", digits=5)})\\[3pt]
-
-Tajima's D &  \Sexpr{formatC(ery.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)}) & \Sexpr{formatC(par.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)})  & \Sexpr{formatC(ery.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)}) & \Sexpr{formatC(par.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)})\\
+\textbf{overlapping sites} &  &  &  \\[5pt]
+\textit{erythropus} & \Sexpr{formatC(S_prop.ery, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot, probs=c(.025, .975)), format="f", digits=4)})  & \Sexpr{formatC(pi_sites.ery, format="f", digits=5)}  (\Sexpr{formatC(quantile(pi_sites.ery.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(ery.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)}) \\[5pt]
+\textit{parallelus} & \Sexpr{formatC(S_prop.par, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(pi_sites.par, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(par.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)}) \\[10pt]
+\textbf{including non-overlapping sites} &  &  &  \\[15pt]
+\textit{erythropus} & \Sexpr{formatC(S_prop.ery.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(pi_sites.ery.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(ery.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)}) \\[5pt]
+\textit{parallelus} & \Sexpr{formatC(S_prop.par.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot.nonO, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(pi_sites.par.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot.nonO, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(par.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)}) \\
+%%\rowcolor[gray]{0.9} 
 \bottomrule
 \end{tabular}
 \end{table}
-\todo{regarding potential reasons for negative Tajima's D see \cite{Reed2005} and \cite{Corbett-Detig2015a}}
 %
 %%
+%
+%\begin{table}
+%\centering\scriptsize
+%\setlength{\tabcolsep}{7pt}
+%\caption{Comparison of the proportion of segregating sites $S_{prop}$, the average number of pairwise differences per site $\pi_{site}$ and Tajima's D for the global \gls{SFS} of \textit{erythropus} and \textit{parallelus}. Numbers in brackets are 95\% bootstrap confidence intervals. Diversity statistics are calculated from only overlapping sites or including non-overlapping sites. There are 1,130,775 overlapping sites. When including non-overlapping sites, estimates are based on 1,214,939 sites for \textit{parallelus} and 1,638,468 sites for \textit{erythropus}.}
+%\label{Tab:diversity_parameters}
+%\vspace{5pt}
+%\begin{tabular}{lllll}
+%%\begin{tabularx}{\textwidth}{XXXXX}
+%\toprule
+%\multirow{2}{*}{parameter} & \multicolumn{2}{c}{\textbf{only overlapping sites}} & \multicolumn{2}{c}{\textbf{including non-overlapping sites}} \\[5pt]
+%                                    & \textit{erythropus} & \textit{parallelus} & \textit{erythropus} & \textit{parallelus} \\
+%\midrule
+%$S_{prop}$ & \Sexpr{formatC(S_prop.ery, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.par, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.ery.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=4)}) & \Sexpr{formatC(S_prop.par.nonO, format="f", digits=4)} (\Sexpr{formatC(quantile(S_prop.par.boot.nonO, probs=c(.025, .975)), format="f", digits=4)})\\[3pt]
+%%\rowcolor[gray]{0.9} 
+%$\pi_{site}$ & \Sexpr{formatC(pi_sites.ery, format="f", digits=5)}  (\Sexpr{formatC(quantile(pi_sites.ery.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.par, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.ery.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.ery.boot.nonO, probs=c(.025, .975)), format="f", digits=5)}) & \Sexpr{formatC(pi_sites.par.nonO, format="f", digits=5)} (\Sexpr{formatC(quantile(pi_sites.par.boot.nonO, probs=c(.025, .975)), format="f", digits=5)})\\[3pt]
+%
+%Tajima's D &  \Sexpr{formatC(ery.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)}) & \Sexpr{formatC(par.TajimasD.global, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot, probs=c(.025, .975)), format="f", digits=3)})  & \Sexpr{formatC(ery.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(ery.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)}) & \Sexpr{formatC(par.TajimasD.global.nonO, format="f", digits=3)} (\Sexpr{formatC(quantile(par.TajimasD.global.boot.nonO, probs=c(.025, .975)), format="f", digits=3)})\\
+%\bottomrule
+%\end{tabular}
+%\end{table}
 %%
 %%
+%%
 
 
-The number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) are summary statistics of the \gls{SFS}. While $S$ weights each site equally, intermediate frequency variants contribute much more to the magnitude of $\pi$ than high- and low-frequency variants \cite[eq. 1.4]{Wakeley2009}. Both diversity estimates are significantly higher in \textit{parallelus} than in \textit{erythropus}.
-This seems at odds with the expectation from the hitherto proposed demographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much smaller distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity much more so than for the \textit{erythropus} subspecies \citep{Luca2011}.\todo{Look at data from other European species. Do they show the expected reduction of diversity with distance from the the glacial refuge? see \cite{Hewitt2004, Hewitt1996, Hewitt2000, Ramachandran2005, Slatkin2012, Petit1999, Pool2008}}
-
-
-
+The number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) are summary statistics of the \gls{SFS}. While $S$ weights each site equally, intermediate frequency variants contribute much more to the magnitude of $\pi$ than high- and low-frequency variants \cite[eq. 1.4]{Wakeley2009}. Both diversity estimates are significantly higher in \textit{parallelus} than in \textit{erythropus} (tab. \ref{Tab:diversity_parameters}).
+This seems at odds with the expectation from the hitherto proposed demo- and biogeographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much smaller distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity at the edge of the distribution much more so than for the \textit{erythropus} subspecies \citep{Luca2011}.\todo{Look at data from other European species. Do they show the expected reduction of diversity with distance from the the glacial refuge? see \cite{Hewitt2004, Hewitt1996, Hewitt2000, Ramachandran2005, Slatkin2012, Petit1999, Pool2008}}
 
 That ancestral \textit{parallelus} and \textit{erythropus} expanded from their glacial refuges as a "wave", i. e. without colonisation by rare long--distance migration, is made unlikely by at least two observations: 
 \begin{itemize}
 \item the colonisation of Britain by \textit{C. p. parallelus} before the flooding of the English Channel after the last Ice Age \citep{Cooper1995},
 \item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the \emph{average} dispersal rate of this species of 30 m/generation \citep{Nichols1994}. \todo{\cite{Ibrahim1996}}
 \end{itemize}
-The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.\todo{$K_S$ values in \cite{Cooper1995} from a single nuclear locus contradict this and show about twice as much genetic variation in Spain as in France.}
+The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.\todo{$K_S$ values in \cite{Cooper1995} from a single nuclear locus contradict this and show about twice as much genetic variation in Spain as in France.} 
 
+The values of $\pi_{site}$ are slightly (but significantly) higher when including non-overlapping sites than when estimated from only overlapping sites (tab. \ref{Tab:diversity_parameters}). This makes sense since loci with greater nucleotide heterozygosity should have a higher chance of allele-drop-out due to polymorphisms in the restriction site and therefore also a lower chance of overlapping between the two populations (i. e. having 9 individuals with read data in each population).
 
-The Tajima's D estimates also differ significantly between the two subspecies (tab. \ref{Tab:diversity_parameters}). Both supspecies have a significantly negative Tajima's D which would be consistent with a recent population expansion.%%
+Both subspecies have a significantly negative Tajima's D (tab.~\ref{Tab:diversity_parameters}). This means that there is an excess of low frequency variants. Besides artefacts in the data or analysis pipeline \citep{Shafer2016a}, this can only have two reasons. First, many variable sites are of recent recent origin, which would be a signal of recent population size expansion\todo{regarding potential reasons for negative Tajima's D see \cite{Reed2005} and \cite{Corbett-Detig2015a}}. Second, pervasive genome-wide selection, positive or negative and at the detected sites or closely linked sites. With negative, or purifying, selection low frequency variants would also be of ancient origin and be kept at low frequency by selection. The Tajima's D estimates also differ significantly between the two subspecies. The estimate for \textit{parallelus} is far more negative than the estimate for \textit{erythropus}. This is as expected from a greater recent population size expansion in \textit{parallelus} than in \textit{erythropus}. 
+%Europe-wide phylogeographic studies of the two subspecies have indicated that, after the end of the last ice age, \textit{parallelus} spread from refuges in southeastern Europe across Europe and met \textit{erythropus}, which expanded from southern Spain, in the Pyrenees. 
+The difference in Tajima's D observed here therefore would be in line with the scenario inferred by previous phylogeographic studies. Alternatively, a greater ancient population size in \textit{parallelus}, as indicated by the higher genetic diversity estimates, would allow for a greater strength of purifying selection in \textit{parallelus} than in \textit{erythropus}\todo{could it be that RAD markers are biased toward expressed sequences? Are coding sequences GC richer than non-coding sequences?}.
+
+%%
 %\begin{figure}[htb]
 %\centering
 %<< Tajimas-D-by-contig, out.width='.65\\linewidth', echo=FALSE, cache=TRUE, warning=FALSE>>=
@@ -571,19 +647,197 @@ The Tajima's D estimates also differ significantly between the two subspecies (t
 %
 %
 %
-\section{Demographic history of the hybrid zone}
+\subsection{Demographic history of the hybrid zone}
 %
 %
 %
-A simple divergence-in-isolation model in dadi infers a similar divergence time as previously estimated from mitochondrial data (add citation).\todo{add 95\% CI interval to estimated divergence time}. Adding gene flow to this model significantly improves the fit of the simulated model spectrum to the observed spectrum. There has been no divergence in allopatry as previously assumed (add citation). Allowing for gene flow doubles the estimated divergence time. Allowing the gene flow to be asymmetric improves the once more. Gene flow is estimated to have been on average 5 times higher in the direction PAR$\rightarrow$ERY than vice versa. PAR had a much greater ancient effective population size than ERY (see fig. \ref{Fig:overlapping_stairway_plot}). There seems to be a signal of a very recent and drastic bottleneck, at least in PAR. Dadi infers a much less severe bottleneck for ERY than stairway-plot. A recent bottleneck is what would be expected from a series of founder events during range expansion after the last ice age. It would make sense that this had been less severe for ERY than for PAR. A model with ancient gene flow fits the observed 2D SFS better than a secondary contact model. There is no signal of recent gene flow. The detected asymmetry of gene flow can therefore not just be a consequence of different distances to the hybrid zone centre of the two populations or hybrid zone movement. Rather, this hints at intrinsic asymmetric isolation, which is corroborated by asymmetric homogamy in crossings between PAR and ERY (\citep{Bella1992, Hutchison2013}).
+If all sites were bi-allelic, and if there were no linkage among sites, i. e. each site could be regarded as an independent data point, then the 2-dimensional \gls{SFS} in figure \ref{Fig:unfolded-2D-SFS} would be a complete summary of the genetic variation in the data set. Figure \ref{Fig:2DSFS_folded} shows the folded version of this. Each cell in this figure indicates the count of sites with a specific allele frequency in \textit{erythropus} and a specific allele frequency in \textit{parallelus} of the \emph{joint} minor allele, i. e. the minor allele when pooling both populations.
+
+%
+\begin{figure}[!hbt]
+\centering
+\includegraphics[width=\textwidth]{2DSFS_folded}
+\caption{Folded joint \gls{SFS} of \textit{erythropus} and \textit{parallelus} from 1,130,775 overlapping sites. The cells contain counts of sites with a certain joint allele frequency on a log scale. The upper right half of the matrix is empty in a folded 2D spectrum and therefore set white. Counts of zero have been set to 1 and appear white in the lower left half of the matrix. This spectrum contains 74,058 sites that are polymorphic in \textit{erythropus} or \textit{parallelus} or both. Monomorphic sites (with joint frequency [0,0]) have been masked for better visualisation.}
+\label{Fig:2DSFS_folded}
+\end{figure}
+%
+
+Accounting for migration between the two populations leads to the inference of a much earlier divergence than from previous studies.
 
 
-\begin{figure}
+A simple divergence-in-isolation model in $\delta a \delta i$ infers a similar divergence time as previously estimated from mitochondrial sequence data (tab. \ref{Tab:divergence-in-isolation}). Assuming a mitochondrial nucleotide substitution rate of 2\% per million years and no gene flow since the split of the two subspecies, \cite{Lunt1998} have estimated the divergence time to between 363,000 and 731,000 years.\todo{add 95\% CI interval to estimated divergence time}
+%
+\begin{table}[!hbt]
+\centering\small
+\setlength{\tabcolsep}{10pt}
+\caption{Parameters for a simple \textsl{divergence-in-isolation} model inferred with $\delta a \delta i$. $N_{ery}$: diploid population size of \textit{erythropus}, $N_{par}$: diploid population size of \textit{parallelus}, $T$: divergence time in years. The population sizes are assumed to have been constant since the split from the common ancestral population.}
+\label{Tab:divergence-in-isolation}
+\vspace{5pt}
+\begin{tabular}{lll}
+\toprule
+Parameter & \gls{ML} estimate & 95\% \gls{CI} \\
+\midrule
+$N_{ery}$ & 602,490    		&  586,288 -- 618,692  \\[5pt]
+$N_{par}$ & 1,281,364    	&  1,236,331 -- 1,326,398  \\[5pt]
+$T$         & 486,848    	&  476,703 -- 496,994  \\
+\midrule
+-logL      & 25,375 &     \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Adding gene flow to this model significantly improves the fit of the simulated model spectrum to the observed spectrum. Allowing for gene flow doubles the estimated divergence time. 
+%
+\begin{table}
+\centering\small
+\setlength{\tabcolsep}{10pt}
+\caption{Parameters for a \textsl{divergence-with-migration} model inferred with $\delta a \delta i$. $N_{ery}$: diploid population size of \textit{erythropus}, $N_{par}$: diploid population size of \textit{parallelus}, $T$: divergence time in years, $m$: proportion of new immigrant individuals each generation, -logL: negative log-likelihood of the model spectrum simulated with the given parameter values. The population sizes are assumed to have been constant since the split from the common ancestral population. Gene flow is assumed to be equal in both directions.}
+\label{Tab:divergence-with-migration}
+\vspace{5pt}
+\begin{tabular}{lll}
+\toprule
+Parameter & \gls{ML} estimate & 95\% \gls{CI} \\
+\midrule
+$N_{ery}$ & 599,837     		&  584,697 -- 614,978  \\[5pt]
+$N_{par}$ & 1,167,067    	&  1,132,862 -- 1,201,271  \\[5pt]
+$T$         & 1,083,296    	&  1,062,695 -- 1,103,896  \\[5pt]
+$m$ ($\times 10^{-7}$)  & 2.49  	&  2.41 -- 2.57    \\
+\midrule
+-logL            & 21,942 &      \\
+\bottomrule
+\end{tabular}
+\end{table}
+\\
+This \textsl{divergence-with-migration} model can be reduced to the \textsl{divergence-in-isolation} model (without migration) by setting the migration rate to zero. The latter model is therefore nested within the former, allowing for the application of a \gls{LRT} for the statistical significance of the existence of gene flow between \textit{erythropus} and \textit{parallelus}. With the composite likelihood adjustment of the \gls{LRT} test statistic evaluated at the complex model (i. e. \textsl{divergence-with-migration}) optimal parameterisation, the addition of a migration rate parameter greater than zero is highly significant ($p\simeq0.0$). Note, that since here a single parameter is on the boundary of the parameter space, the null distribution of the \gls{LRT} test statistic is $\frac{1}{2}\chi^{2}_0 + \frac{1}{2}\chi^2_1$ \citep{Self1987}. If the adjustment factor is computed with the optimal parameters from the nested \textsl{divergence-in-isolation} model, then a non-zero migration rate has a p-value of 0.011. The observed 2D-SFS therefore seems to provide a robust signal of low but non-zero gene flow between the two subspecies. A model of divergence in allopatry is clearly not compatible with this data set.
+
+The \textsl{divergence-with-migration} model has markedly reduced residuals for the counts of low frequency shared polymorphisms as compared to the \textsl{divergence-in-isolation} model (fig. \ref{Fig:compare_residuals}). An increased number of shared polymorphisms at low frequency in one or both populations is a signal of gene flow \citep[suppl. mat. section 1.1]{Gutenkunst2009}. Further details can be found in section \vref{Sec:div_time_vs_migration} of the supplementary material.
+%
+\begin{figure}[hbt]
+\centering
+\includegraphics[width=.53\textwidth]{divergence-in-isolation_resid_plot}\hspace{-30pt}
+\includegraphics[width=.53\textwidth]{divergence-with-migration_resid_plot}
+\caption{The plots of Poisson residuals between the observed 2D-SFS (fig. \ref{Fig:2DSFS_folded}) and the best-fit model spectra from the \textsl{divergence-in-isolation} model (left) and the \textsl{divergence-with-migration} model (right). Note the markedly reduced residuals for the count of low frequency shared polymorphisms in the residual plot of the \textsl{divergence-with-migration} model.}
+\label{Fig:compare_residuals}
+\end{figure}
+%
+
+Allowing the gene flow to be asymmetric improves the fit to the data once more (tab \ref{Tab:asymmetric-migration}). 
+\begin{table}[hbt]
+\centering\small
+\setlength{\tabcolsep}{10pt}
+\caption{Parameters for a \textsl{asymmetric-migration} model inferred with $\delta a \delta i$. $N_{ery}$: diploid population size of \textit{erythropus}, $N_{par}$: diploid population size of \textit{parallelus}, $T$: divergence time in years, $m$: proportion of new immigrant individuals each generation, -logL: negative log-likelihood of the model spectrum simulated with the given parameter values. The population sizes are assumed to have been constant since the split from the common ancestral population.}
+\label{Tab:asymmetric-migration}
+\vspace{5pt}
+\begin{tabular}{lll}
+\toprule
+Parameter & \gls{ML} estimate & 95\% \gls{CI} \\
+\midrule
+$N_{ery}$ &  500,974     & 483,927 -- 518,021   \\[5pt]
+$N_{par}$ &  1,279,484   & 1,240,749 -- 1,318,220   \\[5pt]
+$T$       &  1,138,863   &  1,102,539 -- 1,175,187   \\[5pt]
+$m_{ery\rightarrow par}$ ($10^{-7}$)  & 1.06  &  0.89 -- 1.23    \\[5pt]
+$m_{par\rightarrow ery}$ ($10^{-7}$)  & 4.97  &  4.66 -- 5.28    \\
+\midrule
+-logL     &  21,465      &      \\
+\bottomrule
+\end{tabular}
+\end{table}
+Are the two migration rates, one for each direction, significantly different from each other? The model with one (symmetrical) migration rate is not just nested within a model with two different migration rates. I have therefore parameterised the \textsl{asymmetric migration} model so that the divergence with (symmetrical) migration model is nested within it by setting $m_2 = r \times m_1$. The divergence with symmetrical migration model has by definition an $r$ of 1. I can then ask: does allowing $r$ to be different from 1 significantly improve the fit to the observed spectrum? The p-value of the LRT test statistic (D), with an adjustment factor calculated by evaluating at the complex model optimal parameterisation, is 0.0 (assuming D is $\chi^2_1$ distributed). With an adjustment factor calculated by evaluating at the nested model optimal parameterisation, the p-value of the LRT is 0.00083. There therefore seems to be a robust signal of asymmetric migration between \textit{erythropus} and \textit{parallelus}. 
+
+Gene flow is estimated to have been on average $\sim$5 times higher in the direction PAR$\rightarrow$ERY than vice versa (tab. \ref{Tab:asymmetric-migration}). This is in line with the previously reported occurrence of French/Balkan mitotypes on the Spanish side of the Pyrenees \citep{Lunt1998}. One potential reason for stronger effective gene flow from \textit{parallelus} into \textit{erythropus} than vice versa could be that introgressed alleles from \textit{parallelus} could have reached those \textit{erythropus} populations that survived the ice ages in southern Spain more easily than introgressed \textit{erythropus} alleles could have reached those \textit{parallelus} populations that survived the ice ages in the Balkans or even further southeast. This is already obvious from the much greater geographical distance of the current hybrid zone (and probably also hybrid zones of previous epochs) to the inferred location of glacial refuges of the two subspecies: southern Spain for \textit{erythropus}, the Balkans for \textit{parallelus} \citep{Lunt1998}.
+
+\begin{table}[hbt]
+\centering\small
+\setlength{\tabcolsep}{10pt}
+\caption{Parameters for a \textsl{two-epoch-exp.-size-change} model inferred with $\delta a \delta i$. $N_{ery}^1$: diploid population size of \textit{erythropus} during the first epoch after the split from the common ancestral population, $N_{par}^1$: diploid population size of \textit{parallelus} during the first epoch, $T_1$ ($T_2$): duration of the first (second) epoch in years, $N_{ery}^2$ ($N_{par}^2$): diploid population size of \textit{erythropus} (\textit{parallelus}) at the end of the second epoch (i. e. at present), $m$: proportion of new immigrant individuals each generation, -logL: negative log-likelihood of the model spectrum simulated with the given parameter values. The population sizes are assumed to have been constant during the first epoch after the split from the common ancestral population.}
+\label{Tab:two-epoch-exp.-size-change}
+\vspace{5pt}
+\begin{tabular}{lll}
+\toprule
+Parameter & \gls{ML} estimate & 95\% \gls{CI} \\
+\midrule
+$N_{ery}^1$ &  477,541  		&  457,215 -- 497,867  \\[5pt]
+$N_{par}^1$ &  1,742,857   	&  1,664,480 -- 1,821,233  \\[5pt]
+$T_1$       &  1,054,796   	&  899,637 -- 1,209,952  \\[5pt]
+$N_{ery}^2$ &  275,161  		&  127,196 -- 423,127  \\[5pt]
+$N_{par}^2$ &  40,775   		&  29,753 -- 51,798  \\[5pt]
+$T_2$       &  5,330    		&  4,188 -- 6,472     \\[5pt]
+$T_1 + T_2$ &  1,060,126     & 1,018,721 -- 1,101,530 \\[5pt]
+$m_{ery\rightarrow par}$ ($\times 10^{-7}$)  & 0.9  &  0.71 -- 1.08 \\[5pt]
+$m_{par\rightarrow ery}$ ($\times 10^{-7}$)  & 5.5  &  5.06 -- 5.95  \\
+\midrule
+-logL     &  21,009      &      \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%
+\begin{figure}[!hbt]
+\centering
+\includegraphics[width=.9\textwidth]{two_epoch_combined}
+\caption{Graphical representation of the best-fit two epoch model with exponential size change in the second epoch. Note that here numbers for migration rates in the first epoch are shown as scaled migration rates ($2Nm$), scaled by twice the population size of the receiving population.}
+\label{Fig:two_epoch_combined}
+\end{figure}
+%
+
+Table \ref{Tab:two-epoch-exp.-size-change} shows the parameters of a two-epoch model with exponential size change in the second (recent) epoch. The model allows a second size change starting at time $T_2$ in the past with the populations exponentially reaching the current population size (fig. \ref{Fig:two_epoch_combined}). Each population size change is enforced to happen at the same time for both populations. Migration is assumed to be the same during all epochs. The best-fit parameters of this model indicate a very recent population size reduction for both \textit{erythropus} and \textit{parallelus}, with a much more severe bottleneck in \textit{parallelus} than \textit{erythropus}. Does the addition of the second epoch significantly improve the fit to the observed 2D-SFS? By either setting $N_{ery}^2 = N_{ery}^1$ and $N_{par}^2 = N_{par}^1$ or by setting $T_2 = 0$, I can reduce this two epoch model to the one epoch \textsl{asymmetric migration} model from above. When calculating the composite likelihood adjustment factor by evaluating at the optimal parameterisation of the complex model  (treating $N_{ery}^2$, $N_{par}^2$ and $T_2$ as nested), the p-value of the \gls{LRT} is $\simeq0.0$. Note that here one parameter ($T_2$) is at the boundary of the parameter space. So $D$ is not strictly $\chi^2$ distributed with 3 degrees of freedom (see \citealt{Self1987}). However, I cannot find out the correct mixing of probability distributions, so I am using the $\chi^2_3$ distribution in the hope that this is conservative. The adjustment factor evaluating at the optimal parameterisation of the simple model (\textsl{asymmetric-migration}) resulted in an error message and therefore could not be calculated. Still, the addition of the second epoch seems to allow for a statistically significant improvement of the fit to the data. 
+
+%
+\begin{figure}[!hbt]
 \includegraphics[width=\textwidth]{ERY_-_200_bootstrap_replicates_final_summary}
 \includegraphics[width=\textwidth]{PAR_-_200_bootstrap_replicates_final_summary}
-\caption{\texttt{stairway plot} for \textit{erythropus} and \textit{parallelus} from only overlapping sites. The thick grey lines define the 75\% bootstrap-CI and the light grey lines define the 95\% bootstrap-CI.}
+\caption{\texttt{stairway plot} for \textit{erythropus} and \textit{parallelus} from only overlapping sites. The red line is the median inferred population size in each time interval from 200 bootstrap replicates of the SFS. The thick grey lines define the 75\% bootstrap-CI and the light grey lines define the 95\% bootstrap-CI. Apparent bottlenecks in the two plots at around 400 \gls{kya} are likely artefacts (see \cite{Liu2015}).}
 \label{Fig:overlapping_stairway_plot}
 \end{figure}
+%
+
+Figure \ref{Fig:overlapping_stairway_plot} shows the stairway plots for \textit{erythropus} and \textit{parallelus}. They indicate a much larger ancient population size for \textit{parallelus} with around 4 million than for \textit{erythropus} with around 0.7 million. In addition, the estimate of ancient population size for \textit{erythropus} seems to come with an exceptionally low uncertainty. The uncertainty for the very recent population sizes then increases sharply. This is in contrast to the stairway plot of \textit{parallelus}, which indicates a similar uncertainty for all time intervals. There is no hint of ancient fluctuations in population size. The apparent bottlenecks at around 400 \gls{kya} are likely artefacts of the estimation method \citep{Liu2015}. Both stairway plots indicate a very recent drastic reduction in population size. For the \textit{erythropus} population, the stairway plot indicates a reduction to about 5\% of the ancestral population size ($\sim 35,000$) within just the last 1.5 thousand years. For the \textit{parallelus} population, \texttt{stairway-plot} infers an even more drastic reduction to about 0.5\% of the ancestral population size ($\sim 20,000$). This dramatic reduction in effective population size is inferred to have happened within the last 20 thousand years. 
+
+So there is a general agreement between the stairway plots (figure \ref{Fig:overlapping_stairway_plot}), inferred from single population site frequency spectra with \texttt{stairway-plot}, and the \textsl{two-epoch-with-exp-size-change} model inferred from the two population joint \gls{SFS} with $\delta a \delta i$ (fig. \ref{Fig:two_epoch_combined}). Both infer a much larger ancient population size for \textit{parallelus} compared to \textit{erythropus}. However, while $\delta a \delta i$ infers only $\sim$1.7 million as ancient population size for \textit{parallelus}, \texttt{stairway-plot} infers $\sim4$ million. Both programmes infer a very recent population size reduction for both populations. Remember, however, that the model in $\delta a \delta i$ enforced the second size change to happen over the same time period for both populations while the stairway plots have no such restriction. The inferences of both programmes agree about a very drastic population size reduction for the \textit{parallelus} population. However, there is quite a large discrepancy about the inferred size of the recent bottleneck for the \textit{erythropus} population. While \texttt{stairway-plot} infers a very severe bottleneck to current population size of only $\sim 35,000$, $\delta a \delta i$ infers only a mild bottleneck to $\sim 275$ thousand, which is only a reduction by less than 50\% from the ancient population size of $\sim 477$ thousand. 
+
+In addition to allowing for two epochs with different population sizes, I have also fit two-epoch models allowing for different migration rates between the epochs to the data. The questions is: can we detect a change in the rate of migration over the history of the two subspecies? Table \ref{Tab:ancient-asymmetric-migration} shows the best fitting parameters for an \textsl{ancient-asymmetric-migration} model in $\delta a \delta i$. This model fixes the migration rate in the second, i. e. recent, epoch ($T_i$) at zero. This model infers that gene flow between \textit{erythropus} and \textit{parallelus} has ceased $\sim$ 27 thousand years ago (fig. \ref{Fig:ancient_migration_edited}). 
+
+\begin{table}[!hbt]
+\centering\small
+\setlength{\tabcolsep}{10pt}
+\caption{Parameters for an \textsl{ancient-asymmetric-migration} model inferred with $\delta a \delta i$. $N_{ery}$: diploid population size of \textit{erythropus} after the split from the common ancestral population, $N_{par}$: diploid population size of \textit{parallelus}, $T_c$: duration of period with gene flow in years, $T_i$: time in years since total isolation, i. e. no gene flow, $m$: proportion of new immigrant individuals each generation, -logL: negative log-likelihood of the model spectrum simulated with the given parameter values. The population sizes are assumed to have been constant since the split from the common ancestral population.}
+\label{Tab:ancient-asymmetric-migration}
+\vspace{5pt}
+\begin{tabular}{lll}
+\toprule
+Parameter & \gls{ML} estimate & 95\% \gls{CI} \\
+\midrule
+$N_{ery}$ &  490,244 		&  473,465 -- 507,021     \\[5pt]
+$N_{par}$ &  1,257,636   	&  1,220,512 -- 1,294,754 \\[5pt]
+$T_c$       &  1,262,489    &  1,223,308 -- 1,301,670 \\[5pt]
+$T_i$       &  27,489   		&  26,450 -- 28,529       \\[5pt]
+$T_c + T_i$ &  1,289,979    &  1,251,387 -- 1,328,572 \\[5pt]
+$m_{ery\rightarrow par}$ ($\times 10^{-7}$)  & 1.23  &  1.056 -- 1.406 \\[5pt]
+$m_{par\rightarrow ery}$ ($\times 10^{-7}$)  & 6.43  &  6.029 -- 6.839 \\
+\midrule
+-logL     &  21,301   &      \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Compared to the single-epoch \textsl{asymmetric-migration} model from above, this model adds a recent period of complete isolation, which improves the fit to the data by 164 log-likelihood units. The \textsl{ancient-asymmetric-migration} model can be reduced to the \textsl{asymmetric-migration} model by setting $T_i$ to zero. The latter is therefore nested within the former and a \gls{LRT} of the significance of $T_i$ can be performed. A linkage adjusted LRT has a p-value of 0.0, when calculating the adjustment factor by evaluating at the optimal parameters of the complex model, or a p-value of 0.014, when evaluating at the optimal parameters of the simple model. On a cautionary note, the adjustment factor calculated by evaluating at the optimal parameters of the complex model is 2.22, which would indicate an \emph{increase} in power due to linkage in the data. Obviously, this makes no sense and probably indicates that the approximations from the Godambe Information Matrix are breaking down here \citep{Coffman2016}. Despite this, adding a recent time of complete isolation between \textit{erythropus} and \textit{parallelus} does seem to improve the fit to the data significantly. What is more, allowing the gene flow in the second epoch to be non-zero in both directions, i. e. adding two more migration rate parameters, does not improve the fit to the data (same log-likelihood) and converges to migration rate parameter values for the second epoch that are practically zero.
+
+%
+\begin{figure}[!hbt]
+\centering
+\includegraphics[width=.9\textwidth]{ancient_migration_edited}
+\caption{Graphical representation of the best fit \textsl{ancient-asymmetric-migration} model. As in figure \ref{Fig:two_epoch_combined}, the  migration rates in the first epoch are shown as scaled migration rates ($2Nm$), i. e. scaled by twice the population size of the receiving population. The horizontal black bar starting at 27 thousand years in the past symbolises the cessation of gene flow.}
+\label{Fig:ancient_migration_edited}
+\end{figure}
+%
+
+Phylogeographic studies as well as paleoclimatic data strongly suggest that the two subspecies, \textit{erythropus} and \textit{parallelus}, diverged in isolation during at least the last ice age and only recently ($\sim$10 \gls{kya}) came into secondary contact\todo{add citation}. Clines of several morphological as well as molecular markers have been shown to be very wide\todo{add citation}, which indicates substantial gene flow across the hybrid zone into adjacent pure populations. The two population samples come from such "pure" populations in close proximity to the hybrid zone. They may therefore show evidence of recent gene flow between the two subspecies. I have therefore also fit a \textsl{secondary-contact} model to the observed spectrum with $\delta a \delta i$. This model specifies divergence in isolation during an initial period followed by a period with (symmetrical) migration between the two subspecies until the present. The best fitting model parameters indicate that \textit{erythropus} and \textit{parallelus} diverged in isolation for 445,694 generations. The two populations then came into secondary contact 587,653 generations ago. So, the best fitting parameters clearly do not specify a recent and relatively short period of secondary contact. Also, compared to the simpler one-epoch \textsl{divergence-with-migration} model, the \textsl{secondary-contact} model improves the fit to the data by only 27 log-likelihood units. Despite this, a linkage adjusted \gls{LRT} indicates that this improvement is highly significant (p-value $< 10^{-7}$).
+
+The reverse of the \textsl{secondary-contact} model is a model that defines the first epoch as the one where gene flow is allowed, followed by a second epoch with complete isolation. It could therefore also be called a \textsl{primary-contact} model. I have also fitted such a \textsl{primary-contact} model to the data for comparison with the \textsl{secondary-contact} model. Note, that the definition of the \textsl{primary-contact} model is similar to the \textsl{ancient-asymmetric-migration} model described above with the restriction that here there is only one migration rate parameter, i. e. gene flow is assumed to be equal in both directions. Unsurprisingly, the best fit parameters of this \textsl{primary-contact} model indicate a very similar history as the slightly more complex \textsl{ancient-asymmetric-migration} model. It too infers a long initial period of contact between \textit{erythropus} and \textit{parallelus} ($\sim$1.2 million generations) and a very recent cessation of gene flow between the two subspecies ($\sim$28 thousand generations ago). Compared to the nested \textsl{divergence-with-migration} model, it improves the fit to the data by 91 log-likelihood units and a linkage adjusted \gls{LRT} is highly significant (p < 0.004, with conservative adjustment). This confirms that the addition of an epoch without gene flow significantly improves the fit to the data. In addition, a \textsl{primary-contact} model fits the data better than a \textsl{secondary-contact} model by 66 log-likelihood units. Finally, a three-epoch model, where in the most recent epoch gene flow is allowed to recommence, converges on a time parameter for the third epoch that is practically zero. That is, the three-epoch model converges on the \textsl{primary-contact} model. This underscores that there is no significant signal of recent gene flow in the data. This may in part be caused by a lack of power to detect recent demographic events with the current sample size of 18 individuals \citep{Robinson2014}.
+
+PAR had a much greater ancient effective population size than ERY (see fig. \ref{Fig:overlapping_stairway_plot}). There seems to be a signal of a very recent and drastic bottleneck, at least in PAR. Dadi infers a much less severe bottleneck for ERY than stairway-plot. A recent bottleneck is what would be expected from a series of founder events during range expansion after the last ice age. It would make sense that this had been less severe for ERY than for PAR. A model with ancient gene flow fits the observed 2D SFS better than a secondary contact model. There is no signal of recent gene flow. The detected asymmetry of gene flow can therefore not just be a consequence of different distances to the hybrid zone centre of the two populations or hybrid zone movement. Rather, this hints at intrinsic asymmetric isolation, which is corroborated by asymmetric homogamy in crossings between PAR and ERY \citep{Bella1992, Hutchison2013}.preferential homogamy in crossing experiments with \textit{parallelus} females \citep{Bella1992, Hutchison2013} and the .
+
+
 
 \todo[inline, color=green]{check whether gene flow between the two subspecies could explain problems with fitting 1D models, by taking the marginal from the best-fit 2D model that includes migration and determine likelihood}
 
@@ -611,7 +865,7 @@ A simple divergence-in-isolation model in dadi infers a similar divergence time 
 
 \todo[inline]{Learn the theory of creating a genetic map! What kind of data is necessary? Is it conceivable to use genotype likelihoods for that? \cite{Ma2012}}
 
-\todo[inline]{explain inclusion of reads from PCR duplicates. Show plot of coverage distribution from deduplicated read data and non-converged spectra from \texttt{realSFS}.}
+\todo[inline, color=green]{explain inclusion of reads from PCR duplicates. Show plot of coverage distribution from deduplicated read data and non-converged spectra from \texttt{realSFS}.}
 
 \todo[inline]{does dadi's Nref refer to haploid or diploid population size?}
 
@@ -628,7 +882,7 @@ A simple divergence-in-isolation model in dadi infers a similar divergence time 
 %
 Sequencing an individual of a closely related outgroup species, e. g. \textit{Chorthippus montanus}, would allow the polarisation of allele frequencies with respect to ancestral and derived states, assuming that the outgroup sequence generally contains the ancestral state (i. e. that the infinite-sites mutation model holds across the two species). This would allow the analysis of unfolded (i. e. derived allele frequency) spectra and provide greater power to distinguish between alternative demographic models than with the folded (i. e. minor allele frequency) spectra that only could be constructed with the data available for this study \cite[p. 128]{Wakeley2009}.\todo{D-statistics and PBS statistics, Fay and Wu's H statistic}
 
-A moderate increase in the number of sequenced individuals (>50 per population) would ensure enough power to infer more recent demographic events, like a recent secondary contact \citep{Adams2004, Robinson2014}.
+A moderate increase in the number of sequenced individuals (>50 per population) would ensure enough power to infer more recent demographic events, like a recent secondary contact \citep{Adams2004, Robinson2014}. For accurate inference of very recent population size changes (<10 kya) more than 180 chromosomes need to be sampled \citep[suppl. mat., fig. 2, middle row]{Liu2015}.
 
 In this study, all sequenced grasshoppers were male. There is no male sex chromosome and so all males are haploid for the X chromosome. The X chromosome is the fourth largest of the 9 chromosomes in \textit{Chorthippus parallelus} (8 autosomes plus X) \cite[fig. 2]{Gosalvez1988}. That is, about 1/9th of the RAD loci in this study have been haploid while ANGSD assumed all loci to be diploid. Since these loci appear homozygous they contribute more toward even than uneven frequency classes, thereby creating large deviations from all possible expected counts. This is likely to reduce power to distinguish between demographic models. Since female grasshoppers have two X chromosomes, a future study that attempts to estimate accurate sample allele frequencies should therefore sequence female individuals instead of male individuals. 
 
@@ -638,11 +892,13 @@ Downsample reads from \textit{erythropus} to the median coverage of \textit{para
 
 Effective density of informative RAD markers for Fst-outlier scans may be too low to safely detect all regions under divergent selection \citep{Roesti2012a} from population samples. Second generation hybrid populations provide much extended LD and therefore are much greater chance to detect regions under selection in hybrids. 
 
+\cite{Shafer2016a} have shown that many population genetic summary statistics (with the notable exception of $F_{ST}$) and in particular parameter estimates of demographic models vary widely with the assembly method and the filters used for RAD data. They, however, did not include population genetic estimates from genotype likelihoods. The robustness of ML estimates for demographic model parameters against a different de novo assembly strategy and different filtering should therefore be tested.
+
 %
 %
 %
 \section{Supplementary Material}
-\label{sec:suppl_material_methods}
+\label{Sec:suppl_material_methods}
 %
 %
 %
@@ -780,7 +1036,7 @@ SNP's were called with a LRT of the \gls{maf} being 0 at a p-value threshold of 
 
 Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} shows the plot of the first two eigenvectors of a PCA with SNP calling and normalisation. SNP calling finds 68,590 SNP's. When comparing with the PCA from figure \vref{Fig:PCA} a general similarity in the relative coordinates between individuals is apparent. However, the first eigenvector in figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} explains only 13\% of the total genotypic variation in the data compared to 23\% in the PCA without SNP calling (fig. \ref{Fig:PCA}).
 %
-\begin{figure}
+\begin{figure}[!hbt]
 \centering
 << PCA-with-SNP-calling-and-normalisation, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -791,7 +1047,7 @@ Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} shows the plot of the fi
 \\
 Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation-and-genotype-calling} shows the plot of the first two eigenvectors of a PCA with genotype calling. The genotype with the maximum posterior probability was called. Again, when compared to the PCA plot in figure \ref{Fig:PCA} a general similarity of the relative coordinates between individuals is apparent (except for the switch in sign on the second axis, which is chosen randomly by the \texttt{prcomp} function in \texttt{R}). With genotype calling, the proportion of total variance explained by the first eigenvector is reduced even further to just 11\%.
 %
-\begin{figure}[htb]
+\begin{figure}[!hbt]
 \centering
 << PCA-with-SNP-calling-and-normalisation-and-genotype-calling, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -813,9 +1069,9 @@ These different PCA's all reveal two clusters of individuals on the first axis o
 
 $F_{ST}$ is a summary statistic of the joint \gls{SFS} from two or more populations. The 2D-SFS in figure \vref{Fig:unfolded-2D-SFS} has been estimated from the 1,130,775 sites that are overlapping, i. e. sites with sequence reads from at least 9 individuals in each population. I have used the function \texttt{Fst} in $\delta a \delta i$ \citep{Gutenkunst2009} to calculate Weir \& Cockerham's $F_{ST}$ \citep[eq. for $\hat{\theta}$ at top of p. 1363]{Weir1984} from this 2D-SFS. This version of $F_{ST}$ should be very similar to Reynolds $F_{ST}$\footnote{this has not been fully  verified due to the complexity of the formulas}. Both assume equal amounts of drift experienced by both populations and if this assumption is violated, they become dependent on the ratio of sample sizes. In contrast, Hudson/Bhatia's $F_{ST}$ does not make this assumption and is independent of sample sizes \citep{Bhatia2013}. Here, however, sample sizes are the same (18). So I do not expect both versions of $F_{ST}$ to differ because of weighting by sample size. The genome-wide $F_{ST}$ as calculated from this 2D-SFS is 0.265 (see section "Fst" in \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/dadi/05_2D_models.ipynb}{\texttt{05\_2D\_models.ipynb}}). This is \Sexpr{signif(Fst.reynolds.global-0.26527944085739236, 2)} below Reynolds' $F_{ST}$ as estimated from 1.6 million sites with \texttt{realSFS}.
 
-Hudson/Bhatia's genome-wide $F_{ST}$ has shown a bias of \Sexpr{signif(perm.fst.CI95[2], 2)} as determined by the median of the empirical null distribution estimated by 100 permutations of population label. I have also estimated the empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated from the 2D site frequency spectra estimated from \gls{SAF} files with permuted population labels. The median of this distribution indicates a bias in the genome-wide $F_{ST}$ estimate of 0.037 (fig. \ref{Fig:Fst_dadi_perm_null_dist}).
+Hudson/Bhatia's genome-wide $F_{ST}$ has shown a bias of \Sexpr{signif(perm.fst.CI95[2], 2)} as determined by the median of the empirical null distribution estimated by 100 permutations of population label. I have also estimated the empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated from the 2D site frequency spectra estimated from \gls{saf} files with permuted population labels. The median of this distribution indicates a bias in the genome-wide $F_{ST}$ estimate of 0.037 (fig. \ref{Fig:Fst_dadi_perm_null_dist}).
 %
-\begin{figure}[htb]
+\begin{figure}[!hbt]
 \centering
 \includegraphics[width=.9\textwidth]{Fst_dadi_perm_null_dist}
 \caption{Empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated in $\delta a \delta i$ from the 2D-SFS's of 100 permutations of population label.}
@@ -829,16 +1085,96 @@ F_{{ST}_{corr}} = nF_{ST} - \frac{n-1}{n} \sum_{i=1}^{n} F_{{ST}_i}
 $$ 
 $F_{{ST}_i}$ is the $F_{ST}$ from the i-th jackknife resample. This leads to only a negligible bias correction of -3.5e-06.
 
+%
+%
+%
+\subsection{Stairway plots}
+\label{Sec:stairway-plots-supp}
+%
+%
+%
 
-% ----------------------------
+The stairway plots in figure \ref{Fig:overlapping_stairway_plot} have been created from only overlapping sites, i. e. exclusively from sites that had 9 individuals with read data in both populations. Figure \ref{Fig:nonO_stairway_plot} shows the corresponding stairway plots when this restriction is released. When comparing with figure \ref{Fig:overlapping_stairway_plot}, the stairway plot for \textit{parallelus} is hardly changed. The stairway plot for \textit{erythropus} is also very similar to the one in figure \ref{Fig:overlapping_stairway_plot}. The ancient population size is estimated to have been slightly higher, about 1.0 million, and the current population size is estimated to be about 8,000 instead of above 20,000.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{ERY_-_200_bootstrap_replicates_final_summary_nonO}
 \includegraphics[width=\textwidth]{PAR_-_200_bootstrap_replicates_final_summary_nonO}
-\caption{\texttt{stairway plot} for \textit{erythropus} and \textit{parallelus} from including non-overlapping sites. The thick grey lines define the 75\% bootstrap-CI and the light grey lines define the 95\% bootstrap-CI.}
+\caption{\texttt{stairway plot} for \textit{erythropus} and \textit{parallelus} from including non-overlapping sites. The thick grey lines define the 75\% bootstrap-CI and the light grey lines define the 95\% bootstrap-CI. Compare with figure \vref{Fig:overlapping_stairway_plot}.}
 \label{Fig:nonO_stairway_plot}
 \end{figure}
 
+%
+%
+%
+\subsection{Distinguishing reduced divergence time from increased migration}
+\label{Sec:div_time_vs_migration}
+%
+%
+%
+The figures \ref{Fig:divergence_time_series} and \ref{Fig:migration_rate_series} show a series of expected two-dimensional site frequency spectra simulated with $\delta a \delta i$ for different divergence times and migration rates. They show that qualitatively quite similar expected spectra can be generated when either reducing divergence time or increasing the migration rate. $N_a$ stands for the inferred common ancestral population size of the two populations, which was calculated by first computing Watterson's $\theta$ from the observed 2D-SFS (see eq. \vref{Eq:Wattersons-theta}) and assuming $\theta_W \simeq 4N_a \mu L$.
+With the mutation rate $\mu$ set to to $3 \times 10^{-9}$ and the total sequence length $L$ set to 1,130,775, this results in an estimate of $N_a$ of 1,126,030. A divergence time of $0.222 \times 2N_a$ therefore corresponds to 500,000 generations. 
+%
+\begin{figure}[!hbt]
+%\centering
+\includegraphics[width=\textwidth]{divergence_time_series}
+\caption{Expected two-dimensional site frequency spectra for an increasing series of divergence times without migration.}
+\label{Fig:divergence_time_series}
+\end{figure}
+%
+Migration rates reported in figure \ref{Fig:migration_rate_series} are scaled by $2N_a$, i. e. divide by $2N_a$ to get $m$, the proportion of new immigrant individuals per generation.
+%
+\begin{figure}[!hbt]
+%\centering
+\includegraphics[width=\textwidth]{migration_rate_series}
+\caption{Expected two-dimensional site frequency spectra for an increasing series of migration rates and with a fixed divergence time of 500,000 generations.}
+\label{Fig:migration_rate_series}
+\end{figure}
+%
+
+Figure \ref{Fig:compare-model-spectra} compares the best fitting model spectra from $\delta a \delta i$ for the \textsl{divergence-in-isolation} model and the \textsl{divergence-with-migration} model. The greatest qualitative difference between the two model spectra is the much higher number of expected low frequency shared polymorphisms in the \textsl{divergence-with-migration} model spectrum and the higher expected number of high frequency shared polymorphisms is in the \textsl{divergence-in-isolation} model spectrum. The model parameters for these two spectra are given in table \vref{Tab:divergence-in-isolation} and \vref{Tab:divergence-with-migration}, respectively.
+%
+\begin{figure}[!htb]
+%\centering
+\includegraphics[width=.49\textwidth]{split_NOmig_model_spectrum}
+\hspace{10pt}
+\includegraphics[width=.49\textwidth]{split_MIG_model_spectrum}
+\caption{Best fitting model spectra from $\delta a \delta i$ for the \textsl{divergence-in-isolation} model (left) and the \textsl{divergence-with-migration} model (right).}
+\label{Fig:compare-model-spectra}
+\end{figure}
+%
+%
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=.9\textwidth]{NOmig_vs_MIG_resid_plot}
+\caption{Plot of Poisson residuals between the best fit model spectra in figure \ref{Fig:compare-model-spectra} (each scaled by the optimal $\theta$).}
+\label{Fig:NOmig_vs_MIG_resid_plot}
+\end{figure}
+%
+
+Figure \ref{Fig:NOmig_vs_MIG_resid_plot} shows the plot of Poisson residuals between the best fit model spectra in figure \ref{Fig:compare-model-spectra}. The large residuals for shared polymorphisms that are at low frequency in one or both populations is a signature of gene flow (\citealt[suppl. mat. section 1.1]{Gutenkunst2009}).
+
+
+%
+%
+%
+\subsection{Miscellaneous results from demographic modelling}
+\label{Sec:}
+%
+%
+%
+%
+Figure \ref{Fig:Model_comparison_asym_mig_two_epoch} shows the best fitting model spectra from the \textsl{asymmetric-migration} model and the \textsl{two-epoch-with-exp-size-change} model inferred with $\delta a \delta i$ together with plots of the Poisson residuals between them. The plot of Poisson residuals in the bottom left indicates that the main difference between the two models is in how they fit low frequency variants private to \textit{parallelus}. Of these variants, the \textsl{two-epoch-with-exp-size-change} model predicts far fewer singletons and many more doublets, triplets, etc.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=.9\textwidth]{Model_comparison_asym_mig_two_epoch}
+\caption{Top: plots of the best fitting model spectra of the \textsl{asymmetric-migration} model and the \textsl{two-epoch-with-exp-size-change} model. Bottom: the Poisson residuals between the two best fitting model spectra (each scaled by the optimal $\theta$).}
+\label{Fig:Model_comparison_asym_mig_two_epoch}
+\end{figure}
+%
+
+
+%
 %
 %
 \section{TODO}
@@ -870,31 +1206,35 @@ $F_{{ST}_i}$ is the $F_{ST}$ from the i-th jackknife resample. This leads to onl
 \item[\ding{52}] summarized and documented positive Fis estimates (see \texttt{assembly.sh, line 2461} and \texttt{MAF\_by\_pval.ipynb})
 \item[\ding{52}] added deduplication analysis, showed coverage distribution
 \item[\ding{52}] added PCA with SNP calling and normalisation to suppl. mat.
-\item review Fst analysis
-\item document bootstrapping over contigs in genetic diversity section
-\item document determination of overlapping sites and estimation of statistics from those
-\item add subsection brief description of dadi analysis with links to IPython notebooks, should include a brief description of how it works
-\item add subsection with brief description of stairway-plot with custom version, briefly describe how it works 
+\item[\ding{52}] reviewed Fst analysis
+\item[\ding{52}] document bootstrapping over contigs in genetic diversity section
+\item[\ding{52}] document determination of overlapping sites and estimation of statistics from those
+\item[\ding{52}] added subsection with brief description of stairway-plot with custom version, briefly described how it works
+\item[\ding{52}] mentioned which version of dadi I used
+\item[\ding{52}] add subsection brief description of dadi analysis with links to IPython notebooks, should include a brief description of how it works
+\item[\ding{52}] add plot for spectra with varying divergence time and varying migration rate
+\item[\ding{52}] aren't divergence time and migration rate conflated? how can dadi distinguish between those? see section 1.1 of \cite[suppl. mat.]{Gutenkunst2009}
+\item mention that 1D model fitting with dadi was not successful (stairway-plot instead)
+\item add description of models for figure \ref{Fig:fst-by-maf-dadi-4Models}
+\item document translation of standard deviations from genetic units to absolute units in suppl. mat.
 \end{itemize}
 \item Results:
 \begin{itemize}
-\item document Fst analysis, bootstrapping, Fst.Rmd
-\item estimate Fst from 2D SFS with dadi, including bootstraps
-\item replace 2D SFS with one that contains logarithm of counts (use dadi for that)
+\item[\ding{52}] documented Fst analysis, bootstrapping, Fst.Rmd
+\item[\ding{52}] estimated Fst from 2D SFS with dadi, including bootstraps
+\item[\ding{52}] replaced 2D SFS with one that contains logarithm of counts
+\item[\ding{52}] add folded 2D spectrum to results section
+\item[\ding{52}] added figure of 2-epoch model
+\item[\ding{52}] added figure of primary contact model
+\item[\ding{52}] add table with model parameters for the 2-epoch and primary contact model including 95\% CI
+\item[\ding{52}] add CI to divergence time in simple divergence model
+\item[\ding{52}] add CI to divergence time in divergence with gene flow model
+\item was gene flow low enough to allow divergence by drift (see \cite{Bank2012})
+\item What happened $\sim$1.5 Mya in the Pyrenees? \cite{Webb1992, Hewitt2011, Hewitt2004, Sommer2009}
+\item discuss assumed mutation rate and the influence my uncertainty in it on parameter estimates in absolute units, \cite{Liu2017, Keightley2009}
 \item read about the potential effects of allele-dropout on SFS and discuss
 \item read about potential reasons for negative Tajima's D and discuss
 \item read up on serial founder effect and discuss
-\item mention that 1D model fitting with dadi was not successful
-\item add CI to divergence time in simple divergence model
-\item add CI to divergence time in divergence with gene flow model
-\item add plot for spectra with varying divergence time and varying migration rate
-\item aren't divergence time and migration rate conflated? how can dadi distinguish between those?
-\item was gene flow low enough to allow divergence by drift (see \cite{Bank2012})
-\item add figure of 2-epoch model
-\item add figure of primary contact model
-\item add table with model parameters for the 2-epoch and primary contact model including 95\% CI
-\item What happened $\sim$1.5 Mya in the Pyrenees? \cite{Webb1992, Hewitt2011, Hewitt2004, Sommer2009}
-\item discuss assumed mutation rate and the influence my uncertainty in it on parameter estimates in absolute units, \cite{Liu2017, Keightley2009}
 \end{itemize}
 \end{itemize}
 

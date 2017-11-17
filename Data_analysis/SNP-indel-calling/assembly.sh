@@ -2727,9 +2727,9 @@ cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
 # It took 5h 22min to estimate the SAF's for 200 regions files for ERY and PAR.
 # The new SAF files are in ./minInd9_overlapping/SAF/bootstrap/PAR/ and ./minInd9_overlapping/SAF/bootstrap/ERY/.
 
-# ----------------------------------------------------
+# ---------------------------------------
 # estimate 1D SFS for boostrapped SAF's
-# ----------------------------------------------------
+# ---------------------------------------
 cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
 # estimate the first 100 bootstrap replicate SFS's for ERY 
 # see run_realSFS.sh
@@ -2851,10 +2851,12 @@ mkdir -p including_non-overlapping/SAF/bootstrap/ERY including_non-overlapping/S
 # calculate SAF files for bootstrapped regions files from INCLUDING NON-overlapping sites
 # ----------------------------------------------------------------------------------------
 cd /data3/claudius/Big_Data/ANGSD/BOOTSTRAP_CONTIGS
-# see bootstrao_contigs.ipynb
+# see bootstrap_contigs.ipynb
 # I have put the code for SAF file estimation into the script estimate_SAFs.py.
 # I had to modify the paths in this script: replaced "minInd9_overlapping" with "including_non-overlapping" and
 # "from_SAFs_minInd9_overlapping.sites" with "all.sites"
+
+# ---------------------- END STAIWAY-PLOT ------------------------------------------------
 
 
 # ----------------------------------------------------------------------------------------
