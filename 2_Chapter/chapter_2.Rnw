@@ -1,14 +1,14 @@
-% !TEX TS-program = Knitr
-\documentclass[a4paper,12pt,times,print,custombib,custommargin]{../Classes/PhDThesisPSnPDF}
-%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
-
-\usepackage{import}
-
-\input{../Preamble/preamble}
-
-%******************************** Glossary *********************************************
-\input{../Glossary/glossary}
-
+%% !TEX TS-program = Knitr
+%\documentclass[a4paper,12pt,times,print,custombib,custommargin]{../Classes/PhDThesisPSnPDF}
+%%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
+%
+%\usepackage{import}
+%
+%\input{../Preamble/preamble}
+%
+%%******************************** Glossary *********************************************
+%\input{../Glossary/glossary}
+%
 %%%%%% -- KNITR SETUP -- %%%%%%%%%%
 <<setup_ch2, include=FALSE, cache=FALSE>>=
 library(knitr)
@@ -22,39 +22,40 @@ options(replace.assign=TRUE,width=90)
 # setwd() in each chunk
 opts_knit$set(root.dir='~/Data_analysis/SNP-indel-calling/data')
 # read in external R code file
-read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty.R')
+read_chunk('~/Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty.R')
 # include preamble from main doc for isolated compilation
 # doesn't currently work because relative paths are used there
 # set_parent('../thesis.Rnw')
 @
 %************************************************************************************************
-
-
-\begin{document}
-
-\tableofcontents
 %
-%\listoffigures
 %
-%\listof{cmd}{List of commands}
+%\begin{document}
 %
-%%\todototoc
-\listoftodos
+%\tableofcontents
+%%
+%%\listoffigures
+%%
+%%\listof{cmd}{List of commands}
+%%
+%%%\todototoc
+%\listoftodos
+%
+%\printglossaries
 
-\printglossaries
 
-
-% **************************** Define Graphics Path **************************
-%% Note, every path needs to end with a "/" !!!
+%% **************************** Define Graphics Path **************************
+%%% Note, every path needs to end with a "/" !!!
 \ifpdf
     \graphicspath{
     {./Figs/Raster/}
     {./Figs/PDF/}
     {./Figs/}
-    {../Data_analysis/SNP-indel-calling/figure/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Data_analysis/SNP-indel-calling/figure/}
     {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Presentations/PEB_Bialowieza/figures/}
     {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Data_analysis/reference-mapping/data/simulation/Mapping_Tool_Test_files/figure-html/}
     {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Data_analysis/SNP-indel-calling/BAM/Big_Data_files/figure-markdown_github/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/2_Chapter/Figs/Raster/}
     }
 \else
     \graphicspath{ 
@@ -64,19 +65,24 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
     }
 \fi
 
+
 %
 %
 %
-\chapter{Investigation into the demographic history of the hybrid zone}
+\chapter{Investigation into the demographic history of the hybrid zone}\label{ch:demo_hist}
 %
 %
 %
-\begin{figure}[htb]
-\centering
-\includegraphics[width=.9\linewidth]{grasshopper}
-\caption{\textit{Chorthippus parallelus parallelus}. Male individual from Finland.}
-\label{Fig:grasshopper}
-\end{figure}
+%\begin{figure}[htb]
+%\centering
+%\includegraphics[width=.9\linewidth]{grasshopper}
+%\caption{\textit{Chorthippus parallelus parallelus}. Male individual from Finland.}
+%\label{Fig:grasshopper}
+%\end{figure}
+
+\epigraph{
+There's no such thing as a data analysis pipeline.
+}{John McCutcheon}
 
 
 %
@@ -150,16 +156,19 @@ read_chunk('../Data_analysis/SNP-indel-calling/data/PopGen-with-geno-uncertainty
 
 \section{Introduction}
 
-The two subspecies of the flightless grasshopper \textit{Chorthippus parallelus}, \textit{C. p. parallelus} and \textit{C. p. erythropus}, are thought to have come into secondary contact in the Pyrenees between France and Spain after the last Ice Age some 9000 years ago \citep{Hewitt1990}. They form hybrid zones across the cols of this mountain range \citep{Butlin1985,Butlin1985a}. 
-Laboratory generated F$_{1}$ male hybrids between \textit{C. p. parallelus} and \textit{C. p. erythropus} from outside the hybrid zone are almost completely sterile with degenerate testes and a severely disrupted meiosis \citep{Hewitt1987}. Analysis of backcross hybrids in the laboratory suggests that a few loci of large effect contribute to hybrid sterility \citep{Llewellyn2008}. 
+% The two subspecies of the flightless grasshopper \textit{Chorthippus parallelus}, \textit{C. p. parallelus} and \textit{C. p. erythropus}, are thought to have come into secondary contact in the Pyrenees between France and Spain after the last Ice Age some 9000 years ago \citep{Hewitt1990}. They form hybrid zones across the cols of this mountain range \citep{Butlin1985,Butlin1985a}. Laboratory generated F$_{1}$ male hybrids between \textit{C. p. parallelus} and \textit{C. p. erythropus} from outside the hybrid zone are almost completely sterile with degenerate testes and a severely disrupted meiosis \citep{Hewitt1987}. Analysis of backcross hybrids in the laboratory suggests that a few loci of large effect contribute to hybrid sterility \citep{Llewellyn2008}. 
 
-Males collected from the center of the hybrid zone, however, are almost completely fertile \citep{Ritchie1992}. The absence of sterile males in the center of the hybrid zone is likely due to the reconstruction of ancestral genotypes caused by selection against combinations of derived alleles in hybrids \citep{Butlin1998a}. The two subspecies are polymorphic for these negative epistatic interactions \citep{Shuker2005} and thus compatible (i.e. ancestral) alleles can reach the center of the hybrid zone. Therefore, selection is likely to restrict the introgression of those parts of the genome that are responsible for genic incompatibilities between the genomes of the two subspecies, whereas neutral loci should introgress to some extent in the two subspecies due to dispersal and recombination. 
+%Males collected from the centre of the hybrid zone, however, are almost completely fertile \citep{Ritchie1992}. The absence of sterile males in the centre of the hybrid zone is likely due to the reconstruction of ancestral genotypes caused by selection against combinations of derived alleles in hybrids \citep{Butlin1998a}. The two subspecies are polymorphic for these negative epistatic interactions \citep{Shuker2005} and thus compatible (i.e. ancestral) alleles can reach the centre of the hybrid zone. Therefore, selection is likely to restrict the introgression of those parts of the genome that are responsible for genic incompatibilities between the genomes of the two subspecies, whereas neutral loci should introgress to some extent in the two subspecies due to dispersal and recombination. 
 
 %\cite{Butlin1998a} and \cite{Shuker2005} have shown that clines for sterility, cuticular hydrocarbons and female preference are steep in contrast to clines of several morphological characters. This indicates differential introgression across the hybrid zone. We therefore expect to find a marked increase in F$_{ST}$ in comparisons between parental populations, and steeper clines at those loci that are involved in Dobzhansky-Muller incompatibilities observed in male hybrids as compared to neutral loci.
 
 Traditionally, population genetic analyses relied on a genotype calling step. However, with low to medium coverage ($<10\times$) next generation sequencing data there can be substantial uncertainty in genotype inferences. The major sources of error are assembly and mapping errors \citep{Li2011} as well as base call errors and the random sampling of allele copies at hererozygous loci. If this uncertainty is ignored during downstream analyses by using the most likely genotype given the sequencing read data at a locus from an individual -- and usually some hard filtering of putatively variant sites based on quality scores or \gls{LRT} p-values -- this can lead to errors or biases in population genetic inferences \citep{Han2014,Crawford2012a, Johnson2008}. Methods that avoid genotype calling by incorporating genotype uncertainty in downstream analyses can largely avoid these biases \citep{Nielsen2012, Li2011}. In addition, by avoiding SNP calling and instead incorporating uncertainty in polymorphic sites, these methods can also avoid ascertainment bias in downstream analyses \citep{Albrechtsen2010}. 
 
-The following study is an attempt to infer some details of the demographic history of the two subspecies from patterns of genetic variation observed in next--generation sequencing data from a reduced representation library.
+The following study is an attempt to infer some details of the demographic history of the two subspecies \textit{erythropus} and \textit{parallelus} from patterns of genetic variation observed in next-generation sequencing data from a standard RAD library. In this chapter, \textsl{population size} always stands for \textsl{effective population size}, not census population size, unless stated otherwise.
+
+%%%%%%%%%%%%%%%%
+%\begin{comment}
+%%%%%%%%%%%%%%%%
 
 %
 %
@@ -172,18 +181,17 @@ The following study is an attempt to infer some details of the demographic histo
 %
 \subsection{Sampling and library preparation}
 
-Individuals from each of the two distal populations of a transect through the eastern part of the Pyrenees Mountains (Col de la Quillane) were sampled by Jamie Hutchison and Roger Butlin in 2008 and preserved in ethanol until DNA extraction in 2009. A \gls{rad} library was prepared according to the protocol of \cite{Baird2008} (see Appendix~\autoref{ch:sRAD_protocol} on page~\pageref{ch:sRAD_protocol} for details).\todo{refer to outline of different RAD protocols in first chapter; this can only be done when the whole thesis gets compiled} ~It was then sequenced on 4 lanes of an Illumina GAIIx with 51 base pair paired-end sequencing which yielded a total number of 52,872,783 read pairs.
+Individuals from each of the two distal populations of a transect through the eastern part of the Pyrenees Mountains (Col de la Quillane, fig. \ref{Fig:sampling-sites-map}) were sampled by Jamie Hutchison and Roger Butlin in 2008 and preserved in ethanol until DNA extraction in 2009. A \gls{rad} library was prepared according to the protocol of \cite{Baird2008} (see Appendix~\autoref{ch:sRAD_protocol} on page~\pageref{ch:sRAD_protocol} for details).\todo{refer to outline of different RAD protocols in first chapter; this can only be done when the whole thesis gets compiled} ~It was then sequenced on 4 lanes of an Illumina GAIIx with 51 base pair paired-end sequencing which yielded a total number of 52,872,783 read pairs.
 % -- Greixer in Spain and Aunat in France -- 
-%
-\begin{figure}[htb]
-\centering
-\includegraphics[width=.9\linewidth]{map-1}
-\caption{Map of sampling locations. \textsc{jh34-AU}: \textit{parallelus}; \textsc{jh30-GR}: \textit{erythropus}. \textsc{sterility centre}: marks the centre of the cline of sterility as determined by \cite{Shuker2005}. Details about the creation of this map are provided in the \nameref{Sec:suppl_material_methods.}
-}
-\label{Fig:sampling-sites-map}
-\end{figure}
-\todo{move the description of map creation to supplementary M \& M}
-%
+%%
+%\begin{figure}[htb]
+%\centering
+%\includegraphics[width=1\linewidth]{map_of_sampling_sites_with_legend_small}
+%\caption{Map of sampling locations. \textsc{jh34-AU}: \textit{parallelus}; \textsc{jh30-GR}: \textit{erythropus}. \textsc{jh20-mb}: marks the centre of the cline of sterility as determined by \cite{Shuker2005}. Details about the creation of this map are provided in the \nameref{Sec:suppl_material_methods}.
+%}
+%\label{Fig:sampling-sites-map}
+%\end{figure}
+%%
 
 %
 %
@@ -196,11 +204,12 @@ Raw sequencing reads were split by individual barcodes and filtered for base cal
 \subsection{De novo assembly}
 %
 %
-In order to create a reference sequence for the RAD tags in this library, I used an assembly strategy very similar to the one implemented in \href{https://github.com/jpuritz/dDocent}{\texttt{dDocent} }\citep{Puritz2014a} (see figure \ref{Fig:DeNovoAssembly_sketch} for an overview). I used only non-redundant sequence reads for de novo assembly of a "RADome". I used \href{https://github.com/gui11aume/starcode}{\texttt{starcode}} (commit 1034408ca6) \citep{Zorita2015} to collapse \emph{read pairs} from each individual separately into unique representatives allowing for an \gls{edit distance} of up to 2. These unique representatives are the canonical sequences from all \glspl{connected component} of the graph from an \gls{all pairs} search. Canonical sequences are chosen by highest read count, then by highest number of connections with other reads. This reduced the number of quality filtered read pairs for de novo assembly to 9,179,521 (\Sexpr{round(9179521/ 44367356*100, digits=0)}\% of original read pair number). Due to the shotgun-type nature of \gls{pe} reads, read pairs should only be identical (up to 2 mismatches) if they come from the same \gls{fragment} of shearing, i. e. if they are PCR duplicates. 
+In order to create a reference sequence for the RAD tags in this library, I used an assembly strategy very similar to the one implemented in \href{https://github.com/jpuritz/dDocent}{\texttt{dDocent} }\citep{Puritz2014a} (see figure \ref{Fig:DeNovoAssembly_sketch} for an overview). I used only non-redundant sequence reads for de novo assembly of a "RADome". I used \href{https://github.com/gui11aume/starcode}{\texttt{starcode}} (commit 1034408ca6) \citep{Zorita2015} to collapse \emph{read pairs} from each individual separately into unique representatives allowing for an \gls{edit distance} of up to 2. These unique representatives are the canonical sequences from all \glspl{connected component} of the graph from an \gls{all pairs} search. Canonical sequences are chosen by highest read count, then by highest number of connections with other reads. This reduced the number of quality filtered read pairs for de novo assembly to 9,179,521 (\Sexpr{round(9179521/ 44367356*100, digits=0)}\% of the original read pair number). Due to the shotgun-type nature of \gls{pe} reads, read pairs should only be identical (up to 2 mismatches) if they come from the same \gls{fragment} from random shearing, i. e. if they are clonal reads from PCR. 
 
-After combining all \gls{se} sequences from these unique sequence pairs from all individuals into one fasta file, I have used \href{https://github.com/torognes/vsearch}{\texttt{Vsearch}} (commit 1116d6167b) \citep{Rognes2016} with its subcommand \texttt{cluster\_fast} for heuristic clustering with a pairwise identity threshold of 0.8 of a query sequence with the centroid of a growing cluster. Identity is defined as 1 minus \gls{edit distance}, but excluding terminal gaps. Thus an indel between two reads will only contribute once towards their edit distance.
+After combining all \gls{se} sequences from these unique sequence pairs from all individuals into one fasta file, I have used \href{https://github.com/torognes/vsearch}{\texttt{Vsearch}} (commit 1116d6167b) \citep{Rognes2016} with its subcommand \texttt{cluster\_fast} for heuristic clustering with a pairwise identity threshold of 0.8 of a query sequence with the centroid of a growing cluster. Identity is defined as 1 minus \gls{edit distance} as a proportion of alignment length, but excluding terminal gaps. Thus a \gls{indel} between two reads will only contribute once towards their edit distance.
 
-\begin{figure}[htb]
+\vspace{10pt}
+\begin{figure}[!htb]
 \begin{center}
 \includegraphics[width=.9\textwidth]{DeNovoAssembly_sketch}
 \vspace{10pt}
@@ -213,7 +222,8 @@ Next, I have used the \texttt{uclust} format output of \texttt{Vsearch} together
 
 Finally, since the merge process of \texttt{rainbow} depends on overlap between \gls{pe} reads from the same RAD locus, it could be incomplete when coverage is low. I therefore clustered the \texttt{rainbow} contigs again with the \texttt{Vsearch} subprogramme \texttt{cluster\_fast}, this time with an identity threshold of 0.9 and producing a majority consensus sequence from a multiple alignment of the sequences in each cluster of \texttt{rainbow} contigs. The assembled RADome contains 583,312 contigs and a total length of 97 \gls{Mbp}. In the following I will frequently refer to it under the informal name of \emph{Big Data} reference assembly.
 
-An extensive documentation about the assembly procedure as well further downstream analyses can be found in the \texttt{BASH} script \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/assembly.sh}{\texttt{assembly.sh}}. This text file contains exact command lines used together with extensive explanation. It should be the first stop for information when trying to reproduce the results presented here. Note, not all steps of the analysis could be documented directly in this text file, but when \href{http://rmarkdown.rstudio.com}{Rmarkdown} or \href{https://ipython.org}{IPython} notebooks \citep{Perez2007} have been used for analysis then references to those file can be found in \texttt{assembly.sh}.
+An extensive documentation about the assembly procedure as well further downstream analyses can be found in the \texttt{BASH} script \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/assembly.sh}{\texttt{assembly.sh}}. This text file contains exact command lines used, together with extensive explanation. It should be the first stop for information when trying to reproduce the results presented here. Note, not all steps of the analysis could be documented directly in this text file, but when \href{http://rmarkdown.rstudio.com}{Rmarkdown} or \href{https://ipython.org}{IPython} notebooks \citep{Perez2007} have been used for analysis, then references to those files can be found in \texttt{assembly.sh}.
+
 
  
 %
@@ -221,45 +231,56 @@ An extensive documentation about the assembly procedure as well further downstre
 \subsection{Read mapping}
 %
 %
-I mapped all quality filtered reads against the Big Data reference with the programme~\href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}{\texttt{bowtie2}} version 2.2.9 (downloaded on 29th October 2016) \citep{Langmead2012}. I ran \texttt{bowtie2} in end--to--end mode, i. e. without soft--clipping of query sequences. Further, I specified "very--sensitive" search mode with a seed length of 20. I allowed gaps to be up to 10 bp long, but I disallowed gaps within 4 bp of either end of the read. In addition I specified a high penalty of 10 for alignments against ambiguous characters in the reference. In each reference contig, \gls{se} RAD tag and \gls{pe} contig were separated by 10 N's. This high penalty therefore makes successful read alignments across the gap between \gls{se} RAD tag and \gls{pe} read contig very unlikely. Further, I specified a minimum fragment length of 60 for \gls{proper pair} read alignments, thus allowing some overlap between reads in a pair. 
+I mapped all quality filtered reads against the newly created RADome (or Big Data reference) with the programme~\href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}{\texttt{bowtie2}} version 2.2.9 (downloaded on 29th October 2016) \citep{Langmead2012}. I ran \texttt{bowtie2} in end--to--end mode, i. e. without soft--clipping of query sequences. Further, I specified "very--sensitive" search mode with a seed length of 20. I allowed gaps to be up to 10 bp long, but I disallowed gaps within 4 bp of either end of the read. In addition I specified a high penalty of 10 for alignments against ambiguous characters in the reference. In most reference contigs, \gls{se} RAD tag and \gls{pe} contig were separated by 10 N's (unless \texttt{rainbow asm} assembled \gls{se} and \gls{pe} reads into one contig). This high penalty therefore makes successful read alignments across the gap between \gls{se} RAD tag and \gls{pe} read contig very unlikely. Further, I specified a minimum fragment length of 60 for \gls{proper pair} read alignments, thus allowing some overlap between reads in a pair\todo{So, sometimes sometimes SE RAD tag and PE contig overlap and are therefore not separated by a sequence of N's. Check this!}. 
 
-Although standard RAD data from paired-end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so, since \texttt{ANGSD} could not estimate a \gls{SFS} from a de-duplicated data set (see section \vref{Sec:Deduplication} in the supplementary material). The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype. Due to the PCR duplicates I expect the genotype likelihoods to be generally biased against heterozygote genotypes.
+Although standard RAD data from paired-end sequencing allows the detection and removal of PCR duplicates, I have opted not to do so, since \texttt{ANGSD} could not estimate a \gls{SFS} from a de-duplicated data set (see section \vref{Sec:Deduplication} in the supplementary material). The following analyses all depend on the correct estimation of genotype likelihoods which assumes that reads are sampled independently from the true genotype. Due to the PCR duplicates, I expect the genotype likelihoods to be generally biased against heterozygote genotypes\todo{maybe mention here already that the assumption of HWE by \texttt{ANGSD} counteracts this bias.}. \cite{Andrews2016} have claimed that "PCR should not systematically favour one allele over another at a given locus, and therefore parameters estimated from a large number of loci are unlikely to be substantially biased". However, PCR drift, i. e. the random amplification of one allele at a locus at the expense of the other, as well as allele dropout can bias the \gls{SFS} towards higher frequency counts. For instance, if there were three true heterozygotes at a locus and all other individuals homozygous for the reference allele, then the count class 3 should be incremented in the SFS. With three false homozygote calls at this locus, the count class 6 will be incremented instead.
 
 %
 %
 \subsection{Filtering of the de novo reference assembly}
 %
 %
-
 There are 4,575 contigs with \gls{se} reads that map to the \gls{pe} part of the contig, i. e. which do not pass the \textit{mismapping} filter. I have also filtered \glspl{contig} for excessive coverage by \gls{se} reads, which map to the \gls{RAD tag} part of each contig (i. e. next to the restriction site). The coverage by \gls{pe} reads is much more dependent on the length of the contig. With this filter a contig has excessive coverage if in any of the individual BAM files it has \gls{se} read coverage above the 99th percentile of that individual's coverage distribution. I have thus excluded 2,282 contigs due to excessive coverage. Since many false--positive \glspl{snp} fall within low--complexity sequences \citep{Li2014}, I have detected those regions within the \emph{Big Data} reference assembly with \texttt{dustmasker} \citep{Morgulis2006} and excluded them from further analysis. The above filters have excluded 10\% of the reference from further analysis, leaving 88 \gls{Mbp}. %before filtering: sum of interval length from Big_Data_ref.fa.bed, after filtering: sum of interval length from Big_Data_Contigs.noSEgt2.nogtQ99Cov.noDUST.bed
 
 I then went on to extract those bits of the filtered reference that have sufficient data for downstream analyses. I used the \texttt{samtools depth} command to get the read count for all positions and for all 36 individuals across the filtered reference. I then extracted those positions where at least 15 individuals have each at least 3$\times$ coverage. I only counted reads with a mapping quality greater than 5. This reduces the number of sites to 2\% of the original \emph{Big Data} reference assembly or 2 \gls{Mbp}, spread over 34,967 contigs. The first 6 base pairs of each contig are the remainder of the SbfI restriction site (\texttt{TGCAGG}) and therefore not variable. I have excluded those sites as well from further analysis. 
 
 In addition to the excessive coverage filter, I have also applied a HWE filter to the remaining sites in order to reduce false heterozygotes caused by reads from paralogous sequences mapping to the same position in the reference. I have used the programme \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) \citep{Korneliussen2014} to estimate per site inbreeding coefficients ($F_{site}$) using genotype likelihoods \citep{Vieira2013}. I removed entire contigs that had a site with a negative estimate of inbreeding coefficient and a p-value for deviation of $F_{site}$ from 0 of less than 0.05 from an \gls{LRT}.\todo{note, I did not apply BAQ for HWE filtering} ~I estimated inbreeding coefficients for each population separately as well as for both populations taken together. The latter increased sample size for the estimation of $F_{site}$ but also increased estimates of $F_{site}$ for \glspl{snp} with different allele frequencies in the two populations. This filter removed 217 contigs (for further details see section \vref{Sec:HWE_Filtering} in the supplementary material). This has left 1,799,962 filtered sites on 34,750 contigs for further analysis. 
 %
-\begin{figure}[htb]
+\begin{figure}[!htb]
 \centering
-<< global-coverage-dist, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
+<<global-coverage-dist, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
 \caption{Histogram of across sample coverage with reads of mapping quality greater than 5 from 1.7 million nucleotide sites in the \emph{Big Data} reference after filtering.}
 \label{Fig:global-coverage-dist}
 \end{figure}
 %
 \\
-Inspection of the global, i. e. across sample, coverage distribution revealed that there were 12,693 sites with total coverage greater than 1000$\times$. I have therefore also determined the 99th percentile of the global \emph{per-site}\footnote{including SE and PE reads and across the whole contig, not just RAD tag part} coverage distribution and removed all contigs with a position that had coverage greater than the global 99th percentile. This has removed 69,438 sites on 407 contigs leaving 1,730,524 sites on 34,343 contigs for further analysis. The new coverage distribution is shown in figure \ref{Fig:global-coverage-dist}.
+Inspection of the global, i. e. across sample, coverage distribution revealed that there were 12,693 sites with total coverage greater than 1000$\times$. I have therefore also determined the 99th percentile of the global \emph{per-site}\footnote{including SE and PE reads and across the whole contig, not just RAD tag part} coverage distribution and removed all contigs with a position that had coverage greater than the global 99th percentile. This has removed 69,438 sites on 407 contigs leaving 1,730,524 sites on 34,343 contigs for further analysis. The new across-sample (global) coverage distribution is shown in figure \ref{Fig:global-coverage-dist}.
+
+The average per site, per individual coverage across the 1.7M filtered sites is \Sexpr{round(cov, digits=1)}$\times$ (fig. \ref{Fig:individual-coverage-dist})\todo{could the lower coverage for parallelus be due to the RADome being more similar to erythropus than parallelus, because erythropus alleles initiated clusters and became centroids during Vsearch clustering?}.
 %
-\begin{figure}[htb]
+\begin{figure}[!hbt]
 \centering
+<<ind-cov-dist, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
+@
+\caption{Individual coverage distributions from reads with mapping quality greater than 5 over 1.7 million sites in the \emph{Big Data} reference after filtering. red: \textit{erythropus}, green: \textit{parallelus}.}
+\label{Fig:individual-coverage-dist}
+\end{figure}
+%
+\\
+%
+\begin{figure}[!hbt]
+\begin{center}
 <<mapQ-dist, out.width='.49\\linewidth', echo=FALSE,cache=TRUE>>=
 @
 \caption{Distribution of mapping quality scores determined by \texttt{bowtie2} for all mapped reads to the unfiltered and filtered reference sequence.}
 \label{Fig:mapQ-dist}
+\end{center}
 \end{figure}
 %
-\\
-The above filters have selected for contigs with more unique sequences as shown by the great reduction in the proportion of reads with a mapping quality score of 1 that map to the filtered reference as compared to the unfiltered reference sequence (see fig. \ref{Fig:mapQ-dist}). Only reads with a mapping quality score of $\ge$ 5 have been used for downstream analyses. A Phred score of 5 for the mapping quality should indicate a probability of about 1/3 that the read truly originated elsewhere in the \textsl{reference sequence} (mapping uncertainty does not incorporate assembly uncertainty). However, as figure \vref{Fig:obs-vs-reported-FPR} shows, \texttt{bowtie2} generally greatly underestimates the true mapping quality, given the reference sequence, particularly for very low mapping quality scores. A more stringent filtering of read mappings is therefore not necessary. Note that \emph{all} in the following analyses mapping quality information is incorporated into the calculation of genotype likelihoods by capping base quality by the mapping quality of the read\footnote{This claim has not been fully verified but is very likely: I have used the genotype likelihood version from \texttt{samtools} throughout (and \texttt{ANGSD} directly incorporates code from \texttt{samtools}), which should be based on \texttt{MAQ} \cite[section Methods: Consensus genotype calling]{Li2008}.}. A different mapping programme will therefore result in different genotype likelihoods as mapping quality scores are computed with different heuristics by the different mapping programmes (see fig. \vref{Fig:obs-vs-reported-FPR-a}). 
+The above filters have selected for contigs with more unique sequences as shown by the great reduction in the proportion of reads with a mapping quality score of 1 that map to the filtered reference as compared to the unfiltered reference sequence (see fig. \ref{Fig:mapQ-dist}). Only reads with a mapping quality score of $\ge$ 5 have been used for downstream analyses. A Phred score of 5 for the mapping quality should indicate a probability of about 1/3 that the read truly originated elsewhere in the \textsl{reference sequence} (mapping uncertainty does not incorporate assembly uncertainty). However, as figure \vref{Fig:obs-vs-reported-FPR} shows, \texttt{bowtie2} generally greatly underestimates the true mapping quality, given the reference sequence, particularly for very low mapping quality scores. A more stringent filtering of read mappings is therefore not necessary. Note that in \emph{all} following analyses mapping quality information is incorporated into the calculation of genotype likelihoods by capping base quality by the mapping quality of the read\footnote{This claim has not been fully verified but is very likely: I have used the genotype likelihood version from \texttt{samtools} throughout (and \texttt{ANGSD} directly incorporates code from \texttt{samtools}), which should be based on \texttt{MAQ} \cite[section Methods: Consensus genotype calling]{Li2008}.}. A different mapping programme will therefore result in different genotype likelihoods as mapping quality scores are computed with different heuristics by the different mapping programmes (see fig. \vref{Fig:obs-vs-reported-FPR-a}). 
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 <<mappability-dist, out.width='\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -271,7 +292,7 @@ The above filters have selected for contigs with more unique sequences as shown 
 A better measure of the repetitiveness of the assembled RADome than the distribution of read mapping quality is the distribution of mappability. Mappability measures the uniqueness of a sequence of length $k$ (kmer's) sampled from a position $x$ in the reference sequence (here Big Data reference assembly). Mappability is the inverse of how often that kmer can be found in the whole reference sequence up to a specified number of mismatches (or edits) \citep{Derrien2012}. Mappability has a range between 0 and 1. A position has mappability of 1 if its kmer occurs only once in the reference, 0.5 if it occurs twice and so on. Figure \ref{Fig:mappability-dist} shows the distribution of per contig average mappability of the raw Big Data reference assembly and of the reference assembly after applying above filters. It shows that a large proportion of contigs have an average mappability of 1 or close to 1 and that the majority of contigs have average mappability greater than 0.5. It also shows that the above filters have \emph{not} selected for more unique contigs in the Big Data reference assembly. In fact, the reference contigs kept after filtering for further analysis have \emph{lower} median mappability than before filtering. The median mappability before filtering is \Sexpr{round(median(before), 3)} whereas after filtering it is \Sexpr{round(median(after), 3)}. The median of the difference in mappability between a contig before filtering and a contig after filtering is \Sexpr{round(u$estimate, 3)} (95\% \gls{CI}: \Sexpr{round(u$conf.int, 3)}). ~Regions in the reference with lower mappability are more difficult to map reads to with data from short read next-generation sequencing. Quantitative measures of read counts as well as polymorphism detection in those regions will be compromised \citep{Derrien2012,Lee2012a}. However, a lower mappability is not indicative of a bad de novo assembly of the reference. In fact, collapsing repetitive sequences from the sampled genome into one reference contig will \emph{increase} the average mappability of the assembled reference.
 \\
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 <<contig-length-dist, out.width='\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -279,19 +300,7 @@ A better measure of the repetitiveness of the assembled RADome than the distribu
 \label{Fig:contig-length-dist}
 \end{figure}
 %
-\\
-The above filters have also selected for contigs with lengths that are roughly consistent with the expected size distribution of sonicated restriction fragments that were size selected on an agarose gel during library preparation (see figures \ref{Fig:contig-length-dist} and \vref{shearedPools}). Note that the size selected DNA fragments contained the 67 bp long P1 adapter and that PCR as well as cluster generation on the flow cell should increase the proportion of short fragments in the resulting Illumina sequence data.
-
-The average per site, per individual coverage across the 1.7M filtered sites is \Sexpr{round(cov, digits=1)}$\times$ (fig. \ref{Fig:individual-coverage-dist}).
-%
-\begin{figure}[htb]
-\centering
-<<ind-cov-dist, out.width='.9\\linewidth', echo=FALSE,cache=TRUE>>=
-@
-\caption{Individual coverage distributions from reads with mapping quality greater than 5 over 1.7 million sites in the \emph{Big Data} reference after filtering. red: \textit{erythropus}, green: \textit{parallelus}.}
-\label{Fig:individual-coverage-dist}
-\end{figure}
-%
+The above filters have also selected for contigs with lengths that are roughly consistent with the expected size distribution of sonicated restriction fragments that were size selected on an agarose gel during library preparation (see figures \ref{Fig:contig-length-dist} and \vref{shearedPools}). Note that the size selected DNA fragments contained the 67 bp long P1 adapter and that PCR as well as cluster generation on the flow cell should increase the proportion of short fragments in the resulting illumina sequence data\todo{add citation}.
 
 
 %
@@ -301,7 +310,7 @@ The average per site, per individual coverage across the 1.7M filtered sites is 
 %
 I have used \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) \citep{Korneliussen2014} to estimate posterior genotype probabilities across all sites using as prior a \gls{ML} estimate of the \gls{population minor allele frequency} (MAF) per site across all individuals from the two populations and the assumption of \gls{HWE} \citep{Kim2011}. Although the assumption of \gls{HWE} may well be violated, it should only make genotype probability estimates more similar between divergent individuals. Therefore, any major divergence detected between individuals based on these genotype probabilities cannot be an artefact of this prior. At low coverage, the identification of the minor allele can be uncertain. The estimation of the minor allele frequency incorporated this uncertainty \cite[suppl. mat.]{Skotte2012}. 
 
-Next, I estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{saf} likelihoods (SAF), again across all individuals, using \texttt{ANGSD}'s subprogramme \texttt{realSFS} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{saf} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of all individuals sequenced). 
+Next, I estimated the \gls{ML} global unfolded \gls{SFS} based on per--site \gls{saf} likelihoods (SAF), again across all individuals, using \texttt{ANGSD}'s subprogramme \texttt{realSFS} \citep{Nielsen2012, Korneliussen2013}. This global \gls{SFS} then served as prior to estimate per--site \gls{saf} posterior probabilities. Thus for each site $2N+1$ probabilities were calculated (N=36, the total number of individuals sequenced). 
 
 I have then estimated a genotype covariance matrix with \texttt{ngsCovar} \citep{Fumagalli2014} between all 36 individuals. \todo{in the same way it should be possible to calculate the covariance matrix between all SNP's, thereby getting composite LD estimates}~ At each site the posterior expectation of the genotype covariance is computed by summing over all 9 genotype combinations and weighting each combination by the respective two posterior genotype probabilities. Each cell of the matrix contains the genotype covariance between two individuals averaged over all sites and each site weighted by its probability of being variable using the \gls{saf} posterior probabilities \citep[eq. 19 and 20]{Fumagalli2013}.
 
@@ -315,7 +324,7 @@ I then performed an eigen--decomposition on the resulting covariance matrix with
 %
 %
 %
-Using \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) and its subprogramme \texttt{realSFS} \citep{Korneliussen2014} I have determined a ML estimate of the global \emph{unfolded} 2D--\gls{SFS} that contains the joint sample allele frequencies of the non--reference allele from \textit{erythropus} and \textit{parallelus} (figure \ref{Fig:unfolded-2D-SFS}). I applied standard BAQ \citep{Li2011c} and required a nucleotide site to have sequence reads from at least 9 individuals in each population. The 2D-SFS contains the joint frequencies from approximately 1,130,775 sites of which 60,573 (5\%) are variable in \textit{erythropus}, \textit{parallelus} or both. This global unfolded 2D--\gls{SFS} was then used as (empirical) prior for posterior probabilities of all possible sample allele frequencies from which the posterior expectation of $F_{ST}$ per site is calculated using \texttt{realSFS} from ANGSD \citep[eq. 3 and 16]{Fumagalli2013}. This programme reports the numerator and denominator for either Reynolds' $F_{ST}$ \citep[eq. 1--3]{Fumagalli2013} or Hudson/Bhatia's $F_{ST}$ \citep[eq. 9 and 10]{Bhatia2013} for each site. I am not reporting estimates of $F_{ST}$ per site due to their large variance \citep{Weir2005}. Instead I am reporting the global average $F_{ST}$ across all sites. This average is always calculated by summing nominator and denominator across sites and then taking the ratio \citep{Bhatia2013}. Note, that all estimates of $F_{ST}$ calculated here assume within-population HWE.
+Using \texttt{ANGSD} (version 0.915-5, \texttt{git} commit \texttt{ge6e63e5}, Nov. 2016) and its subprogramme \texttt{realSFS} \citep{Korneliussen2014} I have determined a ML estimate of the global \emph{unfolded} 2D--\gls{SFS} that contains the joint sample allele frequencies of the non--reference allele from \textit{erythropus} and \textit{parallelus} (figure \ref{Fig:unfolded-2D-SFS}). I applied standard BAQ \citep{Li2011c} and required a nucleotide site to have sequence reads from at least 9 individuals in each population. The 2D-SFS contains the joint frequencies from approximately 1,130,775 sites of which 60,573 (5\%) are variable in \textit{erythropus}, \textit{parallelus} or both. This global unfolded 2D--\gls{SFS} was then used as (empirical) prior for posterior probabilities of all possible sample allele frequencies from which the posterior expectation of $F_{ST}$ per site is calculated using \texttt{realSFS} from ANGSD \citep[eq. 3 and 16]{Fumagalli2013}. This programme reports the numerator and denominator for either Reynolds' $F_{ST}$ \citep[eq. 1--3]{Fumagalli2013} or Hudson/Bhatia's $F_{ST}$ \citep[eq. 9 and 10]{Bhatia2013} for each site. I am not reporting estimates of $F_{ST}$ per site due to their large variance \citep{Weir2005}. Instead I am reporting the global average $F_{ST}$ across all sites. This average is always calculated by summing the numerator and denominator across sites and then taking the ratio \citep{Bhatia2013}. Note, that all estimates of $F_{ST}$ calculated here assume within-population HWE.
 %
 \begin{figure}[H]
 \centering
@@ -329,13 +338,29 @@ In order to investigate the dependence of $F_{ST}$ on SNP ascertainment (i. e. s
 
 I have also determined the distribution of $F_{ST}$ over \gls{maf} in either \textit{erythropus} or \textit{parallelus} with the function \texttt{Fst} of $\delta a \delta i$ \citep{Gutenkunst2009} on the observed 2D SFS as shown in figure \ref{Fig:unfolded-2D-SFS}. This calculates Weir \& Cockerham's $F_{ST}$ \citep[eq. for $\hat{\theta}$ at top of p. 1363]{Weir1984}. I then simulated site frequency spectra with $\delta a \delta i$ for four different demographic models and generated expected distributions of $F_{ST}$ over \gls{maf} for these demographic scenarios\todo{add table with parameters for the four demographic models}. Two models included a recent bottleneck for one of the two populations, the other two included a recent population size expansion. Further details can be found in the IPython notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/dadi/05_2D_models.ipynb}{05\_2D\_models}, section "Fst".
 
-
+I have also estimated the net sequence divergence $D_a$ between \textit{erythropus} and \textit{parallelus} \citep[see equation 12.67 on p. 256]{Nei2000}:
+\begin{equation}
+D_a = K_B - K_S
+\end{equation}
+where $K_S$ is the average of within-population genome-wide sequence divergences:
+\begin{equation}
+K_S = \frac{n}{n+m} \times \pi_{ery} + \frac{m}{n+m} \times \pi_{par}
+\end{equation}
+$n$ and $m$ are the sample sizes (36 alleles) of \textit{erythropus} and \textit{parallelus}, respectively. $\pi_{ery}$ and $\pi_{par}$ are the average number of pairwise differences within \textit{erythropus} and \textit{parallelus} as calculated from the 1D site frequency spectra of each population with equation \ref{eq:pi} (see section \nameref{Sec:Genetic-diversity-estimates}).
+$K_B$ is:
+\begin{equation}
+K_B = \frac{1}{nm} \left[ \sum_{i=0}^{m} \sum_{j=0}^{n} [i(n-j) + j(m-i)]\xi_{ij} \right]
+\end{equation}
+where $\xi_{ij}$ is the count in the unfolded joint allele frequency class [i, j] in the 2D-SFS (fig. \ref{Fig:unfolded-2D-SFS}). The allele frequency classes in the 2D-SFS refer to the non-reference allele. The joint reference allele frequency is given by [m-i, n-j]. $K_B$ should be equivalent to $d_{xy}$ as given in eq. 12.66 on p. 256 in \citet{Nei2000}. The expectation of $D_a$ is related to divergence time $T$ (assuming divergence without gene flow) as follows \citep[eq. 12.69 an p. 256]{Nei2000}:
+\begin{equation}
+E[D_a] = 2\mu T \label{eq:expect_Da}
+\end{equation}
+where $\mu$ is the nucleotide mutation rate. I have assumed a nucleotide mutation rate of $3\times 10^{-9}$ throughout this chapter \citep{Liu2017}.
 
 %
 %
 \subsection{Genetic diversity estimates}
 \label{Sec:Genetic-diversity-estimates}
-
 %
 %
 I have calculated ML estimates of the \emph{unfolded} global \gls{SFS}, i. e. including all sites across contigs, for \textit{erythropus} and \textit{parallelus} separately with \texttt{ANGSD} and its subprogramme \texttt{realSFS} \citep{Korneliussen2014}. I used a different version of \texttt{ANGSD} -- 0.917-142, \texttt{git} commit ge3dbeaa, 20 June 2017 -- than for the previous analyses described above. The main difference is that this version applies \emph{extended} instead of standard BAQ (for more details see this \href{https://github.com/ANGSD/angsd/issues/97}{\texttt{ANGSD} issue thread}). Extended BAQ is a more sensitive and less conservative algorithm than standard BAQ allowing for the detection of more polymorphic sites at the cost of slightly increased number of false positives.
@@ -362,7 +387,7 @@ S = \sum_{i=1}^{n/2} \eta_{i}
 \end{equation}
 %
 \begin{equation}
-\pi = \frac{1}{\binom{n}{2}} \sum_{i=1}^{n/2} i(n-i)\eta_i
+\pi = \frac{1}{\binom{n}{2}} \sum_{i=1}^{n/2} i(n-i)\eta_i \label{eq:pi}
 \end{equation}
 %
 where $n$ is the number of alleles sampled, i. e. twice the number of sampled individuals for diploid loci. $\eta_i$ is the count in the i--th frequency class of the folded SFS.
@@ -371,6 +396,7 @@ The estimates of global Tajima's D are based on these estimates and equation 2.1
 \begin{equation}
 D_{T} = \frac{\pi - \theta_{W}}{C}
 \end{equation}
+$C$ is a normalising constant that should make critical values of Tajima's D (-2 and 2 for the 5\% significance level) independent of sample size \cite[page 115]{Wakeley2009}. The formula's for it's calculation can be looked up for instance in \citealt[page 45]{Gillespie2004}.
 $\theta_{W}$ is Watterson's $\theta$ and is calculated with:
 \begin{equation}
 \theta_{W} = \sfrac{S}{\sum_{i=1}^{n-1} \frac{1}{i}} \label{Eq:Wattersons-theta}
@@ -401,7 +427,7 @@ $$
 with $i$ being the number of lineages left in the genealogy and $N_e$ being the diploid effective population size during the interval $T_i$ between two coalescent events (\citealt[eq. 2.13]{Gillespie2004}). 
 
 I used a custom version of \texttt{stairway-plot}. I replaced the java class file \\ \texttt{Stairway\_fold\_training\_testing5.class} with \\
-\texttt{Stairway\_fold\_random\_break5.class}, kindly provided by Xiaoming Liu. This was necessary to allow for the construction of bootstrap \gls{CI}'s for the stairway plots with version 2 and folded site frequency spectra. Usually, version 2 for folded spectra only allows the construction of pseudo \gls{CI}'s by random subsample of polymorphic sites and random breakpoints. I used my own bootstrap replicates of SFS (resampled over contigs), not a parametric bootstrap as implemented in version 1 of \texttt{stairway-plot}. I specified a mutation rate per base pair and generation of $3 \times 10^{-9}$\todo{add citation}~and a single number of breakpoints (steps), 34, effectively turning off random breakpoints.
+\texttt{Stairway\_fold\_random\_break5.class}, kindly provided by Xiaoming Liu. This was necessary to allow for the construction of bootstrap \gls{CI}'s for the stairway plots with version 2 and folded site frequency spectra. Usually, version 2 for folded spectra only allows the construction of pseudo \gls{CI}'s by random subsample of polymorphic sites and random breakpoints. I used my own bootstrap replicates of SFS (resampled over contigs), not a parametric bootstrap as implemented in version 1 of \texttt{stairway-plot}. I specified a mutation rate per base pair and generation of $3 \times 10^{-9}$ \citep{Liu2017} and a single number of breakpoints (steps), 34, effectively turning off random breakpoints.
 
 %
 %
@@ -464,7 +490,7 @@ I estimated posterior expectations of $F_{ST}$ from 1.6 million sites across 32,
 \label{Fig:global-fst}
 \end{figure}
 %
-The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} (95\% bootstrap \gls{CI}: \Sexpr{signif(bhatia.CI95[1], 3)} and \Sexpr{signif(bhatia.CI95[2], 3)}) (see fig. \ref{Fig:global-fst}). Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \citealt[p. 161]{Weir1996}), not the variance due to sampling individuals from the population (statistical sampling). The latter could be estimated by bootstrapping individuals from each population. Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, \emph{two} RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the empirical null distribution of global $F_{ST}$, estimated by randomly permuting the population label of individuals, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}. See section \vref{Sec:FST_supp} of the supplementary material for different estimates of global $F_{ST}$.
+The global average Hudson/Bhatia's estimate of $F_{ST}$ is \Sexpr{signif(Fst.bhatia.global, digits=3)} (95\% bootstrap \gls{CI}: \Sexpr{signif(bhatia.CI95[1], 3)} -- \Sexpr{signif(bhatia.CI95[2], 3)}) (see fig. \ref{Fig:global-fst}). Note, that the 95\% \gls{CI} only captures the variance due to sampling loci in the genome (\emph{genetic sampling} according to \citealt[p. 161]{Weir1996}), not the variance due to sampling individuals from the population (statistical sampling). The latter could be estimated by bootstrapping individuals from each population. Estimating \gls{CI}'s by bootstrapping over contigs assumes that they are independent replicates of the evolutionary process in the history of the two subspecies, i. e. that they are unlinked. However, with the standard RAD protocol \citep{Baird2008}, \emph{two} RAD tags (here called contigs) are recovered from each restriction site. The bootstrap \gls{CI} for genome-wide $F_{ST}$ computed here may therefore slightly underestimate uncertainty. Also note that the empirical null distribution of global $F_{ST}$, estimated by randomly permuting the population label of individuals, does not include 0. There therefore seems to be a positive bias in the estimation of global $F_{ST}$ of about \Sexpr{signif(perm.fst.CI95[2], 3)}. See section \vref{Sec:FST_supp} of the supplementary material for different estimates of global $F_{ST}$.
 
 Figure \ref{Fig:fst-by-maf-class} shows the dependence of average $F_{ST}$ on the minor allele frequency when only sites are included that are polymorphic in the ascertainment population. Not surprisingly, SNP ascertainment in one of the two populations lowers average $F_{ST}$ estimates since it also excludes highly differentiated sites where the ascertainment population is fixed for one allele.
 %
@@ -478,7 +504,7 @@ Figure \ref{Fig:fst-by-maf-class} shows the dependence of average $F_{ST}$ on th
 %
 When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in each case the average $F_{ST}$ estimate tends to decrease with decreasing minor allele frequency. This would be consistent with both populations having undergone a population expansion where rare alleles are more likely to be private to one population. This is made evident by the estimate of global unfolded 2D-\gls{SFS} that was used as prior for per--site $F_{ST}$ estimates (fig. \ref{Fig:unfolded-2D-SFS}). Since these sites have a low allele frequency differentiation, they lower the average $F_{ST}$ estimate. In contrast, if one or both populations had undergone a recent population bottleneck, variable sites would more often be ancient and polymorphic in the ancestral population. Sites with rare alleles in the bottlenecked population would therefore also include those that have drifted apart in allele frequency between the two populations, thus increasing average $F_{ST}$ estimates (see fig. \ref{Fig:fst-by-maf-dadi-4Models}) \citep{Bhatia2013}. According to these predictions, the sudden increase in $F_{ST}$ for the lowest \gls{maf} when ascertaining in \textit{erythropus} (fig. \ref{Fig:fst-by-maf-class}) would therefore indicate a very recent bottleneck, whereas the sudden decrease in $F_{ST}$ when ascertaining in \textit{parallelus} would indicate a very recent population expansion. However, the observed distribution of $F_{ST}$ over \gls{maf} as calculated with $\delta a \delta i$ from the 2D SFS of figure \vref{Fig:unfolded-2D-SFS} does not show the same tendency to decrease with minor allele frequency (figure \ref{Fig:fst-by-maf-dadi-WC}). 
 %
-\begin{figure}
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=.9\textwidth]{Fst_by_MAF}
 \caption{Distributions of $F_{ST}$ by \gls{maf} as estimated from the 2D SFS in figure \vref{Fig:unfolded-2D-SFS} with the function \texttt{Fst} in $\delta a \delta i$. SNP's were subset by minor allele frequency in either \textit{erythropus} (ERY) or \textit{parallelus} (PAR).}
@@ -494,7 +520,9 @@ When ascertaining SNP sites in \textit{erythropus} or \textit{parallelus}, in ea
 \label{Fig:fst-by-maf-dadi-4Models}
 \end{figure}
 %
-A ML estimate of the number of nucleotide sites with fixed differences between these two samples of 18 individuals each of \textit{erythropus} and \textit{parallelus} can also be extracted from the unfolded 2D--\gls{SFS}: \Sexpr{signif(sfs2d[1,37] + sfs2d[37,1], 3)} or \Sexpr{signif((sfs2d[1,37] + sfs2d[37,1])/sum(sfs2d)*100, 2)}\% of polymorphic sites. 
+A \gls{ML} estimate of the number of nucleotide sites with fixed differences between these two samples of 18 individuals each from \textit{erythropus} and \textit{parallelus} can also be extracted from the 2D-\gls{SFS} in figure \ref{Fig:unfolded-2D-SFS}: \Sexpr{signif(sfs2d[1,37] + sfs2d[37,1], 3)} or \Sexpr{signif((sfs2d[1,37] + sfs2d[37,1])/sum(sfs2d)*100, 2)}\% of polymorphic sites. These are the counts in the cells (0, 36) and (36, 0) of the 2D-SFS. 
+
+The net sequence divergence $D_a$ per site between \textit{erythropus} and \textit{parallelus} is 0.003. 
 %%
 %{\itshape
 %\cite{Whitlock2015} have recently described a method to detect loci likely under spatially heterogeneous selection by modelling the neutral distribution of $F_{ST}$ for specific demographic scenarios. Figure \ref{Fig:fst-by-contig-hist} shows the observed distribution of $F_{ST}$ across all contigs. The method of \cite{Whitlock2015} could be applied to this distribution for inference of likely demographic scenarios.
@@ -512,6 +540,7 @@ A ML estimate of the number of nucleotide sites with fixed differences between t
 %
 %
 %
+\FloatBarrier
 \subsection{Genetic diversity within \textit{erythropus} and \textit{parallelus}}
 %
 %
@@ -535,7 +564,9 @@ Note, that this \gls{SFS} is not based on called \glspl{snp}. Instead it is base
 The \gls{SFS} has not yet been corrected for bias due to allele-drop-out \citep{Luca2011}. Simulations by \citealt{Cariou2016} indicate, however, that "this bias is of minor importance when the polymorphism is below 2 \%, which is the case in most species, at least in animals". The estimated expected nucleotide heterozygosity ($\pi_{site}$) estimated here for both subspecies is well below 2\% (see tab. \ref{Tab:diversity_parameters}).
 \comment{Find estimates of $\pi$ for African Drosophila in \cite{Pool2012} and a comparison of diversity estimates across several species in \cite{Romiguier2014} for reference.}
 Allele-drop-out is a problem that has affected previous types of genetic markers like microsatellites or AFLP's, usually known under the term "null alleles".~\todo{check for the effect of allele-drop-out on the SFS. see also \cite{Davey2012}}
-\cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele-drop-out show a greater proportion of intermediate allele frequencies as compared to loci not affected. They therefore show a relative excess of observed nucleotide heterozygosity ($\pi_{Tajima}$). My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele-drop-out. Those sites show the opposite bias towards a relative excess of low-frequency variants \citep{Arnold2013}. Figure \ref{Fig:folded-sfs} shows site frequency spectra estimated from only overlapping sites, i. e. sites with read data for at least 9 individuals in each population sample, as well as from including non-overlapping sites. Overlapping sites should be more enriched for those less affected by allele-drop-out and therefore show a greater bias towards a relative excess of low-frequency variants. This effect can be observed in the diversity statistics reported in table \ref{Tab:diversity_parameters} where, for instance, the expected nucleotide heterozygosity ($\pi_{site}$) for \textit{parallelus} calculated from a \gls{SFS} from only overlapping sites is lower than when calculated from a SFS including non-overlapping sites. This effect, although statistically significant, is however relatively small and therefore unlikely to change any conclusions drawn from the data in a qualitative way.
+\cite{Arnold2013} and \cite{Gautier2012} have shown with simulations that loci affected by allele-drop-out show a greater proportion of intermediate allele frequencies as compared to loci not affected. 
+%They therefore show a relative excess of expected nucleotide heterozygosity. 
+My data filtering, that included filtering for minimum coverage and for minimum number of individuals with read data, should have enriched for sites less affected by allele-drop-out. Those sites show the opposite bias towards a relative excess of low-frequency variants \citep{Arnold2013}. Figure \ref{Fig:folded-sfs} shows site frequency spectra estimated from only overlapping sites, i. e. sites with read data for at least 9 individuals in each population sample, as well as from including non-overlapping sites. Overlapping sites should be more enriched for those less affected by allele-drop-out and therefore show a greater bias towards a relative excess of low-frequency variants. This effect can be observed in the diversity statistics reported in table \ref{Tab:diversity_parameters} where, for instance, the expected nucleotide heterozygosity ($\pi_{site}$) for \textit{parallelus} calculated from a \gls{SFS} from only overlapping sites is lower than when calculated from a SFS including non-overlapping sites. This effect, although statistically significant, is relatively small and therefore unlikely to change any conclusions drawn from the data in a qualitative way. This makes sense since loci with greater nucleotide heterozygosity should have a higher chance of allele-drop-out due to polymorphisms in the restriction site and therefore also a lower chance of overlapping between the two populations (i. e. having 9 individuals with read data in each population).
 
 Since the same filtering thresholds were applied to the data from \textit{erythropus} and \textit{parallelus} and since the \textit{parallelus} sample has generally much lower coverage (see fig. \ref{Fig:individual-coverage-dist}), it would seem plausible that, when \emph{including non-overlapping sites}, the sites used to estimate the \gls{SFS} for \textit{parallelus} have been relatively more enriched for those less affected by allele-drop-out than the sites used to estimate the SFS of \textit{erythropus}. However, although absolute parameter values may well be biased in both \textit{parallelus} and \textit{erythropus}, all analyses in this and the following section are also done from only overlapping sites. Any differences between \textit{parallelus} and \textit{erythropus} can therefore not be due to lower coverage in \textit{parallelus} in conjunction with allele-drop-out.  
 \comment{I have estimated $\pi$ from marginal 1D spectra, i. e. from only overlapping sites. The estimates of $\pi_{site}$ change only marginally. I think that rules out that a different degree of allele-drop-out could explain the differences in diversity. See section "marginal spectra" in \texttt{05\_2D\_models.ipynb}.}
@@ -626,20 +657,21 @@ Figure \ref{Fig:folded-sfs-boot-exh} shows that despite the large amount of site
 
 The number of segregating sites ($S$) and the average number of pairwise differences ($\pi_{Tajima}$) are summary statistics of the \gls{SFS}. While $S$ weights each site equally, intermediate frequency variants contribute much more to the magnitude of $\pi$ than high- and low-frequency variants \cite[eq. 1.4]{Wakeley2009}. Both diversity estimates are significantly higher in \textit{parallelus} than in \textit{erythropus} (tab. \ref{Tab:diversity_parameters}).
 
-This seems at odds with the expectation from the hitherto proposed demo- and biogeographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much smaller distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity at the edge of the distribution much more so than for the \textit{erythropus} subspecies \citep{Luca2011}.\todo{Look at data from other European species. Do they show the expected reduction of diversity with distance from the the glacial refuge? see \cite{Hewitt2004, Hewitt1996, Hewitt2000, Ramachandran2005, Slatkin2012, Petit1999, Pool2008}}
+This seems at odds with the expectation from the hitherto proposed historical biogeographic model of a postglacial expansion of \textit{C. p. parallelus} towards central and western Europe from a glacial refuge in the Balkans \citep{Cooper1995, Lunt1998}. \textit{C. p. erythropus} in the Pyrenees on the other hand is expected to be derived from several smaller refuges in southern Spain, i. e. its expansion after the last Ice Age would have covered a much shorter distance. According to this model one would expect the \textit{parallelus} subspecies to have undergone a long series of founder events which should have reduced genetic diversity at the edge of the distribution much more so than for the \textit{erythropus} subspecies \citep{Luca2011}.\todo{Look at data from other European species. Do they show the expected reduction of diversity with distance from the the glacial refuge? see \cite{Hewitt2004, Hewitt1996, Hewitt2000, Ramachandran2005, Slatkin2012, Petit1999, Pool2008}}
 
 That ancestral \textit{parallelus} and \textit{erythropus} expanded from their glacial refuges as a "wave", i. e. without colonisation by rare long--distance migration, is made unlikely by at least two observations: 
 \begin{itemize}
 \item the colonisation of Britain by \textit{C. p. parallelus} before the flooding of the English Channel after the last Ice Age \citep{Cooper1995},
-\item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the \emph{average} dispersal rate of this species of 30 m/generation \citep{Nichols1994}. \todo{\cite{Ibrahim1996}}
+\item the clines for several markers in the Pyrenean hybrid zone between the two subspecies that are too wide to be explained by the \emph{average} dispersal rate of this species of 30 m per generation \citep{Nichols1994}. \todo{\cite{Ibrahim1996}}
 \end{itemize}
-The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. So reported \cite{Lunt1998} intraregional $K_{S}$ values of a mitochondrial sequence that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences.\todo{$K_S$ values in \cite{Cooper1995} from a single nuclear locus contradict this and show about twice as much genetic variation in Spain as in France.} 
+The higher genetic diversity in Pyrenean \textit{parallelus} is not unique to this study though. \cite{Lunt1998} reported intraregional $K_{S}$ values of a mitochondrial sequence that were 1.5 times higher in Pyrenean \textit{parallelus} than in Pyrenean \textit{erythropus} and \cite{Llewellyn2008}, table 3--3, found that nucleotide diversity ($\pi_{Tajima}$) was higher in \textit{parallelus} than in \textit{erythropus} from the Pyrenees in 5 out of 7 expressed sequences. $K_S$ values in \cite{Cooper1995} from a single nuclear locus contradict this and show about twice as much genetic variation in Spain as in France. 
 
-The values of $\pi_{site}$ are slightly (but significantly) higher when including non-overlapping sites than when estimated from only overlapping sites (tab. \ref{Tab:diversity_parameters}). This makes sense since loci with greater nucleotide heterozygosity should have a higher chance of allele-drop-out due to polymorphisms in the restriction site and therefore also a lower chance of overlapping between the two populations (i. e. having 9 individuals with read data in each population).
 
-Both subspecies have a significantly negative Tajima's D (tab.~\ref{Tab:diversity_parameters}). This means that there is an excess of low frequency variants. Besides artefacts in the data or analysis pipeline \citep{Shafer2016a}, this can only have two reasons. First, many variable sites are of recent recent origin, which would be a signal of recent population size expansion\todo{regarding potential reasons for negative Tajima's D see \cite{Reed2005} and \cite{Corbett-Detig2015a}}. Second, pervasive genome-wide selection, positive or negative and at the detected sites or closely linked sites. With negative, or purifying, selection low frequency variants would also be of ancient origin and be kept at low frequency by selection. The Tajima's D estimates also differ significantly between the two subspecies. The estimate for \textit{parallelus} is far more negative than the estimate for \textit{erythropus}. This is as expected from a greater recent population size expansion in \textit{parallelus} than in \textit{erythropus}. 
+%Could it be that parallelus in Pyrenees is derived from an expansion originating in the Balkans but also mixing with a second expansion from the Italian peninsula? This admixture might have offset the diversity decreasing effect of serial founder events \cite{Petit2003}. 
+
+Both subspecies have a significantly negative Tajima's D (tab.~\ref{Tab:diversity_parameters}). This means that there is an excess of low frequency variants. Besides artefacts in the data or analysis pipeline \citep{Shafer2016a}, this can only have two reasons. First, many variable sites are of recent recent origin, which would be a signal of recent population size expansion\todo{regarding potential reasons for negative Tajima's D see \cite{Reed2005} and \cite{Corbett-Detig2015a}}. Second, pervasive genome-wide selection, positive or negative and at the detected sites or closely linked sites. With purifying selection, low frequency variants would also be of ancient origin and be kept at low frequency by selection. The Tajima's D estimates also differ significantly between the two subspecies. The estimate for \textit{parallelus} is far more negative than the estimate for \textit{erythropus}. This is as expected from a greater recent population size expansion in \textit{parallelus} than in \textit{erythropus}. 
 %Europe-wide phylogeographic studies of the two subspecies have indicated that, after the end of the last ice age, \textit{parallelus} spread from refuges in southeastern Europe across Europe and met \textit{erythropus}, which expanded from southern Spain, in the Pyrenees. 
-The difference in Tajima's D observed here therefore would be in line with the scenario inferred by previous phylogeographic studies. Alternatively, a greater ancient population size in \textit{parallelus}, as indicated by the higher genetic diversity estimates, would allow for a greater strength of purifying selection in \textit{parallelus} than in \textit{erythropus}\todo{could it be that RAD markers are biased toward expressed sequences? Are coding sequences GC richer than non-coding sequences?}.
+The difference in Tajima's D observed here therefore would be in line with the scenario inferred by previous phylogeographic studies. Alternatively, a greater ancient population size in \textit{parallelus}, as indicated by the higher genetic diversity estimates, would allow for a greater strength of purifying selection in \textit{parallelus} than in \textit{erythropus} \citep{Corbett-Detig2015a}.\todo{could it be that RAD markers are biased toward expressed sequences? Are coding sequences GC richer than non-coding sequences?}
 
 %%
 %\begin{figure}[htb]
@@ -664,17 +696,17 @@ If all sites were bi-allelic and if there were no linkage among sites, i. e. eac
 \begin{figure}[!hbt]
 \centering
 \includegraphics[width=\textwidth]{2DSFS_folded}
-\caption{Folded joint \gls{SFS} of \textit{erythropus} and \textit{parallelus} from 1,130,775 overlapping sites. The cells contain counts on a log scale of sites with a certain joint allele frequency. The upper right half of the matrix is empty in a folded 2D spectrum and therefore set white. Counts of zero have been set to 1 and appear white in the lower left half of the matrix. This spectrum contains 74,058 sites that are polymorphic in \textit{erythropus} or \textit{parallelus} or both. Monomorphic sites (with joint frequency [0,0]) have been masked for better visualisation.}
+\caption{Folded joint \gls{SFS} of \textit{erythropus} and \textit{parallelus} from 1,130,775 overlapping sites. The cells contain counts on a log scale of sites with a certain joint minor allele frequency. The upper right half of the matrix is empty in a folded 2D spectrum and therefore set white. Counts of zero have been set to 1 and appear white in the lower left half of the matrix. This spectrum contains 74,058 sites that are polymorphic in \textit{erythropus} or \textit{parallelus} or both. Monomorphic sites (with joint frequency [0,0]) have been masked for better visualisation.}
 \label{Fig:2DSFS_folded}
 \end{figure}
 %
 
-A simple \textsl{divergence-in-isolation} model in $\delta a \delta i$ infers a similar divergence time for the two subspecies as previously estimated from mitochondrial sequence data (tab. \ref{Tab:divergence-in-isolation}). Assuming a mitochondrial nucleotide substitution rate of 2\% per million years and no gene flow since the split from their common ancestral population, \cite{Lunt1998} have estimated the divergence time to between 363,000 and 731,000 years.
+A simple \textsl{divergence-in-isolation} model in $\delta a \delta i$ infers a similar divergence time for the two subspecies as previously estimated from mitochondrial sequence data (tab. \ref{Tab:divergence-in-isolation}). Assuming a mitochondrial nucleotide substitution rate of 2\% per million years and no gene flow since the split from their common ancestral population, \cite{Lunt1998} have estimated the divergence time to between 363,000 and 731,000 years. The estimate of divergence time from this model in $\delta a \delta i$ is also very similar to the estimated divergence time derived from the expectation of $D_a$, the net sequence divergence (see eq. \ref{eq:expect_Da}): 504,166 years.
 %
-\begin{table}[!hbt]
+\begin{table}[!bht]
 \centering\small
 \setlength{\tabcolsep}{10pt}
-\caption{Parameters for a simple \textsl{divergence-in-isolation} model inferred with $\delta a \delta i$. $N_{ery}$: diploid population size of \textit{erythropus}, $N_{par}$: diploid population size of \textit{parallelus}, $T$: divergence time in years. The population sizes are assumed to have been constant since the split from the common ancestral population.}
+\caption{Parameters for a simple \textsl{divergence-in-isolation} model inferred with $\delta a \delta i$. $N_{ery}$: diploid population size of \textit{erythropus}, $N_{par}$: diploid population size of \textit{parallelus}, $T$: divergence time in years, -logL: negative log-likelihood of the model spectrum simulated with the given parameter values. The population sizes are assumed to have been constant since the split from the common ancestral population.}
 \label{Tab:divergence-in-isolation}
 \vspace{5pt}
 \begin{tabular}{lll}
@@ -712,9 +744,9 @@ $m$ ($\times 10^{-7}$)  & 2.49  	&  2.41 -- 2.57    \\
 \end{tabular}
 \end{table}
 %
-This \textsl{divergence-with-migration} model can be reduced to the \textsl{divergence-in-isolation} model (without migration) by setting the migration rate to zero. The latter model is therefore nested within the former, allowing for the application of a \gls{LRT} for the statistical significance of the existence of gene flow between \textit{erythropus} and \textit{parallelus}. With the composite likelihood adjustment of the \gls{LRT} test statistic evaluated at the complex model (i. e. \textsl{divergence-with-migration}) optimal parameterisation, the addition of a migration rate parameter greater than zero is highly significant ($p\simeq0.0$). Note, that since here a single parameter is on the boundary of the parameter space, the null distribution of the \gls{LRT} test statistic is $\frac{1}{2}\chi^{2}_0 + \frac{1}{2}\chi^2_1$ \citep{Self1987}. If the adjustment factor is computed with the optimal parameters from the nested \textsl{divergence-in-isolation} model, then a non-zero migration rate has a p-value of 0.011. The observed 2D-SFS therefore seems to provide a robust signal of low but non-zero gene flow between the two subspecies during the history of their divergence.
+This \textsl{divergence-with-migration} model can be reduced to the \textsl{divergence-in-isolation} model (without migration) by setting the migration rate to zero. The latter model is therefore nested within the former, allowing for the application of a \gls{LRT} for the statistical significance of the existence of gene flow between \textit{erythropus} and \textit{parallelus}. With the composite likelihood adjustment of the \gls{LRT} statistic evaluated at the complex model (i. e. \textsl{divergence-with-migration}) optimal parameterisation, the addition of a migration rate parameter greater than zero is highly significant ($p\simeq0.0$). Note, that since here a single parameter is on the boundary of the parameter space, the null distribution of the \gls{LRT} statistic is $\frac{1}{2}\chi^{2}_0 + \frac{1}{2}\chi^2_1$ \citep{Self1987}. If the adjustment factor is computed with the optimal parameters from the nested \textsl{divergence-in-isolation} model, then a non-zero migration rate has a p-value of 0.011. The observed 2D-SFS therefore seems to provide a robust signal of low but non-zero gene flow between the two subspecies during the history of their divergence.
 
-The \textsl{divergence-with-migration} model has markedly reduced residuals for the counts of low frequency shared polymorphisms as compared to the \textsl{divergence-in-isolation} model (fig. \ref{Fig:compare_residuals}). An increased number of shared polymorphisms at low frequency in one or both populations is a signal of gene flow \citep[suppl. mat. section 1.1]{Gutenkunst2009}. Further details can be found in section \vref{Sec:div_time_vs_migration} of the supplementary material.
+The \textsl{divergence-with-migration} model spectrum has markedly reduced residuals for the counts of low frequency shared polymorphisms as compared to the \textsl{divergence-in-isolation} model (fig. \ref{Fig:compare_residuals}). An increased number of shared polymorphisms at low frequency in one or both populations is a signal of gene flow \citep[suppl. mat. section 1.1]{Gutenkunst2009}. Further details can be found in section \vref{Sec:div_time_vs_migration} of the supplementary material.
 %
 \begin{figure}[hbt]
 \centering
@@ -725,7 +757,7 @@ The \textsl{divergence-with-migration} model has markedly reduced residuals for 
 \end{figure}
 %
 
-Allowing the gene flow to be asymmetric further improves the fit to the data (tab \ref{Tab:asymmetric-migration}). 
+Allowing the gene flow to be asymmetric further improves the fit to the data (tab. \ref{Tab:asymmetric-migration}). 
 \begin{table}[hbt]
 \centering\small
 \setlength{\tabcolsep}{10pt}
@@ -746,9 +778,12 @@ $m_{par\rightarrow ery}$ ($10^{-7}$)  & 4.97  &  4.66 -- 5.28    \\
 \bottomrule
 \end{tabular}
 \end{table}
-Are the two migration rates, one for each direction, significantly different from each other? The model with one (symmetrical) migration rate is not just nested within a model with two different migration rates. I have therefore parameterised the \textsl{asymmetric migration} model so that the divergence with (symmetrical) migration model is nested within it by setting $m_2 = r \times m_1$. The divergence with symmetrical migration model has by definition an $r$ of 1. I can then ask: does allowing $r$ to be different from 1 significantly improve the fit to the observed spectrum? The p-value of the LRT test statistic (D), with an adjustment factor calculated by evaluating at the complex model optimal parameterisation, is 0.0 (assuming D is $\chi^2_1$ distributed). With an adjustment factor calculated by evaluating at the nested model optimal parameterisation, the p-value of the LRT is 0.00083. There therefore seems to be a robust signal of asymmetric migration between \textit{erythropus} and \textit{parallelus}. 
+Are the two migration rates, one for each direction, significantly different from each other? The model with one (symmetrical) migration rate is not just nested within a model with two different migration rates. I have therefore parameterised the \textsl{asymmetric migration} model so that the divergence with (symmetrical) migration model is nested within it by setting $m_2 = r \times m_1$. The divergence with symmetrical migration model has by definition an $r$ of 1. I can then ask: does allowing $r$ to be different from 1 significantly improve the fit to the observed spectrum? The p-value of the LRT statistic (D), with an adjustment factor calculated by evaluating at the complex model optimal parameterisation, is 0.0 (assuming D is $\chi^2_1$ distributed). With an adjustment factor calculated by evaluating at the nested model optimal parameterisation, the p-value of the LRT is 0.00083. There therefore seems to be a robust signal of asymmetric migration between \textit{erythropus} and \textit{parallelus}. 
 
-Gene flow is estimated to have been on average $\sim$5 times higher in the direction \textit{parallelus}$\rightarrow$\textit{parallelus} than vice versa (tab. \ref{Tab:asymmetric-migration}). This is in line with the previously reported occurrence of French/Balkan mitotypes on the Spanish side of the Pyrenees \citep{Lunt1998}. One potential reason for stronger effective gene flow from \textit{parallelus} into \textit{erythropus} than vice versa could be that introgressed alleles from \textit{parallelus} had a greater chance to reach those \textit{erythropus} populations that survived the ice ages in southern Spain than introgressed \textit{erythropus} alleles could have reached those \textit{parallelus} populations that survived the ice ages in the Balkans or even further southeast. This is already obvious from the much greater geographical distance of the current hybrid zone (and probably also hybrid zones of previous epochs) to the inferred location of glacial refuges of the two subspecies: southern Spain for \textit{erythropus}, the Balkans for \textit{parallelus} \citep{Lunt1998}\todo{asymmetric homogamy, detected asymmetry in gene flow is ancient and cannot have recent causes}.
+Gene flow is estimated to have been on average $\sim$5 times higher in the direction \textit{parallelus}$\rightarrow$\textit{erythropus} than vice versa (tab. \ref{Tab:asymmetric-migration}). Several observations from previous studies have indicated greater introgression from \textit{parallelus} into \textit{erythropus} (summarised in the chapter \nameref{ch:intro}). 
+%First, the occurrence of French/Balkan mitotypes on the Spanish side of the Pyrenees \citep{Lunt1998}. Second, the cline for a \textit{parallelus} specific nucleolar organiser region on the X chromosome that is displaced about 4 km south of the cline centre for most other characters studied at Col du Pourtalet. Third, females sequentially mated with males of both subspecies that produce far more pure offspring when \textit{C. p. parallelus} is the mother. 
+
+One potential reason for stronger effective gene flow from \textit{parallelus} into \textit{erythropus} than vice versa could be that introgressed alleles from \textit{parallelus} had a greater chance to reach those \textit{erythropus} populations that survived the ice ages in southern Spain than introgressed \textit{erythropus} alleles could have reached those \textit{parallelus} populations that survived the ice ages in the Balkans or even further southeast. This is already obvious from the much greater geographical distance of the current hybrid zone (and probably also hybrid zones of previous epochs) to the inferred location of glacial refuges of the two subspecies \citep{Lunt1998}\todo{asymmetric homogamy, detected asymmetry in gene flow is ancient and cannot have recent causes}.
 
 \begin{table}[hbt]
 \centering\small
@@ -795,9 +830,11 @@ Table \ref{Tab:two-epoch-exp.-size-change} shows the parameters of a two-epoch m
 \end{figure}
 %
 
-Figure \ref{Fig:overlapping_stairway_plot} shows the stairway plots for \textit{erythropus} and \textit{parallelus}. They indicate a much larger ancient population size for \textit{parallelus} with around 4 million than for \textit{erythropus} with around 0.7 million. In addition, the estimate of ancient population size for \textit{erythropus} seems to come with an exceptionally low uncertainty. The uncertainty for the very recent population sizes then increases sharply. This is in contrast to the stairway plot of \textit{parallelus}, which indicates a similar uncertainty for all time intervals. There is no hint of ancient fluctuations in population size. The apparent bottlenecks at around 400 \gls{kya} are likely artefacts of the estimation method \citep{Liu2015}. Both stairway plots indicate a very recent drastic reduction in population size. For the \textit{erythropus} population, the stairway plot indicates a reduction to about 5\% of the ancestral population size ($\sim 35,000$) within just the last 1.5 thousand years. For the \textit{parallelus} population, \texttt{stairway-plot} infers an even more drastic reduction to about 0.5\% of the ancestral population size ($\sim 20,000$). This dramatic reduction in effective population size is inferred to have happened within the last 20 thousand years. 
+Figure \ref{Fig:overlapping_stairway_plot} shows the stairway plots for \textit{erythropus} and \textit{parallelus}. They indicate a much larger ancient population size for \textit{parallelus} with around 4 million than for \textit{erythropus} with around 0.7 million. In addition, the estimate of ancient population size for \textit{erythropus} seems to have an exceptionally low uncertainty. The uncertainty for the very recent population sizes then increases sharply. This is in contrast to the stairway plot of \textit{parallelus}, which indicates a similar uncertainty for all time intervals. There is no hint of ancient fluctuations in population size. The apparent bottlenecks at around 400 \gls{kya} are likely artefacts of the estimation method \citep{Liu2015}. Both stairway plots indicate a very recent drastic reduction in population size. For the \textit{erythropus} population, the stairway plot indicates a reduction to about 5\% of the ancestral population size ($\sim 35,000$) within just the last 1.5 thousand years. For the \textit{parallelus} population, \texttt{stairway-plot} infers an even more drastic reduction to about 0.5\% of the ancestral population size ($\sim 20,000$). This dramatic reduction in effective population size is inferred to have happened within the last 20 thousand years. 
 
-So there is a general agreement between the stairway plots (figure \ref{Fig:overlapping_stairway_plot}), inferred from single population site frequency spectra with \texttt{stairway-plot}, and the \textsl{two-epoch-with-exp-size-change} model inferred from the two population joint \gls{SFS} with $\delta a \delta i$ (fig. \ref{Fig:two_epoch_combined}). Both infer a much larger ancient population size for \textit{parallelus} compared to \textit{erythropus}. However, while $\delta a \delta i$ infers only $\sim$1.7 million as ancient population size for \textit{parallelus}, \texttt{stairway-plot} infers $\sim4$ million. Both programmes infer a very recent population size reduction for both populations. Remember, however, that the model in $\delta a \delta i$ enforced the second size change to happen over the same time period for both populations while the stairway plots have no such restriction. The inferences of both programmes agree about a very drastic population size reduction for the \textit{parallelus} population. However, there is quite a large discrepancy about the inferred size of the recent bottleneck for the \textit{erythropus} population. While \texttt{stairway-plot} infers a very severe bottleneck to a current population size of $\sim$35 thousand, $\delta a \delta i$ infers a only mild bottleneck to $\sim$275 thousand, which is only a reduction by less than 50\% from the ancient population size of $\sim$477 thousand. 
+So there is a general agreement between the stairway plots (figure \ref{Fig:overlapping_stairway_plot}), inferred from single population site frequency spectra with \texttt{stairway-plot}, and the \textsl{two-epoch-with-exp-size-change} model inferred from the two-population joint \gls{SFS} with $\delta a \delta i$ (fig. \ref{Fig:two_epoch_combined}). Both infer a much larger ancient population size for \textit{parallelus} compared to \textit{erythropus}. However, while $\delta a \delta i$ infers only $\sim$1.7 million as ancient population size for \textit{parallelus}, \texttt{stairway-plot} infers $\sim4$ million. Both programmes infer a very recent population size reduction for both populations. Remember, however, that the model in $\delta a \delta i$ enforced the second size change to happen over the same time period for both populations while the stairway plots have no such restriction. The inferences of both programmes agree about a very drastic population size reduction for the \textit{parallelus} population. However, there is quite a large discrepancy about the inferred size of the recent bottleneck for the \textit{erythropus} population. While \texttt{stairway-plot} infers a very severe bottleneck to a current population size of $\sim$35 thousand, $\delta a \delta i$ infers only a mild bottleneck to $\sim$275 thousand, which is only a reduction by less than 50\% from the ancient population size of $\sim$477 thousand. 
+
+The recent population bottleneck shown by the stairway plots for the two subspecies agrees with expectations of range expansion from glacial refuges by long distance dispersal and serial founder events after the end of the last ice age. It also makes sense that the population size started to reduce much earlier in parallelus than erythropus as the range expansion of parallelus must have begun earlier than in erythropus for it to reach the Pyrenees at about the same time as erythropus. It is also congruent with the current biogeographic model that Pyrenean \textit{erythropus} had experienced a much smaller bottleneck due to serial founder events during range expansion than parallelus, since the distance to the glacial refuge is much shorter for Pyrenean \textit{erythropus} than Pyrenean \textit{parallelus}.
 
 In addition to allowing for two epochs with different population sizes, I have also fit two-epoch models to the data that allow for different migration rates between the epochs. The questions is: can we detect a change in the rate of migration over the history of the two subspecies? Table \ref{Tab:ancient-asymmetric-migration} shows the best-fitting parameters for an \textsl{ancient-asymmetric-migration} model in $\delta a \delta i$. This model fixes the migration rate in the second, i. e. recent, epoch ($T_i$) at zero. This model infers that gene flow between \textit{erythropus} and \textit{parallelus} has ceased $\sim$27 thousand years ago (fig. \ref{Fig:ancient_migration_edited}). 
 
@@ -835,15 +872,36 @@ Compared to the single-epoch \textsl{asymmetric-migration} model from above, thi
 \end{figure}
 %
 
-Phylogeographic studies as well as paleoclimatic data strongly suggest that the two subspecies, \textit{erythropus} and \textit{parallelus}, diverged in isolation during last 2 or 3 ice ages and only recently ($\sim$10 \gls{kya}) came into secondary contact\todo{add citation}. Clines of several morphological as well as molecular markers have been shown to be very wide\todo{add citation}, which indicates substantial gene flow across the hybrid zone into adjacent pure populations. The two population samples come from such "pure" populations in close proximity to the hybrid zone. They may therefore show evidence of recent gene flow between the two subspecies. I have therefore also fit a \textsl{secondary-contact} model to the observed spectrum with $\delta a \delta i$. This model specifies divergence in isolation during an initial period followed by a period with (symmetrical) migration between the two subspecies until the present. The best fitting model parameters indicate that \textit{erythropus} and \textit{parallelus} diverged in isolation for 445,694 generations. The two populations then came into secondary contact 587,653 generations ago. So, the best fitting parameters clearly do not specify a recent and relatively short period of secondary contact. Also, compared to the simpler one-epoch \textsl{divergence-with-migration} model, the \textsl{secondary-contact} model improves the fit to the data by only 27 log-likelihood units. Despite this, a linkage adjusted \gls{LRT} indicates that this improvement is highly significant (p-value $< 10^{-7}$).
+Phylogeographic studies as well as paleoclimatic data strongly suggest that the two subspecies, \textit{erythropus} and \textit{parallelus}, diverged in isolation during last 2 or 3 ice ages and only recently ($\sim$10 \gls{kya}) came into secondary contact (see chapter \nameref{ch:intro}). Clines of several morphological, behavioural and molecular markers have been shown to be very wide (some over 40 km) \citep{Butlin1991, Butlin1985, Butlin1985a, Vazquez1994} and their centres often displaced from each other, which indicates substantial gene flow across the hybrid zone \citep{Ferris1993}. \cite{Lunt1998} have found that a population from Pyrenean Spain is genetically more similar to Pyrenean French populations at a mitochondrial sequence (COI) than to other Spanish populations. The two population samples used in this study come from populations in close proximity to the hybrid zone. They may therefore show some evidence of recent gene flow between the two subspecies\todo{what is the distance of the two population samples to the centre of most clines? How wide are the widest clines detected so far? see \cite{Butlin1991}, Jamie thinks that they are unlikely to be influenced by gene flow \cite[p. 68]{Hutchison2013}}. In order to detect this, I have also fit a \textsl{secondary-contact} model to the observed spectrum with $\delta a \delta i$. This model specifies divergence in isolation during an initial period followed by a period with (symmetrical) migration between the two subspecies until the present. The best fitting model parameters indicate that \textit{erythropus} and \textit{parallelus} diverged in isolation for 445,694 generations. The two populations then came into secondary contact 587,653 generations ago. So, the best fitting parameters clearly do not specify a recent and relatively short period of secondary contact. Also, compared to the simpler one-epoch \textsl{divergence-with-migration} model, the \textsl{secondary-contact} model improves the fit to the data by only 27 log-likelihood units. Despite this, a linkage adjusted \gls{LRT} indicates that this improvement is highly significant (p-value $< 10^{-7}$).
 
-The reverse of the \textsl{secondary-contact} model is a model that defines the first epoch as the one where gene flow is allowed, followed by a second epoch with complete isolation. It could therefore also be called a \textsl{primary-contact} model. I have also fitted such a \textsl{primary-contact} model to the data for comparison with the \textsl{secondary-contact} model. Note, that the definition of the \textsl{primary-contact} model is similar to the \textsl{ancient-asymmetric-migration} model described above with the restriction that here there is only one migration rate parameter, i. e. gene flow is assumed to be equal in both directions. Unsurprisingly, the best fit parameters of this \textsl{primary-contact} model indicate a very similar history as the slightly more complex \textsl{ancient-asymmetric-migration} model. It too infers a long initial period of contact between \textit{erythropus} and \textit{parallelus} ($\sim$1.2 million generations) and a very recent cessation of gene flow between the two subspecies ($\sim$28 thousand generations ago). Compared to the nested \textsl{divergence-with-migration} model, it improves the fit to the data by 91 log-likelihood units and a linkage adjusted \gls{LRT} is highly significant (p < 0.004, with conservative adjustment). This confirms that the addition of an epoch without gene flow significantly improves the fit to the data. In addition, a \textsl{primary-contact} model fits the data better than a \textsl{secondary-contact} model by 66 log-likelihood units. Finally, a three-epoch model, where in the most recent epoch gene flow is allowed to recommence, converges on a time parameter for the third epoch that is practically zero. That is, the three-epoch model converges on the \textsl{primary-contact} model. This underscores that there is no significant signal of recent gene flow in the data. This may in part be caused by a lack of power to detect recent demographic events with the current sample size of 18 individuals \citep{Robinson2014}.
+The reverse of the \textsl{secondary-contact} model is a model that defines the first epoch as the one where gene flow is allowed, followed by a second epoch with complete isolation. It could therefore also be called a \textsl{primary-contact} model. I have also fitted such a \textsl{primary-contact} model to the data for comparison with the \textsl{secondary-contact} model. Note, that the definition of the \textsl{primary-contact} model is similar to the \textsl{ancient-asymmetric-migration} model described above with the restriction that here there is only one migration rate parameter, i. e. gene flow is assumed to be equal in both directions. Unsurprisingly, the best fit parameters of this \textsl{primary-contact} model indicate a very similar history as the slightly more complex \textsl{ancient-asymmetric-migration} model. It too infers a long initial period of contact between \textit{erythropus} and \textit{parallelus} ($\sim$1.2 million generations) and a very recent cessation of gene flow between the two subspecies ($\sim$28 thousand generations ago). Compared to the nested \textsl{divergence-with-migration} model, it improves the fit to the data by 91 log-likelihood units and a linkage adjusted \gls{LRT} is highly significant (p < 0.004, with conservative adjustment). This confirms that the addition of an epoch without gene flow significantly improves the fit to the data. In addition, a \textsl{primary-contact} model fits the data better than a \textsl{secondary-contact} model by 66 log-likelihood units. Finally, a three-epoch model, where in the most recent epoch gene flow is allowed to recommence, converges on a time parameter for the third epoch that is practically zero. That is, the three-epoch model converges on the \textsl{primary-contact} model. This underscores that there is no significant signal of recent gene flow in the data. This may in part be caused by a lack of power to detect very low and recent gene flow with the current sample size of 18 individuals \citep{Robinson2014}. If the two populations had been affected by recent gene flow across the hybrid zone it must have been so low that the frequencies of introgressed alleles are too low to be detected with a sample size of just 18 individuals. This result confirms previous clines analyses of many other characters that indicated that these two populations could be regarded as pure representatives of their respective subspecies \citep{Vazquez1994}.
 
-Accounting for migration between the two populations leads to the inference of a much earlier divergence than from previous studies. There seems to be a signal of a very recent and drastic bottleneck, at least in PAR. Much greater ancient population size for PAR than for ERY. Dadi infers a much less severe bottleneck for ERY than stairway-plot. 
+The inferred demographic models as depicted in the figures \ref{Fig:two_epoch_combined} and \ref{Fig:ancient_migration_edited} should not be taken at face value. They are necessarily gross simplification of the actual demographic history. For instance, continuous migration during an epoch has been assumed in all models. The actual demographic history is certainly more complex and likely to be one of short periods of intermediate gene flow (while in secondary contact during interglacials) interrupted by long periods without gene flow (while in separate glacial refugias) \citep{Hewitt1990}. A model that does not contain this complexity will necessarily estimate a longterm average gene flow that is very low.
 
-A recent bottleneck is what would be expected from a series of founder events during range expansion after the last ice age. It would make sense that this had been less severe for ERY than for PAR. 
+Both populations sampled are in an area that was inhospitable for these grasshoppers or even covered by glaciers during the last ice age. They must therefore have a history of range expansion from glacial refugia and colonisation of new habitat that formed between $\sim$20,000 and 10,000 years ago. It is not known whether a particular climatic event coincides with the estimated divergence time of about 1.0--1.2 \gls{mya}. The estimated divergence time between \textit{erythropus} and \textit{parallelus} may simply be the time of first settlement of Iberia and the Balkans or Turkey by \textit{C. parallelus}. The divergence time estimate is based on an estimate of per nucleotide mutation rate in other insects \citep{Liu2017} and assumes a molecular clock, i. e no variation in substitution rate over the time of divergence between the two subspecies. 
 
-A model with ancient gene flow fits the observed 2D SFS better than a secondary contact model. There is no signal of recent gene flow. The detected asymmetry of gene flow can therefore not just be a consequence of different distances to the hybrid zone centre of the two populations or hybrid zone movement. Rather, this hints at intrinsic asymmetric isolation, which is corroborated by asymmetric homogamy in crossings between PAR and ERY \citep{Bella1992, Hutchison2013}.preferential homogamy in crossing experiments with \textit{parallelus} females \citep{Bella1992, Hutchison2013} and the .
+
+%%--------------------------------
+%\subsection{Conclusion}
+%%--------------------------------
+%
+%The two subspecies \textit{erythropus} and \textit{parallelus} have a high genome-wide average genetic differentiation ($F_{ST}$: \Sexpr{signif(Fst.bhatia.global, digits=3)}, 95\% bootstrap \gls{CI}: \Sexpr{signif(bhatia.CI95[1], 3)} -- \Sexpr{signif(bhatia.CI95[2], 3)}). The net sequence divergence $D_a$ of 0.003, however, clearly marks them as a semi-isolated species pair in the "grey zone" of the speciation continuum \citep{Roux2016}.
+%
+%The two subspecies  have not diverged in complete allopatry. Instead there is a robust signal of ancient and asymmetric gene flow during the history of the divergence of the two subspecies (see tab. \ref{Tab:asymmetric-migration}). Allowing for gene flow doubles the divergence time estimate from about 0.5 to 1.1 \gls{mya}. Gene flow had been about 5 times higher in the direction from \textit{parallelus} to \textit{erythropus} than vice versa. This is in line with many previous studies of the Pyrenean hybrid zone that indicated an asymmetry of gene flow in the same direction (see chapter \nameref{ch:intro}). Gene flow was apparently low enough and selection on alleles causing \gls{DMI} high enough to allow the evolution of \gls{DMI} between the two subspecies \citep{Bank2012a}. The combined scaled unidirectional migration rates ($2Nm$) estimated by the \textsl{two-epoch-exp.-size-change} (fig. \ref{Fig:two_epoch_combined}) and \textsl{ancient-asymmetric-migration} models (fig. \ref{Fig:ancient_migration_edited}) are close to 1. Under the (strong) assumption from Wright's island model that every migrant allele is unique, a scaled migration rate greater 0.5 prevents divergence by genetic drift \citep[p. 134--135]{Gillespie2004}. It therefore seems likely that natural selection has played an important role in the divergence of the two subspecies.
+%
+%The \textit{parallelus} population had a much greater ancient population size than \textit{erythropus}: at least twice as high according to $\delta$a$\delta$i and four times as high according to \texttt{stairway-plot}. There seems to be a signal of a recent (postglacial) drastic bottleneck in \textit{parallelus} as would be expected from serial founder events during range expansion from a Balkan glacial refuge. However, it seems difficult to reconcile this with the strongly negative Tajima's $D$ for \textit{parallelus} (tab. \ref{Tab:diversity_parameters}), which would indicate a population size expansion. The signal for a population bottleneck in \textit{erythropus} is more ambiguous. While \texttt{stairway-plot} infers a strong and very recent bottleneck from the 1D \gls{SFS} (fig. \ref{Fig:overlapping_stairway_plot}), $\delta$a$\delta$i infers only a mild bottleneck from the 2D \gls{SFS} (fig. \ref{Fig:two_epoch_combined}). A less severe bottleneck would be consistent with the expected lower effect of serial founder events during the expansion of \textit{erythropus} from its glacial refuge in southern Spain to the Pyrenees.
+%
+%A primary contact model (i. e. with ancient gene flow) fits the data better than a secondary contact model. That means that there is no significant signal of recent gene flow in the genome-wide 2D \gls{SFS}. This could be due to insufficient power to detect recent and low gene flow with the sample size of 18 individuals from each population \citep{Robinson2014}. This also indicates that the detected asymmetry of gene flow between \textit{erythropus} and \textit{parallelus} cannot just be a consequence of different distances of the sampled populations to the hybrid zone centre (fig. \ref{Fig:sampling-sites-map}) or hybrid zone movement. Rather, this hints at intrinsic mechanisms for asymmetric isolation (see chapter \nameref{ch:intro}).
+
+
+
+%Accounting for migration between the two populations leads to the inference of a much earlier divergence than from previous studies. There seems to be a signal of a very recent and drastic bottleneck, at least in PAR. Much greater ancient population size for PAR than for ERY. Dadi infers a much less severe bottleneck for ERY than stairway-plot. 
+
+%A recent bottleneck is what would be expected from a series of founder events during range expansion after the last ice age. It would make sense that this had been less severe for ERY than for PAR. 
+
+%A model with ancient gene flow fits the observed 2D SFS better than a secondary contact model. There is no signal of recent gene flow. The detected asymmetry of gene flow can therefore not just be a consequence of different distances to the hybrid zone centre of the two populations or hybrid zone movement. Rather, this hints at intrinsic asymmetric isolation, which is corroborated by asymmetric homogamy in crossings between PAR and ERY \citep{Bella1992, Hutchison2013}.preferential homogamy in crossing experiments with \textit{parallelus} females \citep{Bella1992, Hutchison2013} and the .
+
+%The stairway plots do not indicate any population bottleneck in the past that would roughly coincide with a glacial maximum. Maybe this is because stairway-plot cannot detect all bottlenecks and in particular not two bottlenecks tightly following each other. 
 
 
 
@@ -869,7 +927,7 @@ A model with ancient gene flow fits the observed 2D SFS better than a secondary 
 
 \todo[inline]{Discuss dadi's estimate of divergence time in light of previous estimates: assumptions required for inference, allowing for gene flow, uncertainties}
 
-\todo[inline]{Describe best-fit model and second best-fit model}
+\todo[inline, color=green]{Describe best-fit model and second best-fit model}
 
 \todo[inline]{Learn the theory of creating a genetic map! What kind of data is necessary? Is it conceivable to use genotype likelihoods for that? \cite{Ma2012}}
 
@@ -880,27 +938,49 @@ A model with ancient gene flow fits the observed 2D SFS better than a secondary 
 \todo[inline]{Does an outlier test make sense? Would it get us closer to incompatibility loci? According to \cite{Shuker2005} we do not expect alleles at sterility loci to be divergently fixed. So should we look for $F_{ST}$ outliers at all? It might be a nice exercise anyway and we do expect markers that are close to sterility genes to be more divergent than average. The average genome-wide level of $F_{ST}$ is already high.}
 
 \todo[inline]{For the introduction on hybrid sterility, read Dettman's papers on experimental evolution with yeast and Neurospora as well as MacNair's papers on copper tolerant Mimulus.}
-%
-%
-%
-\section{Future directions}
-\label{sec:future_directions}
-%
-%
-%
-Sequencing an individual of a closely related outgroup species, e. g. \textit{Chorthippus montanus}, would allow the polarisation of allele frequencies with respect to ancestral and derived states, assuming that the outgroup sequence generally contains the ancestral state (i. e. that the infinite-sites mutation model holds across the two species). This would allow the analysis of unfolded (i. e. derived allele frequency) spectra and provide greater power to distinguish between alternative demographic models than with the folded (i. e. minor allele frequency) spectra that only could be constructed with the data available for this study \cite[p. 128]{Wakeley2009}.\todo{D-statistics and PBS statistics, Fay and Wu's H statistic}
 
-A moderate increase in the number of sequenced individuals (>50 per population) would ensure enough power to infer more recent demographic events, like a recent secondary contact \citep{Adams2004, Robinson2014}. For accurate inference of very recent population size changes (<10 kya) more than 180 chromosomes need to be sampled \citep[suppl. mat., fig. 2, middle row]{Liu2015}.
+\todo[inline]{Lower coverage in PAR than in ERY: did I see this in previous analyses of the same data set? Could it be that Vsearch clusters were mostly initiated by ERY sequences and that the RADome is therefore more similar in sequence to ERY than PAR? Could it be that PAR reads do not map as easily to this ERY reference sequence?}
 
-In this study, all sequenced grasshoppers were male. There is no male sex chromosome and so all males are haploid for the X chromosome. The X chromosome is the fourth largest of the 9 chromosomes in \textit{Chorthippus parallelus} (8 autosomes plus X) \cite[fig. 2]{Gosalvez1988}. That is, about 1/9th of the RAD loci in this study have been haploid while ANGSD assumed all loci to be diploid. Since these loci appear homozygous they contribute more toward even than uneven frequency classes, thereby creating large deviations from all possible expected counts. This is likely to reduce power to distinguish between demographic models. Since female grasshoppers have two X chromosomes, a future study that attempts to estimate accurate sample allele frequencies should therefore sequence female individuals instead of male individuals. 
+\todo[inline]{blast annotate RADome contigs with Schistocerca transcriptome. What proportion of RADome contigs get a blast hit? This may give clues as to whether SbfI restriction has preferentially selected regions close to or within genes.}
 
-It may be possible to find patterns of LD in the data \cite{Kemppainen2015}.
+\todo[inline]{Could PCR errors have affected the SFS? I could not remove PCR errors. I once calculated the proportion of tags with PCR errors in my very first RAD data analysis report.}
 
-Downsample reads from \textit{erythropus} to the median coverage of \textit{parallelus} and redo PCA, etc \citep{Patterson2006}.
-
-Effective density of informative RAD markers for Fst-outlier scans may be too low to safely detect all regions under divergent selection \citep{Roesti2012a} from population samples. Second generation hybrid populations provide much extended LD and therefore are much greater chance to detect regions under selection in hybrids. 
-
-\cite{Shafer2016a} have shown that many population genetic summary statistics (with the notable exception of $F_{ST}$) and in particular parameter estimates of demographic models vary widely with the assembly method and the filters used for RAD data. They, however, did not include population genetic estimates from genotype likelihoods. The robustness of ML estimates for demographic model parameters against a different de novo assembly strategy and different filtering should therefore be tested.
+\todo{add a section with Conclusions, summarising the results}
+%%
+%%
+%%
+%\section{Future directions}
+%\label{Sec:future_directions}
+%%
+%%
+%%
+%Sequencing an individual of a closely related outgroup species, e. g. \textit{Chorthippus montanus}, would allow the polarisation of allele frequencies with respect to ancestral and derived states, assuming that the outgroup sequence generally contains the ancestral state (i. e. that the infinite-sites mutation model holds across the two species). This would allow the analysis of unfolded (i. e. derived allele frequency) spectra and provide greater power to distinguish between alternative demographic models than with the folded (i. e. minor allele frequency) spectra that only could be constructed with the data available for this study \cite[p. 128]{Wakeley2009}.\todo{D-statistics and PBS statistics, Fay and Wu's H statistic}
+%
+%It is necessary to vary the parameters for RADome de novo assembly and locus filtering and investigate the effects of this on the SFS and the inference of demographic models. It may also be necessary to to see the effect of genotype calling with samtools/bcftools on the SFS and demographic model inference.
+%
+%A moderate increase in the number of sequenced individuals (>50 per population) would ensure enough power to infer more recent demographic events, like a recent secondary contact \citep{Adams2004, Robinson2014}. For accurate inference of very recent population size changes (<10 kya) more than 180 chromosomes need to be sampled \citep[suppl. mat., fig. 2, middle row]{Liu2015}.
+%
+%In this study, all sequenced grasshoppers were male. There is no male sex chromosome and so all males are haploid for the X chromosome. The X chromosome is the fourth largest of the 9 chromosomes in \textit{Chorthippus parallelus} (8 autosomes plus X) \cite[fig. 2]{Gosalvez1988}. That is, about 1/9th of the RAD loci in this study have been haploid while ANGSD assumed all loci to be diploid. Since these loci appear homozygous they contribute more toward even than uneven frequency classes, thereby creating large deviations from all possible expected counts. This is likely to reduce power to distinguish between demographic models. Since female grasshoppers have two X chromosomes, a future study that attempts to estimate accurate sample allele frequencies should therefore sequence female individuals instead of male individuals. 
+%
+%It may be possible to find patterns of LD in the data \cite{Kemppainen2015}.
+%
+%RAD markers should be screened for signals of selection (BAMOVA, Lotterhos) and outlier loci be removed before demographic analysis.
+%
+%Downsample reads from \textit{erythropus} to the median coverage of \textit{parallelus} and redo PCA, etc \citep{Patterson2006}.
+%
+%Effective density of informative RAD markers for Fst-outlier scans may be too low to safely detect all regions under divergent selection \citep{Roesti2012a} from population samples. Second generation hybrid populations provide much extended LD and therefore are much greater chance to detect regions under selection in hybrids. 
+%
+%\cite{Shafer2016a} have shown that many population genetic summary statistics (with the notable exception of $F_{ST}$) and in particular parameter estimates of demographic models vary widely with the assembly method and the filters used for RAD data. They, however, did not include population genetic estimates from genotype likelihoods. The robustness of ML estimates for demographic model parameters against a different de novo assembly strategy and different filtering should therefore be tested.
+%
+%Only the frequencies of individual SNP's have been analysed here. The variance of the number of SNP's between loci could provide further information about demography. Also, from sequence reads haplotype sequences could be inferred and used for instance in mismatch distribution analysis. 
+%
+%With the $\Psi$ statistic of \cite{Peter2013}, one could detect whether a range expansion has occurred from putative ancestral populations or even detect where the expansion originated.
+%
+%Are locus based analyses likely to lead to meaningful results with this data set? Is the current data set too noisy for inferences about individual loci? Plot a few distributions of SAF's.
+%
+%Information about LD for $N_e$ estimation 
+%
+%\cite{Peter2013} describe a powerful statistic $\Psi$ that can easily be calculated from 2D SFS's and that allows the detection of range expansion and even inferring the origin of expansion. A dense sampling across Europe and Turkey and RAD sequencing of only one individual per sampling site could allow the robust inference of range expansion by serial founder events (with stepping stone migration) and the origin of expansion, i. e. the location of glacial refuges. In addition, barriers to dispersal could also be inferred. The caveat is that \cite{Peter2013} model stepping stone migration, which has been shown to be incompatible with cline widths in the Pyrenean hybrid zone as well as the colonisation of Britain before the flooding of the English Channel at the end of the last ice age. For an application, see \cite{Potter2016}. For a pipeline that combines more methods see \cite{He2017}.
 
 %
 %
@@ -916,8 +996,7 @@ Effective density of informative RAD markers for Fst-outlier scans may be too lo
 %
 %
 The base map was created from two \gls{DEM} tiles  of the \href{http://www.cgiar-csi.org/data/srtm-90m-digital-elevation-database-v4-1}{SRTM 90m Digital Elevation Database v4.1} provided by CGIAR--CSI \citep{Jarvis2008}. I used \href{http://www.qgis.org/en/site/}{QGIS} to extract the polygons corresponding to the country borders of France and Spain from a shapefile containing all world-wide country borders (downloaded from \href{http://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/}{Natural Earth}).
-Raster manipulations (projection, merging, clipping to polygon outline, color relief, hill shade and slope shade)  were carried out with utilities from the \href{www.gdal.org}{Geospatial Data Abstraction Library (GDAL)}. The exact GDAL command lines can be provided upon request.  Raster overlays and map design was performed with \href{https://tilemill-project.github.io/tilemill/}{\texttt{TileMill}}, which renders maps using \href{http://mapnik.org/}{\texttt{mapnik}}. Final map image manipulations were performed with \href{https://inkscape.org/en/}{InkScape}. 
-
+Raster manipulations (projection, merging, clipping to polygon outline, color relief, hill shade and slope shade)  were carried out with utilities from the \href{www.gdal.org}{Geospatial Data Abstraction Library (GDAL)}. The exact GDAL command lines can be provided upon request.  Raster overlays and map design was performed with \cite{QGIS2017} (version 2.18). 
 %
 %
 %
@@ -946,10 +1025,10 @@ $$
 \begin{figure}
 \centering
 \subcaptionbox{Simulating Illumina reads from the \textit{Heliconius melpomene} reference sequence and mapping with different mapping programmes.\label{Fig:obs-vs-reported-FPR-a}}[\textwidth]
-	{\includegraphics[width=\textwidth]{obs-vs-reported-FPR-1}}
+	{\includegraphics[width=.9\textwidth]{obs-vs-reported-FPR-1}}
 \hfill
 \subcaptionbox{Simulating Illumina reads from \textit{Heliconius melpomene} and \textit{Homo sapiens} reference sequence and mapping with \texttt{bowtie2}.\label{Fig:obs-vs-reported-FPR-b}}[\textwidth]
-	{\includegraphics[width=\textwidth]{obs-vs-reported-FPR-Hmel-Hsap-1}}
+	{\includegraphics[width=.9\textwidth]{obs-vs-reported-FPR-Hmel-Hsap-1}}
 \caption{Comparison of reported and observed false positive mapping rate (FPR). The reported FPR is the mapping quality score transformed back into a probability. The observed FPR is the proportion of all mapped reads with a specific mapping quality score that have an incorrect mapping position reported by the mapping programme. The diagonal line indicates 1:1 correspondence. For points above the diagonal the mapping programme underestimates the true mapping quality. For \texttt{bowtie2} several points have been annotated with the reported mapping quality score of the reads they represent.}
 \label{Fig:obs-vs-reported-FPR}
 \end{figure}
@@ -982,9 +1061,9 @@ I have used programmes in the tool package \href{http://algorithms.cnag.cat/wiki
 %
 %
 %
-I filtered out contigs that had a variable site with a \emph{negative} inbreeding coefficient $F_{IS}$ at the significance level of 0.05 from an \gls{LRT} \citep{Vieira2013}. This was intended as a measure to reduce false-positive SNP's due to paralogous sequences mapping to the same position in the de novo reference assembly. Sites with a \emph{positive} within population $F_{IS}$ could be affected by allele drop out (due to polymorphisms in the restriction site), they could be affected by PCR duplicates or they could map to the X chromosome, since all sequenced individuals are males (and there is no homologous male sex chromosome in \textit{Chorthippus parallelus}, \cite{Gosalvez1988}). 38\% of contigs from \textit{erythropus} and 48\% of contigs from \textit{parallelus} have a SNP with significantly positive $F_{IS}$ at the 0.05 level. But note that \cite{Vieira2013}'s method for estimating the per-site inbreeding coefficient from genotype likelihoods shows a strong upward bias when used with very low coverage data ($1\times$) and few individuals sequenced (10) (see their figure 1). Further analysis reveals a strong correlation of the p-value from the \gls{LRT} with the \gls{maf} of the SNP (see figure \ref{Fig:MAF_by_pval_all}). I have therefore opted not to filter contigs against positive $F_{IS}$ of their SNP's. This filter would have preferentially removed SNP's (and their contigs) with high \gls{maf} and would therefore have distorted the \gls{SFS} which most analyses in this chapter are based on. \cite{Vieira2013}'s method jointly estimates genotype frequencies, minor allele frequency and per-site inbreeding coefficient. It is therefore not surprising that a site with greater \gls{maf} provides more power to detect an excess of homozygote genotypes as compared to HWE expectations. All SNP's with an excess of heterozygotes show very high \gls{maf} even for p-values as high as 0.1. This must be due to the fact that genotype frequencies and \gls{maf} are confounded parameters: a high estimate for heterozygote frequencies cannot go together with a low estimate for \gls{maf}. It is likely that an increase in sample size would increase the power to detect an excess of heterozygotes \citep{Vieira2013}. 
+I filtered out contigs that had a variable site with a \emph{negative} inbreeding coefficient $F_{IS}$ at the significance level of 0.05 from an \gls{LRT} \citep{Vieira2013}. This was intended as a measure to reduce false-positive SNP's due to paralogous sequences mapping to the same position in the de novo reference assembly. Sites with a \emph{positive} within population $F_{IS}$ could be affected by allele drop out (due to polymorphisms in the restriction site), they could be affected by PCR drift or they could map to the X chromosome, since all sequenced individuals are males (and there is no homologous male sex chromosome in \textit{Chorthippus parallelus}, \cite{Gosalvez1988}). 38\% of contigs from \textit{erythropus} and 48\% of contigs from \textit{parallelus} have a SNP with significantly positive $F_{IS}$ at the 0.05 level. But note that \cite{Vieira2013}'s method for estimating the per-site inbreeding coefficient from genotype likelihoods shows a strong upward bias when used with very low coverage data ($1\times$) and few individuals sequenced (10) (see their figure 1). Further analysis reveals a strong correlation of the p-value from the \gls{LRT} with the \gls{maf} of the SNP (see figure \ref{Fig:MAF_by_pval_all}). I have therefore opted not to filter contigs against \emph{positive} $F_{IS}$ of their SNP's. This filter would have preferentially removed SNP's (and their contigs) with high \gls{maf} and would therefore have distorted the \gls{SFS} which most analyses in this chapter are based on. \cite{Vieira2013}'s method jointly estimates genotype frequencies, minor allele frequency and per-site inbreeding coefficient. It is therefore not surprising that a site with greater \gls{maf} provides more power to detect an excess of homozygote genotypes as compared to HWE expectations. All SNP's with an excess of heterozygotes show very high \gls{maf} even for p-values as high as 0.1. This must be due to the fact that genotype frequencies and \gls{maf} are confounded parameters: a high estimate for heterozygote frequencies cannot go together with a low estimate for \gls{maf}. It is likely that an increase in sample size would increase the power to detect an excess of heterozygotes \citep{Vieira2013}. 
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 \includegraphics[width=1.1\textwidth]{MAF_by_pval_all}
 \caption{Dependence of the p-value from an \gls{LRT} test of HWE on the \gls{maf} of the SNP. The upper two panels show SNP's with $F > 0$ at the given significance level. The lower two panels show SNP's with $F < 0$. SNP's were detected with a \gls{LRT} of the \gls{maf} being 0.0 with a significance level of 0.01.}
@@ -1002,24 +1081,24 @@ I filtered out contigs that had a variable site with a \emph{negative} inbreedin
 %
 I have removed PCR duplicates by collapsing read pairs into unique representatives per individual with \texttt{starcode} allowing for an edit distance of 2. I have applied the same filters as before, except for the addition of positive $F_{IS}$ filtering (which removed 225 contigs) and requiring only at least $1\times$ coverage in at least 15 individuals for each included reference site. I only counted reads with a mapping quality score of at least 5. These filters retained 2,455,851 sites on 48,556 contigs. The average per site and per individual coverage is 1.14$\times$. The across sample coverage per site has a modal value of 25 (see fig. \ref{Fig:dedup_cov_dist}). 
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{dedup-across-sample-cov-dist-1}
 \caption{Across sample (i. e. global) coverage distribution with de-duplicated read data after filtering (excluding HWE filtering which removed 3,486 contigs). The distribution is based 2,683,395 sites on 52,042 contigs. The red dashed line marks the modal coverage. Compare with figure \vref{Fig:global-coverage-dist}.}
 \label{Fig:dedup_cov_dist}
 \end{figure}
 %
-The individual coverage distributions show a median coverage of $1\times$ for all \textit{erythropus} individuals and a median of $0\times$ for most \textit{parallelus} individuals (fig. \ref{Fig:dedup_cov_dist}). For some more details see the notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/BAM_dedup/DEDUP.md}{DEDUP}.
+The individual coverage distributions show a median coverage of $1\times$ for all \textit{erythropus} individuals and a median of $0\times$ for most \textit{parallelus} individuals (fig. \ref{Fig:dedup-ind-cov-dist}). For some more details see the notebook \href{https://github.com/claudiuskerth/PhDthesis/blob/master/Data_analysis/SNP-indel-calling/BAM_dedup/DEDUP.md}{DEDUP}.
 %
-\begin{figure}[htb]
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{dedup-ind-cov-dist-1}
 \caption{Individual coverage distributions from de-duplicated read data after filtering (excluding HWE filtering which removed 3,486 contigs). The distribution is based 2,683,395 sites on 52,042 contigs. Compare with figure \vref{Fig:individual-coverage-dist}.}
-\label{Fig:dedup_cov_dist}
+\label{Fig:dedup-ind-cov-dist}
 \end{figure}
 %
 \\
-As before, for the estimation of 1D site frequency spectra I required read data from at least 9 (of 18) individuals to include a reference position. Unfortunately, the \emph{Big Data} set without PCR duplicates does not provide enough information for the estimation of allele frequency spectra (fig. \ref{Fig:EryPar_1DSFS_dedup}). Different minimum coverage filtering for at least $3\times$ in 10 or 15 individuals did not lead to improved results. It could be that there simply is not enough information in the de-duplicated read data to distinguish alleles from sequencing errors.
+As before, for the estimation of 1D site frequency spectra I required read data from at least 9 (of 18) individuals to include a reference position. Unfortunately, the \emph{Big Data} set without PCR duplicates does not provide enough information for the estimation of allele frequency spectra (fig. \ref{Fig:EryPar_1DSFS_dedup}). Different minimum coverage filtering for at least $3\times$ in 10 or 15 individuals did not lead to improved results. It could be that the low coverage of the de-duplicated read data does not allow the distinction between polymorphisms and sequencing errors.
 %
 \begin{figure}
 \centering
@@ -1044,7 +1123,7 @@ SNP's were called with a LRT of the \gls{maf} being 0 at a p-value threshold of 
 
 Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} shows the plot of the first two eigenvectors of a PCA with SNP calling and normalisation. SNP calling finds 68,590 SNP's. When comparing with the PCA from figure \vref{Fig:PCA} a general similarity in the relative coordinates between individuals is apparent. However, the first eigenvector in figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} explains only 13\% of the total genotypic variation in the data compared to 23\% in the PCA without SNP calling (fig. \ref{Fig:PCA}).
 %
-\begin{figure}[!hbt]
+\begin{figure}
 \centering
 << PCA-with-SNP-calling-and-normalisation, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -1055,7 +1134,7 @@ Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation} shows the plot of the fi
 \\
 Figure \ref{Fig:PCA-with-SNP-calling-and-normalisation-and-genotype-calling} shows the plot of the first two eigenvectors of a PCA with genotype calling. The genotype with the maximum posterior probability was called. Again, when compared to the PCA plot in figure \ref{Fig:PCA} a general similarity of the relative coordinates between individuals is apparent (except for the switch in sign on the second axis, which is chosen randomly by the \texttt{prcomp} function in \texttt{R}). With genotype calling, the proportion of total variance explained by the first eigenvector is reduced even further to just 11\%.
 %
-\begin{figure}[!hbt]
+\begin{figure}
 \centering
 << PCA-with-SNP-calling-and-normalisation-and-genotype-calling, out.width='.9\\linewidth', echo=FALSE, cache=TRUE>>=
 @
@@ -1079,7 +1158,7 @@ $F_{ST}$ is a summary statistic of the joint \gls{SFS} from two or more populati
 
 Hudson/Bhatia's genome-wide $F_{ST}$ has shown a bias of \Sexpr{signif(perm.fst.CI95[2], 2)} as determined by the median of the empirical null distribution estimated by 100 permutations of population label. I have also estimated the empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated from the 2D site frequency spectra estimated from \gls{saf} files with permuted population labels. The median of this distribution indicates a bias in the genome-wide $F_{ST}$ estimate of 0.037 (fig. \ref{Fig:Fst_dadi_perm_null_dist}).
 %
-\begin{figure}[!hbt]
+\begin{figure}
 \centering
 \includegraphics[width=.9\textwidth]{Fst_dadi_perm_null_dist}
 \caption{Empirical null distribution of Weir \& Cockerham's $F_{ST}$ estimated in $\delta a \delta i$ from the 2D-SFS's of 100 permutations of population label.}
@@ -1120,9 +1199,9 @@ The stairway plots in figure \ref{Fig:overlapping_stairway_plot} have been creat
 %
 %
 The figures \ref{Fig:divergence_time_series} and \ref{Fig:migration_rate_series} show a series of expected two-dimensional site frequency spectra simulated with $\delta a \delta i$ for different divergence times and migration rates. They show that qualitatively quite similar expected spectra can be generated when either reducing divergence time or increasing the migration rate. $N_a$ stands for the inferred common ancestral population size of the two populations, which was calculated by first computing Watterson's $\theta$ from the observed 2D-SFS (see eq. \vref{Eq:Wattersons-theta}) and assuming $\theta_W \simeq 4N_a \mu L$.
-With the mutation rate $\mu$ set to to $3 \times 10^{-9}$ and the total sequence length $L$ set to 1,130,775, this results in an estimate of $N_a$ of 1,126,030. A divergence time of $0.222 \times 2N_a$ therefore corresponds to 500,000 generations. 
+With the mutation rate $\mu$ set to $3 \times 10^{-9}$ and the total sequence length $L$ set to 1,130,775, this results in an estimate of $N_a$ of 1,126,030. A divergence time of $0.222 \times 2N_a$ therefore corresponds to 500,000 generations. 
 %
-\begin{figure}[!hbt]
+\begin{figure}
 %\centering
 \includegraphics[width=\textwidth]{divergence_time_series}
 \caption{Expected two-dimensional site frequency spectra for an increasing series of divergence times without migration.}
@@ -1131,7 +1210,7 @@ With the mutation rate $\mu$ set to to $3 \times 10^{-9}$ and the total sequence
 %
 Migration rates reported in figure \ref{Fig:migration_rate_series} are scaled by $2N_a$, i. e. divide by $2N_a$ to get $m$, the proportion of new immigrant individuals per generation.
 %
-\begin{figure}[!hbt]
+\begin{figure}
 %\centering
 \includegraphics[width=\textwidth]{migration_rate_series}
 \caption{Expected two-dimensional site frequency spectra for an increasing series of migration rates and with a fixed divergence time of 500,000 generations.}
@@ -1139,9 +1218,9 @@ Migration rates reported in figure \ref{Fig:migration_rate_series} are scaled by
 \end{figure}
 %
 
-Figure \ref{Fig:compare-model-spectra} compares the best fitting model spectra from $\delta a \delta i$ for the \textsl{divergence-in-isolation} model and the \textsl{divergence-with-migration} model. The greatest qualitative difference between the two model spectra is the much higher number of expected low frequency shared polymorphisms in the \textsl{divergence-with-migration} model spectrum and the higher expected number of high frequency shared polymorphisms is in the \textsl{divergence-in-isolation} model spectrum. The model parameters for these two spectra are given in table \vref{Tab:divergence-in-isolation} and \vref{Tab:divergence-with-migration}, respectively.
+Figure \ref{Fig:compare-model-spectra} compares the best fitting model spectra from $\delta a \delta i$ for the \textsl{divergence-in-isolation} model and the \textsl{divergence-with-migration} model. The greatest qualitative difference between the two model spectra is the much higher number of expected low frequency shared polymorphisms in the \textsl{divergence-with-migration} model spectrum and the higher expected number of high frequency shared polymorphisms in the \textsl{divergence-in-isolation} model spectrum. The model parameters for these two spectra are given in table \vref{Tab:divergence-in-isolation} and \vref{Tab:divergence-with-migration}, respectively.
 %
-\begin{figure}[!htb]
+\begin{figure}
 %\centering
 \includegraphics[width=.49\textwidth]{split_NOmig_model_spectrum}
 \hspace{10pt}
@@ -1151,7 +1230,7 @@ Figure \ref{Fig:compare-model-spectra} compares the best fitting model spectra f
 \end{figure}
 %
 %
-\begin{figure}[!htb]
+\begin{figure}
 \centering
 \includegraphics[width=.9\textwidth]{NOmig_vs_MIG_resid_plot}
 \caption{Plot of Poisson residuals between the best fit model spectra in figure \ref{Fig:compare-model-spectra} (each scaled by the optimal $\theta$).}
@@ -1173,7 +1252,7 @@ Figure \ref{Fig:NOmig_vs_MIG_resid_plot} shows the plot of Poisson residuals bet
 %
 Figure \ref{Fig:Model_comparison_asym_mig_two_epoch} shows the best fitting model spectra from the \textsl{asymmetric-migration} model and the \textsl{two-epoch-with-exp-size-change} model inferred with $\delta a \delta i$ together with plots of the Poisson residuals between them. The plot of Poisson residuals in the bottom left indicates that the main difference between the two models is in how they fit low frequency variants private to \textit{parallelus}. Of these variants, the \textsl{two-epoch-with-exp-size-change} model predicts far fewer singletons and many more doublets, triplets, etc.
 
-\begin{figure}[!htb]
+\begin{figure}
 \centering
 \includegraphics[width=.9\textwidth]{Model_comparison_asym_mig_two_epoch}
 \caption{Top: plots of the best fitting model spectra of the \textsl{asymmetric-migration} model and the \textsl{two-epoch-with-exp-size-change} model. Bottom: the Poisson residuals between the two best fitting model spectra (each scaled by the optimal $\theta$).}
@@ -1182,88 +1261,84 @@ Figure \ref{Fig:Model_comparison_asym_mig_two_epoch} shows the best fitting mode
 %
 
 
+%%
+%%
+%%
+%\section{TODO}
+%%
+%%
+%%
+%% add [$\surd$] after \item to mark entry as completed
+%% \ding{} requires \usepackage{pifont}
+%\begin{itemize}
+%\item Rewrite introduction:
+%\begin{itemize}
+%\item literature about the hybrid zone
+%\item ice ages, climatic history
+%\item other phylogeographic and demographic studies
+%\item other hybrid zones
+%\item evolution of hybrid incompatibilities (Dettman and Mimulus)
+%\end{itemize}
+%\item Material and Methods:
+%\begin{itemize}
+%\item[\ding{52}] added standard RAD protocol to appendix of thesis
+%\item[\ding{52}] moved description of map creation to suppl. mat.
+%\item[\ding{52}] linked to \texttt{assembly.sh} at github (not bitbucket)
+%\item[\ding{52}] included de novo assembly sketch
+%\item[\ding{52}] produced a distribution of mapping qualities before and after filtering
+%\item[\ding{52}] explained mapping quality of 5 in \texttt{bowtie2}, see \texttt{Mapping\_Tool\_Test.Rmd}
+%\item[\ding{52}] included a plot of the length distribution of contigs after filtering
+%\item[\ding{52}] included plot of distribution of average mappability per contig before and after filtering
+%\item[\ding{52}] specified ANGSD version for HWE filtering, no BAQ was applied
+%\item[\ding{52}] summarized and documented positive Fis estimates (see \texttt{assembly.sh, line 2461} and \texttt{MAF\_by\_pval.ipynb})
+%\item[\ding{52}] added deduplication analysis, showed coverage distribution
+%\item[\ding{52}] added PCA with SNP calling and normalisation to suppl. mat.
+%\item[\ding{52}] reviewed Fst analysis
+%\item[\ding{52}] document bootstrapping over contigs in genetic diversity section
+%\item[\ding{52}] document determination of overlapping sites and estimation of statistics from those
+%\item[\ding{52}] added subsection with brief description of stairway-plot with custom version, briefly described how it works
+%\item[\ding{52}] mentioned which version of dadi I used
+%\item[\ding{52}] add subsection brief description of dadi analysis with links to IPython notebooks, should include a brief description of how it works
+%\item[\ding{52}] add plot for spectra with varying divergence time and varying migration rate
+%\item[\ding{52}] aren't divergence time and migration rate conflated? how can dadi distinguish between those? see section 1.1 of \cite[suppl. mat.]{Gutenkunst2009}
+%\item mention that 1D model fitting with dadi was not successful (stairway-plot instead)
+%\item add description of models for figure \ref{Fig:fst-by-maf-dadi-4Models}
+%\item document translation of standard deviations from genetic units to absolute units in suppl. mat.
+%\end{itemize}
+%\item Results:
+%\begin{itemize}
+%\item[\ding{52}] documented Fst analysis, bootstrapping, Fst.Rmd
+%\item[\ding{52}] estimated Fst from 2D SFS with dadi, including bootstraps
+%\item[\ding{52}] replaced 2D SFS with one that contains logarithm of counts
+%\item[\ding{52}] add folded 2D spectrum to results section
+%\item[\ding{52}] added figure of 2-epoch model
+%\item[\ding{52}] added figure of primary contact model
+%\item[\ding{52}] add table with model parameters for the 2-epoch and primary contact model including 95\% CI
+%\item[\ding{52}] add CI to divergence time in simple divergence model
+%\item[\ding{52}] add CI to divergence time in divergence with gene flow model
+%\item was gene flow low enough to allow divergence by drift (see \cite{Bank2012})
+%\item What happened $\sim$1.5 Mya in the Pyrenees? \cite{Webb1992, Hewitt2011, Hewitt2004, Sommer2009}
+%\item discuss assumed mutation rate and the influence my uncertainty in it on parameter estimates in absolute units, \cite{Liu2017, Keightley2009}
+%\item read about the potential effects of allele-dropout on SFS and discuss
+%\item read about potential reasons for negative Tajima's D and discuss
+%\item read up on serial founder effect and discuss
+%\item link chapter 2 and three, how are both connected?
+%\item polish references
+%\end{itemize}
+%\end{itemize}
+%
+%%----------------------------
+%% Bibliography
+%%----------------------------
+%
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+%%
 %
 %
-%
-\section{TODO}
-%
-%
-%
-% add [$\surd$] after \item to mark entry as completed
-% \ding{} requires \usepackage{pifont}
-\begin{itemize}
-\item Rewrite introduction:
-\begin{itemize}
-\item literature about the hybrid zone
-\item ice ages, climatic history
-\item other phylogeographic and demographic studies
-\item other hybrid zones
-\item evolution of hybrid incompatibilities (Dettman and Mimulus)
-\end{itemize}
-\item Material and Methods:
-\begin{itemize}
-\item[\ding{52}] added standard RAD protocol to appendix of thesis
-\item[\ding{52}] moved description of map creation to suppl. mat.
-\item[\ding{52}] linked to \texttt{assembly.sh} at github (not bitbucket)
-\item[\ding{52}] included de novo assembly sketch
-\item[\ding{52}] produced a distribution of mapping qualities before and after filtering
-\item[\ding{52}] explained mapping quality of 5 in \texttt{bowtie2}, see \texttt{Mapping\_Tool\_Test.Rmd}
-\item[\ding{52}] included a plot of the length distribution of contigs after filtering
-\item[\ding{52}] included plot of distribution of average mappability per contig before and after filtering
-\item[\ding{52}] specified ANGSD version for HWE filtering, no BAQ was applied
-\item[\ding{52}] summarized and documented positive Fis estimates (see \texttt{assembly.sh, line 2461} and \texttt{MAF\_by\_pval.ipynb})
-\item[\ding{52}] added deduplication analysis, showed coverage distribution
-\item[\ding{52}] added PCA with SNP calling and normalisation to suppl. mat.
-\item[\ding{52}] reviewed Fst analysis
-\item[\ding{52}] document bootstrapping over contigs in genetic diversity section
-\item[\ding{52}] document determination of overlapping sites and estimation of statistics from those
-\item[\ding{52}] added subsection with brief description of stairway-plot with custom version, briefly described how it works
-\item[\ding{52}] mentioned which version of dadi I used
-\item[\ding{52}] add subsection brief description of dadi analysis with links to IPython notebooks, should include a brief description of how it works
-\item[\ding{52}] add plot for spectra with varying divergence time and varying migration rate
-\item[\ding{52}] aren't divergence time and migration rate conflated? how can dadi distinguish between those? see section 1.1 of \cite[suppl. mat.]{Gutenkunst2009}
-\item mention that 1D model fitting with dadi was not successful (stairway-plot instead)
-\item add description of models for figure \ref{Fig:fst-by-maf-dadi-4Models}
-\item document translation of standard deviations from genetic units to absolute units in suppl. mat.
-\end{itemize}
-\item Results:
-\begin{itemize}
-\item[\ding{52}] documented Fst analysis, bootstrapping, Fst.Rmd
-\item[\ding{52}] estimated Fst from 2D SFS with dadi, including bootstraps
-\item[\ding{52}] replaced 2D SFS with one that contains logarithm of counts
-\item[\ding{52}] add folded 2D spectrum to results section
-\item[\ding{52}] added figure of 2-epoch model
-\item[\ding{52}] added figure of primary contact model
-\item[\ding{52}] add table with model parameters for the 2-epoch and primary contact model including 95\% CI
-\item[\ding{52}] add CI to divergence time in simple divergence model
-\item[\ding{52}] add CI to divergence time in divergence with gene flow model
-\item was gene flow low enough to allow divergence by drift (see \cite{Bank2012})
-\item What happened $\sim$1.5 Mya in the Pyrenees? \cite{Webb1992, Hewitt2011, Hewitt2004, Sommer2009}
-\item discuss assumed mutation rate and the influence my uncertainty in it on parameter estimates in absolute units, \cite{Liu2017, Keightley2009}
-\item read about the potential effects of allele-dropout on SFS and discuss
-\item read about potential reasons for negative Tajima's D and discuss
-\item read up on serial founder effect and discuss
-\end{itemize}
-\end{itemize}
-
-%----------------------------
-% Bibliography
-%----------------------------
-
-\bibliographystyle{elsarticle-harv}
-\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+%\end{document}
 %
 
-%----------------------------
-% Appendices
-%----------------------------
-%\begin{appendices} % Using appendices environment for more functunality
-\chapter{Appendix}
-
-\input{../Appendix1/appendix1}
-
-
-%\end{appendices}
-
-\end{document}
-
+%%%%%%%%%%%%%%%%
+%\end{comment}
+%%%%%%%%%%%%%%%%

@@ -1,91 +1,419 @@
-\documentclass[a4paper,12pt,times,print,index,oneside,custommargin]{PhDThesisPSnPDF}
-%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
+%% !TEX TS-program = Knitr
+%\documentclass[a4paper,12pt,times,print,oneside,custommargin,custombib]{../Classes/PhDThesisPSnPDF}
+%% cannot use glossary package and option 'index' to PhDThesisPSnPDF class
+%%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
+%
+%\usepackage{import}
+%
+%\input{../Preamble/preamble}
+%
+%%******************************** Glossary *********************************************
+%\input{../Glossary/glossary}
+%%\input{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Glossary/glossary}
+%
+%%%%%%% -- KNITR SETUP -- %%%%%%%%%%
+%<<setup_ch3, include=FALSE, cache=FALSE>>=
+%library(knitr)
+%# set global chunk options for this child doc
+%opts_chunk$set(
+%	fig.align='center', 
+%	fig.show='hold'
+%	)
+%options(replace.assign=TRUE,width=90)
+%# set up working directory for all code chunks, obviates the need to
+%# setwd() in each chunk
+%opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
+%# read in external R code file
+%read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
+%# include preamble from main doc for isolated compilation
+%# doesn't currently work because relative paths are used there
+%# set_parent('../thesis.Rnw')
+%@
+%%************************************************************************************************
+%
+%
+%\begin{document}
+%
+%\tableofcontents
+%
+%%\listoffigures
+%
+%%\listof{cmd}{List of commands}
+%
+%%\todototoc
+%\listoftodos
+%
+%\printglossaries
 
-\usepackage{import}
 
-\input{../Preamble/preamble}
-
-%******************************** Glossary *********************************************
-\input{../Glossary/glossary}
-
-%%%%%% -- KNITR SETUP -- %%%%%%%%%%
-<<setup_ch3, include=FALSE, cache=FALSE>>=
-library(knitr)
-# set global chunk options for this child doc
-opts_chunk$set(
-	fig.align='center', 
-	fig.show='hold'
-	)
-options(replace.assign=TRUE,width=90)
-# set up working directory for all code chunks, obviates the need to
-# setwd() in each chunk
-opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
-# read in external R code file
-read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
-# include preamble from main doc for isolated compilation
-# doesn't currently work because relative paths are used there
-# set_parent('../thesis.Rnw')
-@
-%************************************************************************************************
-
-
-\begin{document}
-
-\tableofcontents
-
-\listoffigures
-
-\listof{cmd}{List of commands}
-
-%\todototoc
-\listoftodos
-
-\printglossaries
-
-
-% **************************** Define Graphics Path **************************
-%% Note, every path needs to end with a "/" !!!
+%% **************************** Define Graphics Path **************************
+%%% Note, every path needs to end with a "/" !!!
 \ifpdf
     \graphicspath{
     {./Figs/Raster/}
     {./Figs/PDF/}
     {./Figs/}
-    {../Data_analysis/reference-mapping/figure/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX//Data_analysis/de-novo-assembly/figures/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX//Data_analysis/reference-mapping/figure/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/2_Chapter/Figs/Raster/}
     }
 \else
     \graphicspath{ 
     {./Figs/Vector/}
     {./Figs/}
-%    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/}
     }
 \fi
 
 %
 %
 %
-\chapter{General Introduction}
+\chapter{General Introduction}\label{ch:intro}
 %
 %
 %
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.9\linewidth]{grasshopper}
+\caption{\textit{Chorthippus parallelus parallelus}. Male individual from Finland.}
+\label{Fig:grasshopper}
+\end{figure}
 
-\abstract{
-Here I shall write a review about:
+
+
+%\abstract{
+%Here I shall write a review about:
+%\begin{itemize}
+%\item[\ding{52}] the current state of knowledge about (the history of) the hybrid zone
+%\item a few example of the inferred demographic histories from other species
+%\item[\ding{52}] RAD technology
+%\item population genomics with low coverage sequencing and without genotype calling
+%\item[\ding{52}] description of the aims of the research
+%\end{itemize}
+%}
+
+%------------------------------------
+\section{Hybrid Zone in the Pyrenees}
+%------------------------------------
+
+A hybrid zone of the grasshopper \textit{Chorthippus parallelus} (Orthoptera: Acrididae) occurs along the Pyrenees mountains between France and Spain where an Iberian subspecies, \textit{erythropus}, meets the nominate subspecies \textit{parallelus} \citep{Butlin1985, Butlin1985a}. In Europe, the subspecies \textit{parallelus} is distributed from the Balkans in the southeast to southern France, northwards up to England (but not Ireland) and to southern Finland and eastwards at least until the Ural and Caucasus mountains. On the Iberian peninsula, it is replaced by the subspecies \textit{erythropus}. 
+%Both subspecies meet along the Pyrenees between France and Spain forming a hybrid zone. 
+The two subspecies meet and hybridise in transverse mountain passes (cols) of the Pyrenees. The hybrid zone is not confined to the High Pyrenees. The hybrid zone extends into the eastern (Catalan region) and western foothills (Basque region) of the Pyrenees \citep{Buno1994, Hewitt1993}. The hybrid zones in the Basque region and probably also the Catalan region appear to be much wider than in the High Pyrenees \citep{Buno1994, Vazquez1994}. This is likely due to greater population densities and fewer barriers to dispersal (e. g. high mountains) allowing a greater degree of mixing. 
+
+%Detailed ecological studies did not find significant differences in habitat between the northern and southern edge of the hybrid zone \citep{Virdee1990}\comment{I cannot check this at the moment}. It therefore seems unlikely that local adaptation to different habitats is the cause for the clines observed for many characters across the hybrid zone. The hybrid zone is more likely to be maintained by a balance between gene flow and selection against hybrids \citep{Barton1985}.
+
+%-----------------------------------------------------------
+\subsubsection{In what characters have subspecies diverged?}
+%-----------------------------------------------------------
+The two subspecies have diverged in many characters. They include morphological characters \citep{Butlin1985, Butlin1991}, mating behaviour, i. e. male calling and courtship song, cuticular hydrocarbons and female preference \citep{Butlin1985a, Ritchie1989, Ritchie1990,Buckley2003},  chromosomal characters \citep{Gosalvez1988, Bella2007} and a neuropeptide \citep{Roth2007}. The two subspecies also have different patterns of infection by the bacterial endosymbiont \textit{Wolbachia} \citep{Zabal-Aguirre2010, Zabal-Aguirre2014} with a generally lower infection frequency in \textit{parallelus} than in \textit{erythropus}.
+
+
+%------------------------------------------------------
+\subsubsection{Phylogeographic studies of \textit{Chorthippus parallelus} in Europe}
+%------------------------------------------------------
+
+The historical biogeography and population structure of \textit{C. parallelus} in Europe has been extensively studied by \cite{Cooper1995} and  \cite{Lunt1998}. Based on these studies, the current hybrid zone is believed to have formed by secondary contact following range expansion after the last glaciation from two different refugia as the ice retreated in the Pyrenees some 9-12,000 years ago. The absence of shared haplotypes between Spanish and French populations at an anonymous nuclear sequence marker (cpnl-1) indicates extensive lineage sorting, which can only be caused by a substantial time of divergence with no or very low gene flow \citep{Cooper1993}. Mitochondrial sequence divergence between \textit{erythropus} and \textit{parallelus} has indicated a total divergence time of around 500,000 years \citep{Lunt1998}. This had assumed a mutation rate of 2\% per million years and no gene flow during divergence. 
+
+It seems very likely that large fluctuations in climate, like ice ages, and the concomitant habitat changes have played a major role in repeatedly separating the ranges of the two subspecies for thousands of generations \citep{Hewitt1990}. Secondary contact during interglacial periods would then have allowed some gene exchange between the two subspecies. This would have reduced genetic divergence at least for those populations close to the contact zone. However, those populations would go extinct at the onset of the next ice age. So any gene flow that did not reach populations in glacial refuges did not affect the longterm divergence of the two subspecies.
+
+Phylogeographic studies strongly suggest that the \textit{parallelus} populations on the French side of the Pyrenees are derived from populations in the Balkans (southeastern Europe) and that \textit{erythropus} populations on the Spanish side of the Pyrenees are derived from a refuge in the south of the Iberian peninsula. Strong molecular genetic and chromosomal differentiation within Spain suggests that current \textit{erythropus} populations are derived from several independent refugia in southern Spain \citep{Bella2007, Cooper1993}. In particular, there seems to be strong divergence between Pyrenean and northern Spanish populations on the one hand and central and southern Spanish populations on the other hand. 
+%This may explain the much smaller inferred ancestral population size for \textit{erythropus}. The \textit{parallelus} refugial populations may not have been as isolated from each other and more than one could have contributed to the recolonisation of northern Europe. Too much speculation!
+
+
+%--------------------------------------------------
+\subsubsection{Hybrid zone as a natural laboratory}
+%--------------------------------------------------
+
+With an average haplotype divergence of 1.7\% at a single nuclear locus \citep{Cooper1993}\todo[color=green]{it should be possible to calculate genome-wide average sequence divergence from the 2D-SFS. I have done that. see new\_1D\_SFS.Rmd}, the two subspecies may still be at an intermediate stage in the process of speciation \citep{Mallet2008, Roux2016}. This would make this system suitable for the study of reproductive isolation mechanisms that evolve during the early stages of speciation which do not necessarily have to be similar to those that evolve toward the end of speciation or after speciation is complete.
+
+In the laboratory, F$_{1}$ hybrid males produced from crosses between 'pure' \textit{parallelus} and 'pure' \textit{erythropus} taken from either side of the hybrid zone are almost completely sterile with degenerate testes and a severely disrupted meiosis \citep{Hewitt1987, Virdee1992, Bella1990}. Hybrid females on the other hand are fully fertile. This is therefore an example of Haldane's rule \citep{Turelli1995}.
+Males collected from the hybrid zone, however, are almost completely fertile \citep{Ritchie1992}. The absence of sterile males in the hybrid zone is likely due to the reconstruction of compatible (presumably ancestral) genotypes caused by selection against incompatible combinations of derived alleles \citep{Gavrilets1997}. The two subspecies are polymorphic for these negative epistatic interactions \citep[roughly 10\% of F$_1$ hybrid males are fully fertile][]{Shuker2005} and thus compatible (i.e. ancestral) alleles can reach the centre of the hybrid zone. This also means that genetic markers, even when in complete linkage disequilibrium with a causative variant underlying sterility, are not necessarily expected to be divergently fixed between the two subspecies. 
+
+Within a transect of the hybrid zone, clines for different characters vary greatly in width suggesting that the underlying genes have introgressed to different degrees since the secondary contact of the two subspecies. Selection in hybrids will restrict the introgression of those parts of the genome that are responsible for Dobzhansky-Muller incompatibilities between the genomes of the two subspecies, whereas neutral loci should introgress to a large extent into the other subspecies' genomic background by recombination. The clines of several characters are also much wider than would be expected for neutral introgression given the life time dispersal distance of these grasshoppers of less than 30 m \citep{Virdee1990} and the number of generations since secondary contact of around 9,000 years \citep{Hewitt1990}. Those broad clines are a likely relict of the colonisation of the hybrid zone by rare long distance dispersal \citep{Nichols1994}. Initially broad clines for characters under selection in hybrids should on the other hand have converged to equilibrium narrow clines in just a few hundred generations \citep{Barton1985}. This should increase the power to detect genetic markers under selection in hybrids in a hybrid zone analysis with a dense genome-wide marker set \citep{Gompert2011}. In addition, the bimodal distribution of testis follicle lengths (a good proxy for sterility) of backcross hybrids suggests that only a few loci of large effect contribute to hybrid sterility [\citealp[fig.~4-3]{Llewellyn2008} and \citealp{Shuker2005}]. 
+
+The two subspecies also have divergent infection patterns with the endosymbiont \textit{Wolbachia} \citep{Zabal-Aguirre2010}. That is a low infection frequency in the \textit{parallelus} populations where the B strain of \textit{Wolbachia} is predominant versus a high infection frequency in \textit{erythropus} populations where the F strain is predominant. Unidirectional cytoplasmic incompatibility causes an average reduction of 32.5\% in the proportion of embryos among eggs as compared to crosses between uninfected individuals \citep{Zabal-Aguirre2014}. This, in addition with the slightly less severe bidirectional cytoplasmic incompatibility, should lead to considerable reproductive isolation between the two subspecies. So, male hybrid sterility and divergent mating systems are not the only reproductive barriers between the two subspecies. The occurrence of several reproductive barriers also speaks for a rather old divergence of the two subspecies. 
+
+Another subspecies of \textit{C. parallelus} has been detected in Italy from nuclear sequence \citep{Cooper1995} and chromosomal differentiation and a hybrid zone between the Italian subspecies and the northern European and Balkan subspecies (\textit{parallelus}) based on cytogenetic markers has been described in the Alps \citep{Flanagan1999}. Interestingly, the Italian subspecies seems to be more closely related to the Iberian subspecies (\textit{erythropus}) than to \textit{parallelus} \citep{Cooper1995} and, in contrast to the Pyrenean hybrid zone, natural male hybrids have been found that do show meiotic abnormalities and abnormally developed sperm. This may indicate that the hybrid zones in the Alps are much younger than those in the Pyrenees.
+
+%\cite{Sommer2009}
+
+%--------------------------------------------------------------------------------
+\subsubsection{Evidence for asymmetric introgression across the hybrid zone}
+%--------------------------------------------------------------------------------
+
+%Clines for several morphological characters are up to 16 km wide at Col de la Quillane, but 7 are wider than 16 km (up to 36 km) at Col du Pourtalet \citep{Butlin1991}. The clines of many characters are also greatly displaced from the centre of most characters.
+
+Clines of several morphological as well as molecular markers have been shown to be very wide in different transects through the hybrid zone (up to 40 km) \citep{Butlin1991,Butlin1985,Butlin1985a,Vazquez1994} and their centres are often displaced from each other, which indicates substantial gene flow across the hybrid zone.
+
+\cite{Bella1992} have found preferential homogamy (i. e. production of pure rather than hybrid offspring) in \textit{parallelus} females sequentially mated with males from both subspecies. In a similar study, \cite{Hutchison2013} found that \textit{parallelus} males outcompete \textit{erythropus} males in siring offspring regardless of the females' subspecies status. This indicates some mechanism(s) of postmating isolation. A very good candidate for this is unidirectional cytoplasmic incompatibility caused by divergent frequencies of \textit{Wolbachia} infection in the populations used for those crossing experiments \citep{Zabal-Aguirre2010, Zabal-Aguirre2014}. The fact that \textit{parallelus} males sire more offspring in both types of matings indicates a greater potential for introgression of the \textit{parallelus} genome (including the X chromosome) into the \textit{erythropus} genome than vice versa. This is particularly true when males contribute more to gene flow than females due to their higher dispersal distances as has been estimated in a closely related grasshopper species \citep{Bailey2003}.
+
+\cite{Lunt1998} have found that a population from Pyrenean Spain (Escarilla) is more similar to French populations at a mitochondrial sequence marker (COI) than to all other Spanish populations. If this pattern is a result of introgression of mitochondrial haplotypes from \textit{parallelus} into Pyrenean \textit{erythropus}, then it could be driven by \textit{Wolbachia} \citep{Hurst2005, Raychoudhury2010, Gompert2008}. This is supported by the finding of \cite{Zabal-Aguirre2010} that, in the hybrid zone, the shift of infection from \textit{parallelus} type to \textit{erythropus} type occurs on the Spanish side of the Pyrenees. Mitochondrial and \textit{Wolbachia} genomes should be in strong linkage disequilibrium, since both are maternally inherited. The spread of a \textit{Wolbachia} strain (or the uninfected state) should therefore also lead to the spread of its associated mitochondrium. 
+%The same could apply to the introgression of an X-chromosomal cytogenetic marker into parallelus \cite{Ferris1993}.
+%This indicates introgression of mitochondrial haplotypes across the hybrid zone from \textit{parallelus} into \textit{erythropus}. However, using mitochondrial markers for inference of historical population demography and biogeography has been critisized by \cite{Hurst2005}. They based their criticism on pervasive signals of selection and selective sweeps caused by the strong linkage disequilibrium with the also maternally inherited endosymbiont \textit{Wolbachia}.
+
+\cite{Shuker2005} have estimated clines for sterility in a transect through the hybrid zone by mating pure males of each subspecies with females taken from across the hybrid zone and scoring sterility in their male offspring. They have found that the sterility cline from backcrosses with \textit{parallelus} males is much wider on the hybrid side (i. e. \textit{erythropus} side) of the sterility cline centre than on the pure side and also much wider than the cline on the hybrid side for backcrosses with \textit{erythropus} males. This indicates that the compatible (i. e. ancestral) alleles at the sterility causing loci are more common in \textit{erythropus} than in \textit{parallelus} and therefore the barrier to genome-wide introgression caused by sterility is weaker for alleles from \textit{parallelus} than from \textit{erythropus}.
+
+\cite{Ferris1993} have shown that an X-chromosomal nucleolar organiser region (NOR, a cluster of ribosomal DNA) specific to \textit{parallelus} has introgressed deeply into \textit{erythropus} genomic background in the Pyrenean hybrid zone. At the transect across the Col de la Quillane the cline centre for this marker is some 15 km south of the centre of most other clines. This indicates substantial introgression of X-chromosomal sequences from \textit{parallelus} into \textit{erythropus}. A much more extreme indication of introgression has been found by \cite{Bella2007}. They have shown that an X-chromosomal interstitial heterochromatic band that is closely associated with the NOR characteristic of \textit{parallelus} has introgressed about 400 km into the northwest of the Iberian peninsula into the south of the Cantabrian mountains. Interestingly, the X-NOR did not introgress or is not active in \textit{erythropus} genomic background.
+
+There is not just evidence of introgression from \textit{parallelus} into \textit{erythropus}. \cite{Butlin1991} have shown that at a transect in the western Pyrenees (Col du Pourtalet) many morphological characters have cline centres that are greatly displaced towards the north into \textit{parallelus} territory. However, this is the only study that I am aware of that indicates substantial introgression from \textit{erythropus} into \textit{parallelus}. So there seems to be ample direct and indirect evidence for substantial introgression from \textit{parallelus} into \textit{erythropus} since the formation of the Pyrenean hybrid zone some 10 \gls{kya} (and potentially also in previous interglacials) as detailed above and only scant evidence for gene flow in the other direction.
+
+%This is contradicted by laboratory F$_1$ hybrid males that show greater meiotic disturbance if their X chromosome is from \textit{C. p. parallelus} \citep{Bella1990}. This is however only in F1. There should be no natural F1 hybrids. 
+
+%An anonymous nuclear sequence marker (cpnl-1) has a cline width of about 40 km at Col de la Quillane, a transect in the eastern Pyrenees and the one from which the two distal populations have been analysed in this study \citep{Vazquez1994}.
+%Very broad clines are found in the western end of Pyrenees \citep{Buno1994}. 
+%and at least 400 km to the west into the south of the Cantabrian mountains
+
+
+
+
+
+%----------------------------------------------------
+\subsubsection{Dispersal and serial founder effects}
+%----------------------------------------------------
+Most species on Earth have experienced range shifts and expansions into their current habitat following the changes in environmental conditions due to climate warming at the end of the last ice age between 18,000 and 10,000 years ago. Many species are geographically subdivided into distinct subspecies which form hybrid zones where they meet. Many of these hybrid zones are secondary, having formed after allopatric divergence in different ice age refugia \citep{Hewitt1999, TABERLET1998}.
+
+%During the Quarternary (starting 2.4 Mya), the Earth has experienced  ice ages. The extreme changes in climate and habitat must have led to contractions and subsequent expansions in the distributions of virtually all land living organisms studied so far. Many species survived the ice ages in more than one refugium. This allowed for the divergence of genomes between the different refugia. During interglacials, the populations expanded into formerly uninhabitable territory and in many cases came into secondary contact with populations derived from a different glacial refuge, forming hybrid zones and exchanging gene variants. 
+%The end of the last ice age in Europe some 10,000 years ago.
+
+The recolonisation of previously inhospitable habitat during range expansion should have led to a series of founder events \citep{Peter2015}. 
+These are severe population bottlenecks caused by the founding of new populations by very few colonists. This is followed by initially exponential (census) population size increase. Later gene flow should have little impact on gene frequencies in established populations \citep{Hewitt1996, Waters2013}. A series of founder events should produce a strong negative correlation between genetic diversity and geographical distance from the source population. Similarly, it should produce a strong positive correlation of genetic divergence with geographical distance from the origin of expansion \citep{Peter2013}. Both correlations are strongest right after the time of range expansion and should decay over time depending on the dispersal ability of the species. 
+
+In many species it has indeed been found that genetic diversity decreases the further away a population is from the origin of range expansion \citep[e. g. in humans, ][]{Luca2011}. In particular, populations from the north of a distribution range often have lower genetic diversity than southern populations, which are closer to glacial refugia \citep{Hewitt1996}. There are, however, also exceptions to this overall pattern. For example, \cite{Petit1999} have shown a lack of decreasing genetic diversity of mitochondrial sequences with distance to putative glacial refugia in the bat species \textit{Nyctalus noctula}. It is very likely that the exceptional dispersal capability of this migratory species can at least partly explain this observation.
+
+In \textit{Chorthippus parallelus}, the spatial distribution of genetic variation across Europe at neither a nuclear nor a mitochondrial locus had clearly shown a reduction of genetic diversity with distance from the putative glacial refuge in the Balkans or Greece (see intraregionial $K_S$ values in table 2 of \citealp{Cooper1995} and table 1 of \citealp{Lunt1998}). There is also no increase of genetic distance with geographic distance to putative ancestral populations in the southern Balkans in those two data sets (see their pairwise $K_{ST}$ values).
+%Furthermore, there is no significant correlation of genetic divergence with Euclidian geographic distance at the anonymous nuclear sequence locus from samples across Europe and Turkey \citep{Korkmaz2014} \todo{but note that a Mantel test between all population pairs tests for isolation-by-distance, not recent range expansion, use KST values instead}. 
+The general reduction in genetic diversity from southern to northern European populations found by \cite{Cooper1995} does not necessarily need to be a signal from postglacial range expansion either. A possible alternative explanation would be smaller effective population sizes in the north due to greater forest cover. For instance, the dryer climate in the south could have allowed more wildfires to create the open grassland that is the suitable habitat for \textit{C. parallelus}.  
+
+Serial founder models are based on stepping-stone dispersal that is over discrete locations that are colonised one by one and only by individuals from neighbouring locations. However, it is obvious that most species do not disperse that way. Individual based simulation studies of recolonisation by \cite{Ibrahim1996} have shown that the current spatial distribution of genotypes is very dependent on the \emph{distribution} of individual lifetime dispersal distances of the species (i. e. not just the average individual dispersal distance) as well as on the dispersal of other species it depends on, e. g. food plant species. They included leptokurtic dispersal functions with fat tails that allow rare long distance dispersal. The simulations showed that colonists founding new populations can initially reproduce exponentially, while later migrants will arrive when the population size is closer to its carrying capacity and therefore contribute relatively little to the gene pool of the population. The result are large patches of reduced genetic diversity and those patches persist for many hundreds of generations. According to this study, recolonisation by rare long distance dispersal seems to produce a smaller increase of genetic distance with geographic distance than stepping-stone dispersal and this signal also decays more quickly over time. It also shows that rare long distance dispersal leads to a greater reduction in genetic diversity than stepping-stone dispersal. 
+
+However, when looking at a slightly broader spatial scale than individual subpopulations, the reduction in genetic diversity in a newly colonised area with respect to refugial areas due to serial founder events can be reversed if long distance dispersal is common enough \citep{Bialozyt2006}. In order for long distance dispersal to speed up recolonisation appreciably (e. g. reducing colonisation time by one half) as compared to diffusion dispersal, it's rate needs to be so high that genetic diversity on a regional scale is hardly diminished during colonisation. Founder populations do not have time to grow into large patches and admixture between adjacent founder populations as well as ongoing migration from the source of expansion could erode the small expansion signal of reduced local genetic diversity very quickly \citep[fig. 3]{Peter2013}. 
+
+While \cite{Virdee1990} have estimated the average dispersal distance for the flightless \textit{Chorthippus parallelus} at only 30 m per generation, its postglacial range expansion must have proceeded at a much greater pace. Assuming the distance between the putative Balkan glacial refugia and Britain is about 2,000 km, with a dispersal distance of 30 m it would have taken about 67,000 years to reach Britain. For \textit{C. parallelus} to reach Britain between the Younger Dryas cold spell at around 11 \gls{kya} and the flooding of the English Channel at around 8 \gls{kya} \citep{Sturt2013}, the average dispersal distance would have needed to be 600--700 m per generation (year) \citep{Cooper1995}. This indicates that long distance dispersal during postglacial range expansion of \textit{C. parallelus} was common enough to allow preservation of genetic diversity at a regional scale over its whole current distribution range. The initially reduced genetic diversity at a local scale may have recovered since the end of recolonisation of northern Europe due to gene flow between adjacent founder populations. 
+
+Recently, a more powerful measure to detect range expansions has been proposed by \cite{Peter2013}. It is based on the expected increase of frequencies of shared alleles between source population and newly founded population due to genetic drift, a phenomenon also known as "allele surfing".
+
+%Range expansions should also lead to population expansion, which should increase genetic diversity and potentially relaxed selection pressures during population growth. In particular it should increase the number low frequency variants due to a greater population mutation rate. 
+
+Of particular interest is whether the different processes associated with the postglacial recolonisation of northern Europe (including allele surfing and adaptation to different environments) accelerated the divergence that results in hybrid sterility between the two subspecies \textit{parallelus} and \textit{erythropus}. \cite{Tregenza2002} have investigated this and have found no significant effect associated with recolonisation during postglacial range expansion on testis follicle length (a good proxy for sterility) in crosses between populations across Europe, i. e. a cross between France and Spain does not produce more sterile offspring than a cross between Greece and Spain.
+
+
+%%-------------------------
+%\subsubsection{Wolbachia}
+%%-------------------------
+%
+% A lower incidence of Wolbachia infection in parallelus supports introgression into erythropus. There is strong unidirectional cytoplasmic incompatibility caused by both Wolbachia supergroups (B and F) infecting the two subspecies \citep{Zabal-Aguirre2014}. CI causes an average reduction of 32.5\% in the proportion of embryos among eggs \citep{Zabal-Aguirre2014} as compared to crosses between uninfected individuals. This in addition with the slightly less severe bidirectional CI should lead to considerable reproductive isolation between the two subspecies. So, male sterility and divergent mating systems are not the only reproductive barriers. The occurrence of several reproductive barriers speaks for a rather old divergence of the two subspecies.
+%
+%parallelus populations to the north of Pyrenees generally have a lower incidence of Wolbachia infection, predominantly by the B supergroup, whereas erythropus populations to the south have a high a high incidence of infection, predominantly by the F supergroup of Wolbachia; B-strain most common in parallelus whereas F-strain most common in erythropus \cite{Zabal-Aguirre2010}; 
+%
+%horizontal transfer of Wolbachia DNA from both B and F supergroups into the host genome of uninfected parallelus (from Gabas), some nuclear inserts are subspecies specific \citep{Funkhouser-Jones2015, Toribio-Fernandez2017}; Is the infection with F supergroup older than with the B supergroup? Greater sequence divergence among F strains found in C. par. would be consistent with that \cite[fig. 2]{Martinez-Rodriguez2016}.
+%
+%Wolbachia causes considerable sperm-egg unidirectional cytoplasmic incompatibility \cite{Zabal-Aguirre2014}, which typically results in embryonic death of offspring produced by an uninfected female mated with an infected male (is CI caused by F-strain significant?); can Wolbachia modulate the sterility of F1 male hybrids? Yes, probably. \cite{Sarasa2013} have found sperm abnormalities are increased in \emph{natural} hybrids when they are infected with Wolbachia. F1 hybrids have not been examined so far. While no interaction between the genetic background and Wolbachia induced cytoplasmic incompatibility, as measured by the proportion of embryos per egg, could be detected by \cite{Zabal-Aguirre2014}, \cite{Sarasa2013} found a significant increase in the proportion of abnormal sperm in natural hybrids that were infected with Wolbachia as compared to uninfected hybrids. This seems to be largely an additive effect, since pure infected males also already suffer from a higher degree of spermatid abnormality than uninfected pure males. Infection increases the proportion of abnormal spermatids by roughly three fold.
+%
+%If parallelus males are less frequently infected than erythropus males, then their offspring should be less frequently affected by cytoplasmic incompatibility. This should result in greater gene flow from parallelus to erythropus. This is particularly true when males contribute more to gene flow than females due to their higher dispersal distances as has been estimated in a closely related grasshopper species by \cite{Bailey2003}. Even if dispersal distances were equal between the sexes, then an infected female in a population with low incidence of infection would produce less fit sons, since their offspring will likely suffer from CI. In the reverse case, when an uninfected female reproduces in a population with high incidence of Wolbachia infection, her daughters would be less fit due to CI.
+%
+%If parallelus has been infected with Wolbachia more recently, then its males would have been more compatible with erythropus females for longer (during the history of divergence) than erythropus males with parallelus females, thus promoting introgression from parallelus into erythropus \citep{Funkhouser-Jones2015}. 
+%
+%Wolbachia may have played a role in the likely introgression of Balkan mitochondrial haplotypes across the Pyrenees. Mitochondrial haplotype introgression from parallelus into Pyrenean erythropus (Escarilla) found by \cite{Lunt1998} could be driven by Wolbachia \citep{Hurst2005, Raychoudhury2010, Gompert2008}. This is supported by the finding of \cite{Zabal-Aguirre2010} that, in the hybrid zone, the shift of infection from parallelus type to erythropus type occurs on the Spanish side of the Pyrenees. Mitochondrial and Wolbachia genomes should be in strong linkage disequilibrium, since both a maternally inherited. The spread of a Wolbachia strain (or the uninfected state) should therefore also lead to the spread of its associated mitochondrium. The same could apply to the introgression of an X-chromosomal cytogenetic marker into parallelus \cite{Ferris1993}.
+
+
+%----------------------------
+% RAD technique
+%----------------------------
+
+
+%----------------------------
+\section{RAD}
+%----------------------------
+
+%\begin{itemize} %[\ding{52}]
+%\item[\ding{52}] different types of RAD
+%\item[\ding{52}] successful RAD, including demographic analyses \cite{Andrews2016}, Gompert
+%\item[\ding{52}] problems
+%\end{itemize}
+
+%------------------------------
+\subsubsection{What is \gls{rad}?}
+%------------------------------
+\gls{rad}, aka \textsl{RADseq} and \textsl{sRAD}, is a restriction enzyme-based genotyping by sequencing (GBS) technique. It targets regions of the genome for sequencing that flank the recognition sites of restriction enzymes (fig. \ref{RAD_protocol_overview}).
+\cite{Altshuler2000} were the first to use reduced-representation sequencing libraries from genomic restriction fragments for SNP discovery. After the introduction of massively parallel sequencing technologies, these were further developed for population allele frequency and genotype estimation \citep{Baird2008,VanTassell2008,Andolfatto2011,Elshire2011,Davey2011}. By sequencing only the ends of restriction fragments, \gls{rad} creates sequencing libraries with reduced complexity as compared to whole-genome shotgun sequencing, thus subsampling the genome at homologous locations to identify and type \glspl{snp} and \glspl{indel} more or less randomly throughout the genome and increasing \gls{read} coverage for the enriched sites. It is therefore a cost-effective alternative to whole genome shotgun sequencing. If template molecules for sequencing are labelled with different \glspl{barcode} from ligated adapter oligonucleotides, then individual or population samples can be pooled during library preparation and sequenced together in the same parallel sequencing run. 
+% ---- add glossary entrywithout generating text ----
+\glsadd[]{barcode} % allows to use \glshyperlink in captions
+%
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{RADprotocolOverview}
+\caption[Overview of the RAD marker technique.]{Overview of the standard \gls{rad} marker technique according to \cite{Baird2008}. (1) One restriction enzyme is used to digest genomic DNA. The first illumina adapter (P1), containing a different \glshyperlink[\textsf{barcode}]{barcode} (here called \gls{index}) sequence for each individual, is then ligated to the restriction fragments. The restriction fragments are then sheared, usually by high-frequency sonication, into a fragment size range that is suitable for illumina sequencing, which is selected on an agarose gel. After ligation of the second illumina adapter (P2), fragments with at least one P1 adapter are enriched by selective PCR. (2) The \gls{se} reads start with a barcode sequence, followed by the remainder of the restriction site. Only relatively short sequences (tags) are generated from the ends of the fragments. (3) Due to random shearing of restriction fragments, the \gls{pe} reads start at variable genomic distances from the restriction site (unless they are PCR duplicates) and thus can be assembled into short \gls{pe} contigs, depending on the size range selected on the gel. Taken from \cite{Atwood2011}. }
+\label{RAD_protocol_overview}
+\end{figure}
+%
+Different reads from the same RAD tag are fully overlapping, which focuses coverage at those restriction sites and facilitates variant discovery and genotype calling for RAD tags as compared to shotgun sequencing. When standard RADseq according to \cite{Baird2008} is done with \gls{pe} sequencing, the forward reads begin at the cut site but the second (reverse) reads are coming from the sheared end and are only partially overlapping each other (shotgun type reads). Those paired-end reads that originate from the same side of the same restriction site can be used to identify PCR duplicates and can be assembled into a few hundred base pair long contigs (fig. \ref{RAD_protocol_overview}). \gls{ddRAD} together with paired-end sequencing, i. e. sequencing from each end of the restriction fragment, produces two RAD tags per fragment, i. e. one on each end (fig. \ref{ddRAD_protocol_overview}). 
+
+As opposed to microsatellite markers or target capture sequencing, RADseq can be used with study organisms that are currently lacking genome sequence information and allows genome-wide discovery of co-dominant genetic markers and their genotyping in one go \citep{Davey2011}. Only genome size and GC content are required to estimate the required number of \glspl{read} for a certain target coverage. Previously, microsatellites had been the marker of choice for many population genetic studies. However, developing hundreds or even thousands of polymorphic microsatellite markers is costly and time-consuming for species without a close relative with a sequenced genome \citep{Dawson2010}. Once developed, the genotyping of many microsatellite markers in many individuals is again costly and time-consuming. In addition, mutation mode and mutation rates are generally not known for microsatellites. Like AFLP, RADseq does not require prior sequence information and selection of polymorphic markers for genotyping of population samples. However, instead of dominant restriction fragment length polymorphisms, RADseq provides sequence information from those fragments that makes determination of homology much easier \citep{Hohenlohe2013} and allows the application of \gls{SFS} and haplotype-based population genomic analyses \citep{Pool2010}. 
+%
+\begin{figure}
+%\includegraphics[width=\textwidth]{/Users/Claudius/Documents/PhD/sRAD/RAD_sketches/RAD_sketches}\\
+%\includegraphics[width=\textwidth]{/Users/Claudius/Documents/PhD/sRAD/RAD_sketches/RAD_sketches_1}\\
+%\centering
+\def\svgwidth{.7\textwidth}
+\subimport{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/Inkscape_Graphics/}{ddRAD_overview_1.pdf_tex}\\ 
+\def\svgwidth{\textwidth}
+\subimport{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/Inkscape_Graphics/}{ddRAD_overview_2.pdf_tex}\\
+\def\svgwidth{.7\textwidth}
+\subimport{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/Inkscape_Graphics/}{ddRAD_overview_3.pdf_tex}\\
+\def\svgwidth{.7\textwidth}
+\subimport{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/Inkscape_Graphics/}{ddRAD_overview_4.pdf_tex}\\
+\def\svgwidth{.7\textwidth}
+\subimport{/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/3_Chapter/Figs/Inkscape_Graphics/}{ddRAD_overview_5.pdf_tex}
+\caption[Double-digest RAD protocol overview.]{Double-digest RAD protocol overview. Genomic DNA is first digested by two different restriction enzymes (red and green). illumina adapters (P1 and P2) are then ligated to the restriction fragments. The P2 adapter is a so-called divergent-Y adapter that, if anything, only contains the reverse-complement of the backward PCR primer binding site needed during the selective PCR step (see figure \vref{adapter_outline}). Restriction fragments are then size-selected on a gel. Here, in contrast to the standard RAD protocol (see fig. \ref{RAD_protocol_overview}), gel size selection selects which markers get into the final sequencing library. The selective PCR step enriches the library for fragments with at least one P1 adapter ligated to it. Bridge-amplification on the illumina flow cell requires a P1 and a P2 adapter. illumina paired-end sequencing results in two RAD tags per fragment that can be assembled and used for SNP and indel calling.}
+\label{ddRAD_protocol_overview}
+\end{figure}
+
+While many questions in evolutionary genetics can already be addressed with a fairly moderate number of markers (from 10's to 100's of loci) -- e. g. inference of population structure, phylogeny, phylogeography, historical demography and gene flow as well as QTL mapping -- some other questions greatly benefit from a dense genome-wide marker set (10's of thousands to several million markers depending on genome size). Genome scans, with samples from large, outbred populations in particular, greatly increase their chances of signal detection with a dense genome-wide marker set \citep{Catchen2017,Lowry2016,McKinney2017}. For instance, while association analysis of F2 or backcross individuals from experimental crosses or linkage analysis from wild pedigrees capture only few recombinations that allow for a disassociation of weakly linked markers to a causative allele, the same study within wild populations effectively uses many historical recombinations and thus allows in principle a much finer scale of mapping of loci affecting variation in the focal trait. Thus, genome-wide association studies can benefit from a high density of genetic markers across the genome, and more so for species with low genome-wide levels of \gls{LD}. The same is true in principle for genome-wide scans for signals of selection, e. g. hybrid zone analyses \citep{Gompert2012}.
+
+Since \emph{standard} version of \gls{rad} according to \cite{Baird2008} generates tags around every restriction site -- one upstream and one downstream of it (figure \ref{RAD_protocol_overview}), it allows for only limited complexity reduction. Currently available rare cutter restriction enzymes have an up to 8 bp long recognition sequence (ignoring ambiguous positions). Further complexity reduction can be achieved by skipping the step of shearing the restriction fragments and instead size selecting a range of restriction fragments that have the right size for the sequencing platform \citep{Andolfatto2011,Elshire2011}. This produces RAD tags only at cut sites which have a second cut site within a short distance from the first cut site. Further fine tuning of library complexity can be achieved by adding a second restriction enzyme to the protocol and sequence only fragments cut by both enzymes, so-called \gls{ddRAD} (see fig. \ref{ddRAD_protocol_overview}) \citep{Peterson2012}.
+
+%Standard RAD, as first described in \cite{Baird2008}, produces two RAD tag sequences at every restriction enzyme cut site: one upstream and one downstream of it. Often a greater \gls{complexity reduction} is required than can be achieved with an 8-bp-cutter restriction enzyme (the longest recognition sequence without ambiguous positions of any restriction enzyme currently available). In order to achieve this, one can skip the random shearing step of standard RAD and instead only select restriction fragments with a size suitable for illumina sequencing ($\sim$200--800 bp) \citep{Andolfatto2011,Elshire2011}. This produces RAD tags only at cut sites which have a second cut site within a short distance from the first cut site. Further fine-tuning of library complexity can be achieved by adding a second restriction enzyme to the protocol and sequence only fragments cut by both enzymes, so-called \gls{ddRAD} (see fig. \ref{ddRAD_protocol_overview}) \citep{Peterson2012}.
+%\begin{figure}[!hb]
+%\ContinuedFloat
+%\caption[]{Genomic DNA is first digested by two different restriction enzymes (red and green). illumina adapters (P1 and P2) are then ligated to the restriction fragments. The P2 adapter is a so-called divergent-Y adapter that, if anything, only contains the reverse-complement of the backward PCR primer binding site needed during the selective PCR step (see figure \vref{adapter_outline}). Restriction fragments are then size-selected on a gel. Here, in contrast to the standard RAD protocol (see fig. \ref{RAD_protocol_overview}), gel size selection selects which markers get into the final sequencing library. The selective PCR step enriches the library for fragments with at least one P1 adapter ligated to it. Bridge-amplification on the illumina flow cell requires a P1 and a P2 adapter. illumina paired-end sequencing results in two RAD tags per fragment that can be assembled and used for SNP and indel calling.}
+%\end{figure}
+When making the decision between whether to use standard RAD or ddRAD several things need to be considered. The first is surely whether standard RAD can provide enough complexity reduction. If that is the case, then the next consideration will be the availability of a sonicator for the random shearing of restriction fragments to a size suitable for the sequencing platform. The availability of a sonicator may not be critical though, since there are now enzymes that can perform random DNA fragmentation such as those provided by the NEBNext Ultra II kit from NEB or the Nextera DNA Library Preparation Kit from illumina. One advantage built into standard RAD if the RAD library is sequenced with \gls{pe} sequencing (i. e. a forward read from the \gls{RAD tag} and a reverse read from the opposite end created by shearing) is the easy detection of PCR duplicates. Due to random shearing, the \gls{se} and \gls{pe} reads of two pieces of DNA after PCR should only be identical if at least one of them is a clone from PCR. When doing \gls{pe} sequencing on a ddRAD library, both forward and reverse reads are fixed at restriction sites and PCR duplicates are not detectable unless at least a few degenerate bases had been added to the sequencing adapter and sequenced \citep[see][]{Schweyen2014,Tin2015,Casbon2011}. Another great feature of standard RAD is the possibility to assemble an a few hundred base pair long contig from the partially overlapping \gls{pe} reads of each \gls{RAD tag} (see fig. \ref{RAD_protocol_overview}). This is very useful for paralog detection and functional annotation \citep{Etter2011,Chong2012,Hohenlohe2013}.
+
+Even when standard RAD could provide enough complexity reduction, ddRAD may be still preferable. One reason is the slightly easier library preparation protocol. It has fewer steps, fewer clean-ups with the associated loss of DNA and it doesn't require a sonicator \citep{Puritz2014}. With \gls{pe} sequencing it also provides two \glspl{RAD tag} from each restriction fragment that is being sequenced (see fig. \ref{ddRAD_protocol_overview}), a \gls{se} RAD tag and a \gls{pe} RAD tag which can both be used for SNP and indel genotyping. One major disadvantage that comes with ddRAD is the fact that size selection of restriction fragments selects markers. So reproducibility of markers can be an issue. A good overlap in recovered markers has however been reported with precise size selection tools such as a Pippin Prep (Sage Science) \citep{Peterson2012,DaCosta2014}. Another downside is the greater susceptibility to allele-drop-out due to polymorphisms in the restriction sites \citep{Arnold2013}.
+
+
+
+% Given enough coverage and when using adapters with barcode sequences, individual genotypes can be scored. When doing \gls{pe} sequencing, a \gls{pe} contig of several hundred base pairs length can be assembled for a each \gls{RAD tag} (figure \ref{RAD_protocol_overview}).
+
+
+%ddRAD with two restriction enzymes creating fragments with two different sticky ends compatible to the sticky ends of each illumina sequencing adapter.
+
+
+
+%For all RAD-like protocols, single-end (forward) reads always begin from the restriction site. RAD tags are those sequences that are anchored at restriction sites. Standard RAD produces two RAD tags per restriction site in the genome, i. e. on each side of it.  
+
+%Different reads from the same RAD tag are fully overlapping, which focuses coverage at those restriction sites and facilitates variant discovery and genotype calling for RAD tags as compared to shotgun sequencing. ddRAD together with paired-end sequencing, i. e. sequencing from each end of the restriction fragment, produces two RAD tags per fragment, i. e. one on each end. When standard RADseq is done with paired-end sequencing, the forward reads begin at the cut site but the second (reverse) reads are coming from the sheared end and are only partially overlapping each other (shotgun type reads). Those paired-end reads that originate from the same side of the same restriction site can be used to identify PCR duplicates and can be assembled into a few hundred base pair long contigs.
+
+
+%---------------------------------------
+\subsubsection{What can it be used for?}
+%---------------------------------------
+RADseq (either standard or ddRAD) has been used for virtually any kind of evolutionary genetic analysis including \gls{GWAS} \citep{Nadeau2014,Parchman2012}, genomic clines analysis \citep{Gompert2012a,Nosil2012c}, genetic mapping \citep{Richards2013,Pfender2011,Baxter2011,Andolfatto2011,Chutimanitsakun2011}, phylogenomics \citep{Wagner2012,Nadeau2014,Merz2013}, genome scans for selection \citep{Pujolar2014,Gompert2012a,Stoelting2013,Hohenlohe2010,Andersen2012} and inference of population demographic history \citep{Luca2011,Evans2014,Lozier2014}.
+
+Assuming the majority of a genome evolves neutrally or nearly neutrally, RAD markers provide a lot of neutral sequence variation that can be used to infer fine-scale population structure, phylogeography as well as parameters for models of demographic history, like effective population size and gene flow. This information is useful for the planning and interpretation of genome scans for selection, \glspl{GWAS} and genomic clines analyses. However, some RAD markers will fall into functional regions of the genome and, therefore, cannot be assumed to be neutral genetic markers.
+
+
+%complexity reduction;
+%genome size; no prior genomic information is required, 
+%RADseq: reduced representation library for NGS based on the digestion of genomic DNA with restriction enzymes; RAD targets NGS on loci next to restriction sites, thereby greatly reducing the complexity of the sequencing library as compared to whole genome shotgun sequencing; this allows the multiplexing of samples for population genomic analyses at affordable costs. subsampling of a genome
+
+
+%--------------------------------
+\subsubsection{Problems with RAD}
+%--------------------------------
+RAD markers, however, pose several challenges to unbiased estimation of population genetic parameters. One challenge are null alleles from polymorphisms in the restriction recognition sequence \citep{Gautier2012,Luca2011,Arnold2013}. Allele-drop-out leads to a systematic underestimate of genetic polymorphism and it also tends to increase estimates of genetic differentiation between populations. The biasing effect is stronger the greater the genetic diversity of the species. \cite{Luca2011} have provided formulas for an approximate correction of the effect of allele-drop-out on these measures based on equilibrium assumptions. However, filtering loci by across individual coverage can already greatly reduce its effect. With a frequency of the restriction site mutation of 0.5, 25\% of individuals would not have reads at the locus, assuming HWE. With a frequency of 0.75, 56\% of sampled individuals would not have reads from the locus. So requiring a minimum proportion of individuals to have reads from the locus could mitigate the effect of allele-drop-out but not completely remove it, even if only loci with full coverage across individuals are included \citep{Arnold2013}. That is because the set of loci not affected by allele-drop-out are not a random subset of all loci, but tend to have lower genetic diversity (and therefore also a smaller chance of a mutation in the restriction site).
+
+RADseq is also sensitive to the quality of input DNA \citep{Graham2015}. Shearing of genomic DNA results in smaller fragments that may be too short for efficient sonication in standard RADseq \citep{Davey2012} or disconnect two restriction sites in ddRAD, preventing their PCR and  bridge amplification required for sequencing. However, only highly degraded DNA (i. e. containing only low molecular weight fragments) leads to a marked reduction in RAD tags recovered per individual.
+
+Most RAD-like protocols include a selective PCR step that is intended to increase the fraction of fragments with correctly ligated adapters in the DNA library before sequencing. PCR duplicates in the sequence data set, however, should be removed before genotype calling. This has two reasons. First, misincorporation events that occur and are propagated by PCR amplification during the library preparation would appear like genuine alleles to all genotype callers due to their high read coverage. Second, PCR drift can produce more copies of one allele at a heterozygous locus in the sequencing library. Since most genotype callers assume binomial read sampling from a bi-allelic locus, non-random read sampling from a heterozygous locus will lead to increased false-homozygote genotype calls. Both biases also apply when doing population genetic analyses in a probabilistic framework from genotype likelihoods, as done in the chapter \nameref{ch:demo_hist}.
+
+In general, RAD cannot be expected to provide binomially distributed read depths of alleles at bi-allelic diploid loci nor can it be expected to lead to Poisson distributed read depths across loci. Observed read depth distributions are always overdispersed with respect to these theoretical distributions. For this reason detection of paralogous loci should not be based on Poisson quantile thresholds of locus read depth.
+There are several reasons for overdispersed read depths. \cite{Davey2012} have shown that in standard RAD libraries smaller restriction fragments have lower read coverage than longer ones. This is probably caused by a less efficient shearing through sonication of small restriction fragments \citep{Davey2012}. 
+%Standard RADseq with a 4 bp cutter restriction enzyme therefore wouldn't make much sense, since restriction fragments are too small to be sheared efficiently (256 bp expected size). 
+Additional variation in coverage between RAD tags is caused by a positive GC bias from PCR amplification (at least with the commonly used Phusion DNA polymerase). Variation in DNA methylation of restriction sites is a further reason for overdispersed read depths when using methylation sensitive restriction enzymes. There is also evidence for methylation at CpG sites in another acridian grasshopper related to \textit{C. parallelus} \citep{Keller2007}. Due to random shearing, each locus in a standard RAD sequencing library is represented by DNA copies of different lengths.
+With all other RAD-like protocols, each locus is represented by DNA copies of only one length. PCR amplification as well as bridge amplification on the flow cell of the illumina sequencer are biased toward smaller DNA fragments. This leads to a greater read coverage of loci from smaller restriction fragments \citep{Andrews2014}.
+
+%-----------------------------------------------------
+\subsubsection{RAD de novo assembly pipelines}
+%-----------------------------------------------------
+
+Since RAD produces fully overlapping sequences from RAD tags, de novo assembly algorithms for RAD data have mostly been based on distances between read sequences rather than length of sequence overlaps, which is how shotgun-type reads are assembled into contigs longer than an individual read length. However, assembly programmes designed for shotgun-type reads have been successfully employed for assembling RAD tags \citep[e. g.][]{Parchman2013}. One of the most widely used programmes for RAD de novo assembly, \href{http://catchenlab.life.illinois.edu/stacks/comp/ustacks.php}{\texttt{stacks}}, has only recently introduced gapped alignment (via Needleman-Wunsch algorithm) into its de novo assembly procedure (with version 1.38 from 18 April 2016). This allows it to assemble RAD tags with \glspl{indel}. \cite{Eaton2014} has shown convincingly with simulated and empirical data the advantage of using \href{https://github.com/dereneaton/ipyrad}{\texttt{pyRAD}} over \texttt{stacks} (previous to version 1.38) when the sequences contain realistic numbers of \glspl{indel}. It recovers loci shared among a greater number of individuals. Like \texttt{pyRAD}, the de novo assembly method of \href{https://github.com/jpuritz/dDocent}{\texttt{dDocent}} \citep{Puritz2014a} allows for \glspl{indel} during the clustering step and therefore its assembled loci are shared among a greater number of individuals than those assembled by the indel-unaware clustering algorithm of \texttt{stacks} (previous to version 1.38). 
+
+A common problem with most RAD analysis pipelines published to date is their lack of modularisation and documentation. For instance, a good de novo assembly strategy can be combined with a suboptimal SNP detection or paralogy detection algorithm without clear separation of both functionalities in the code and appropriate documentation. This makes it difficult for users to recombine the best functionality from different programmes or pipelines and results in a lot of underused computer code. Two pipelines that exemplify this problem shall be mentioned here: \href{https://sites.google.com/site/sarahhird/project-code/prgmatic}{\texttt{PRGmatic}} from \cite{Hird2011} and \href{https://github.com/brantp/rtd}{\texttt{rtd}} from \cite{Peterson2012}. Writing feature-rich, complex, monolithic and sparsely documented software is obviously a common issue in software development and has been addressed by providing basic rules in the \href{http://www.catb.org/~esr/writings/taoup/html/ch01s06.html}{Unix philosophy}. A noteworthy positive exception to this general lack of modularisation and thorough documentation is \href{https://github.com/jpuritz/dDocent}{\texttt{dDocent}} \citep{Puritz2014a}. 
+
+The de novo assembly of RAD loci without a reference sequence poses a particular challenge to the application of RAD to non-model organisms. With short read lengths and repetitive genome sequences, the distinction of homologous from paralogous read sequences can become impossible for RAD tags in repetitive parts of the genome. Importantly, mis-assembled clusters of sequence reads from repetitive RAD tags need to be detected and removed from downstream population genetic analyses because they violate the assumption of orthology underlying most of these analyses. Otherwise, diversity estimates will be inflated, for instance.
+
+There have been several attempts to optimise RAD de novo assembly \citep[e. g.][]{Mastretta-Yanes2015, Ilut2014}.  \cite{Ilut2014} describe an empirical method to determine the optimal within cluster distance for RAD tag de novo assembly. Using digital digests of genome sequences with one restriction enzyme (but without random shearing, i. e. equivalent to double-digest), they create a clustering threshold series. For each clustering threshold they determine the number of clusters that contain one haplotype, two haplotypes or $\ge$3 haplotypes. They then propose that the optimal cluster distance threshold is where the 1--haplotype and 2--haplotype clusters start to plateau in frequency and the $\ge$3--haplotype clusters are still low in proportion. Higher thresholds would not increase the detection of heterozygous loci much while increasing the proportion of paralogous sequences within the 2--haplotype cluster category. However, I tested their method on the standard RAD data set used in \nameref{ch:demo_hist} and could not find a plateau in the cluster frequency curves and therefore also no optimal cluster distance threshold (fig. \ref{Fig:Ilut-Distance-threshold-series}).
+%
+% ---- add glossary entrywithout generating text ----
+\glsadd[]{edit distance} % allows to use \glshyperlink in captions
+%
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\textwidth]{distance-threshold-1}
+\caption{Distance threshold series from the Ilut pipeline. The number of distinct sequences in clusters of size 1, 2 and $\ge$3 are plotted for each maximum \glshyperlink[\textsf{edit distance}]{edit distance} threshold for transitive clustering.}
+\label{Fig:Ilut-Distance-threshold-series}
+\end{figure}
+%
+
+Many paralogy filters have been proposed. One commonly used filter is based on an excess of heterozygotes with respect to \gls{HWE} \citep{Hohenlohe2011}. Unless a locus is affected by strong overdominant selection (which is rare), an excess of heterozygous genotypes in a population sample is most likely an artefact of clustering similar sequence reads from repetitive parts in the genome.
+
+
+%A balanced coverage between alleles at a heterozygous locus cannot always be assumed with standard RADseq \citep{Davey2012}. This is because alleles can be derived from restriction fragments of different length due to polymorphic restriction sites close by. The allele from the shorter restriction fragment is sheared less efficiently leading to lower coverage. Given high enough coverage ($\sim 20\times$), an unbalanced coverage does not prevent heterozygote calling. Reduced efficiency of random shearing of smaller fragments also leads to variation in coverage among loci. 
+
+ 
+
+%When size selection on the gel also selects markers as in ddRAD or MSG, consistency of size selection across libraries needs to be optimised if data from different libraries is to be analysed together or markers need to be reproducible. The random shearing step and subsequent size selection in the standard RADseq protocol is only necessary to produce fragments in the right size for next-generation sequencing and remove adapter dimers. Since size selection happens after random shearing of restriction fragments down to a suitable size, it does not select markers. Instead all (more or less) restriction fragments will produce sequences. ddRAD and similar methods allow greater complexity reduction (i. e. reduction in the number of loci sequenced) as compared to standard RADseq, since only restriction fragments within a certain size range are sequenced.
+
+
+
+%----------------------------------
+\subsubsection{Alternatives to RAD}
+%----------------------------------
+
+RAD is an untargeted reduced representation sequencing method (with the exception of GC and methylation bias dependent on restriction enzyme and genome studied) which has been criticised recently by \cite{Lowry2016} and \cite{Tiffin2014} when used in genome scans for regions under selection. Their main point is that many such genome scans had used RAD data with too few markers to have at least one polymorphic marker in strong enough LD with a locus under selection and therefore have probably missed many such loci, particularly those with incomplete selective sweeps or starting from standing genetic variation. The extent of LD  (i. e. average size of linkage blocks) varies greatly among species and seems to be fairly unpredictable \citep[see their table 1]{Lowry2016}. So the scale of this problem very much depends on the average LD and the size of the genome of the species studied. This lack of complete marker coverage in regions under selection has led \cite{Lowry2016} to suggest exome capture sequencing for genomic scans for selection, i. e. enriching for functionally relevant sequences at the risk of missing those distant from genes \citep{Good2011,Mamanova2010,Jones2016}. 
+
+Targeted capture sequencing is only slowly being adopted for evolutionary and ecological studies of non-model organisms \citep{Bi2012,Nadeau2012a}. There are probably two main reasons for that. First, probe design requires prior sequence information. So, unless a genome reference sequence is available from at least a fairly closely related species \citep{Good2011} a transcriptome needs to be assembled first \citep{Bi2012}. Second, probe synthesis has greatly added to the costs of sequencing. Both issues have been  addressed successfully by \cite{Puritz2017}. They show that probes can be generated directly from cDNA. Given that already \cite{Maricic2010} have reported custom in-house generation of capture probes, it seems surprising that this approach has not already been adopted more widely. Also note that not only protein coding sequences would be captured when using cDNA for probe generation but also many long non-coding RNA's most of which have a poly-A tail \citep{Ulitsky2016}. 
+
+It may be argued that inference of neutral processes, like demographic history and gene flow, could not be reliably inferred from exome capture sequence data due to pervasive effects of linked selection. However, RADseq data can also not be assumed to provide fully neutrally evolving sequences \citep{Elyashiv2016}. In addition, 4-fold degenerate sites in protein coding sequences from exome sequencing would provide genetic variation data that could be trusted to be more neutral than genome-wide RAD data \citep{Begun2007,Small2007}. Further, powerful tests of selection based on the ratio of non-synonymous to synonymous substitutions can be performed with protein coding sequences from exome capture but not from RAD data.
+
+%Recently, \cite{Russello2015} have proposed a new reduced representation protocol that uses enzymatic random shearing of genomic DNA together with adapter ligation and PCR with primers that have selective 3' end seqeunces that extend from the adapter into the genomic fragment.
+
+%RADseq provides a random sample of the genome (more or less);
+
+%target capture sequencing \cite{Good2011,Mamanova2010},  RNAseq combined with exome capture sequencing biases the selection of markers a priori to coding regions and close regulatory regions. Regulatory regions more distant from coding regions are generally missed unless LD extends very far. RADseq may also be biased toward coding regions when a methylation sensitive restriction enzyme is used and coding regions are less methylated than non-coding regions as has been shown for many plant genomes. In any case, the bias for RADseq will be much smaller than for exome capture sequencing. 
+%
+%, require prior sequence information, for instance from RNAseq; capturing DNA with direct hybridization; generation of hybridisation probes adds substantially to the costs of targeted capture sequencing; exon-capture sequencing targets coding sequences and may therefore be more likely to pick up functionally relevant genetic variation than RAD with its arbitrary selection of genome wide loci; the proportion of off-target reads can be very high and they would be wasted unless a good genome sequence is available. capture efficiency is usually only about 50\%, meaning that 50\% of reads are off target and therefore wasted unless a good reference ...; requires RNA samples and large quantities of starting material (>500ng) \citep{Good2011}.
+%
+%It is also superior to microsatellites, AFPL or EST markers \cite{Bi2012}
+%
+%Exon-capture could be \cite{Puritz2017}
+
+%\cite{Sousa2013a}
+
+%Given the genome size of about 12 Gbp, a genome scan from outbred populations of cline widths with RAD markers from generated with the 8 bp cutter SbfI would ascertain only a very small fraction of the genome and is therefore highly likely to miss variation that is linked to sterility causing loci \citep{Lowry2016}. A backcross population as generated by \cite{Shuker2005} for a GWAS of male hybrid sterility should have a much larger extent of LD across the genome that increases the likelihood of scoring a marker that is in LD with a sterility causing locus. However, this information may be of little use, especially if there is no linkage map. The marker may be several Mbp away from the causative locus. So  homing in on the causative loci will require a proper QTL study.
+
+%---------------------------------------------------------------
+%\subsubsection{Population genomics from low coverage sequencing}
+%---------------------------------------------------------------
+
+%-------------------------------------------------
+\section{What to expect in the following chapters}
+%-------------------------------------------------
+
+In this study, I address the following questions: 
 \begin{itemize}
-\item the history of the hybrid
-\item RAD technology
-\item population genomics with low coverage sequencing and without genotype calling
-\item an analytical discussion of the related findings to date
-\item description of the aims of the research
+\item Can a genome-wide set of sequence markers be generated from the genome of \textit{C. parallelus}?
+\item Can such a data set be assembled and genetic variation be analysed that allows inferences to be drawn about forces that affect the majority of markers, i. e. can genome-wide signals be detected?
 \end{itemize}
-}
+
+The chapter \vref{ch:testing_incompl_dig} 
+documents an investigation into the possible reasons for a lack of across-individual sequence coverage at almost all de novo assembled RAD tags. In the second chapter, I then apply a new de novo assembly strategy (adapted from \texttt{dDocent}) to one standard RAD data set \citep{Baird2008} from two population samples of \textit{C. p. erythropus} and \textit{C. p. parallelus}. While avoiding SNP and genotype calling from this low coverage data set, I derive genome-wide population genetic summary statistics and use two different programmes to fit demographic models for the two subspecies using their one-dimensional as well as joint site frequency spectra.
+
+
+% did the two subspecies diverge in allopatry or with gene flow? can we detect recent gene flow from the current secondary contact since the end of the last ice age roughly 10,000 years ago? When did the genomes of the two subspecies start to diverge? Are there genetic signatures of population size changes in the history of the two subspecies? Are there signals of recent serial founder events (i. e. bottlenecks) as predicted from postglacial range expansion by rare long-distance dispersal \citep{Waters2013, Ibrahim1996}. Only a large genome wide data set can robustly detect also very small amounts of gene flow. Really? Are there any indications that the two populations sequenced are affected by current gene flow or are they likely to be pure populations of each subspecies?
+
+%Why are we interested in the demographic history of the subspecies? What could insights into demographic history tell us about the evolution of hybrid sterility? Did the two subspecies diverge in complete isolation or have they diverged despite gene flow? Has the biogeographical history been more complex than inferred from only two genetic markers so far in phylogeographic studies, e. g. is the hybrid zone made up of populations derived from more than two refugia, one in the Balkans, one in southern Iberia? Knowledge of the evolutionary history of the hybrid zone can provide new insights into the potential mechanisms that have lead to the divergence of the two subspecies and the evolution of hybrid male sterility between them. For instance, did allele surfing during the last range expansion contribute to hybrid sterility? \cite{Tregenza2002} have not found a correlation of sterility with genetic distance. It is questionable whether the leptokurtic dispersal during recolonisation has allowed allele surfing. Or, did admixture of lineages from two separate glacial refugia contribute to the divergence and evolution of sterility between the two subspecies? Or, did particularly strong drift in small refugial populations mainly contribute to divergence? Finally, for genome wide scans with single marker based statistics (genomic clines analysis, Fst outlier scans) the simulation of null distributions under the most likely demographic scenarios are necessary to detect markers whose statistic cannot be explained by demographic forces alone, i. e. to infer selection \citep{Hsieh2016}. What is the contribution of natural or sexual selection to the divergence of the two subspecies? 
+
+
 
 %----------------------------
 % Bibliography
 %----------------------------
 
-\bibliographystyle{elsarticle-harv}
-\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
-
-\end{document}
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+%
+%\end{document}
 

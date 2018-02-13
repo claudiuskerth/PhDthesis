@@ -145,6 +145,7 @@
     }
 
 \section{Double-Digest sRAD protocol}
+\label{ch:ddRAD_protocol}
 
 \subsection{ingredients}
 
@@ -271,8 +272,8 @@
 \subsection
 {set up a 10$\mu$M P2Y-XhoI adapter stock solution from oligos}
 \begin{itemize}
-\item set up annealing buffer (AB) as shown in table \ref{AB} \marginal{{\color{red}does this buffer contain a high enough salt concentration?!}}
-\marginal{{\color{blue}yes, 1X NEB2 contains 50mM NaCL}}
+\item set up annealing buffer (AB) as shown in table \ref{AB} %\marginal{{\color{red}does this buffer contain a high enough salt concentration?!}}
+%\marginal{{\color{blue}yes, 1X NEB2 contains 50mM NaCL}}
 % call ctable package, 
 \ctable[ 
 	caption =  {annealing buffer set up:},
@@ -411,8 +412,8 @@ AB					& 	80$\mu$l	\ML
 \item purify that solution over one MinElute spin column with a SpeedVac \footnote{even though it says otherwise in the manual of the kit, you can gel extract with just one column as long as the gel contains no more than 1\% agarose and it is completely melted before loading}
 \item elute with 30$\mu$l EB
 \end{itemize}
-
-\begin{figure}[!htb]
+%
+\begin{figure}[htb]
 \begin{center}
 \includegraphics[scale=0.3]{GelSizeSelection_071011}
 \caption{Gel picture after size selection.}
@@ -629,43 +630,43 @@ Unless the library looks like a homogeneous smear on the gel, it is advisable to
 
 \pagebreak
 
-\begin{landscape}
-
-\ctable[ 
-	caption =  {comparison among different ddRADseq protocols},
-	label = compProt,
-%	pos = htb!,
-%	sideways,
-	width = 240mm,
-	captionskip = 1ex, % bring the caption closer to the table
-	doinside=\footnotesize,
-	center,
-]
-{l>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X}
-{
-}
-{
-\FL
-\textbf{protocol}   &   \textbf{adapters}   &   \textbf{DNA isolation}   &   \textbf{digestion}   &   \textbf{ligation}   &   \textbf{gel size selection}   &   \textbf{PCR}   &   \textbf{purification}
-\ML
-\cite{Peterson2012}		& P1 and P2 adapter at stock conc. of 40$\mu$M, short adapters and long PCR primers	& NA	& digest for 3h, no heat-inact. -- instead bead puri.	& 30min ligation at RT, 2-10 fold excess of adapters to sticky ends	& before PCR, automated DNA size selection with Pippin-Prep (Sage Science)	& 20ng size-selected library per PCR reaction, 2$\mu$M end conc. of each PCR primer, only 8-12 cycles (?!) 	& AMPure beads \NN % the ``\rowcolor'' command requires the ``colortbl'' packageted
-\rowcolor[gray]{0.9} \cite{Andolfatto2011}		& 10$\mu$M stock conc., short adapters + long PCR primers	& Puregene (Qiagen)	& 10ng DNA per sample, with 3.3U of 4bp cutter MseI (i. e. no double-digerst), 3h at 37$^{\circ}$C followed by heat-inact.	& 5nmole adapters, only 1 U of T4 DNA ligase in a volume of 50$\mu$l, 1h at 16$^{\circ}$C 	& before PCR, ladder mixed into library, 2\% gel	& only 15 cycles, Phusion	& AMPure beads \NN
-\cite{Parchman2012}		& 1$\mu$M stock conc. for P1 (EcoRI) adapter, 
-					10$\mu$M stock conc. for P2 (MseI) adapter, 
-					annealing in pure water (?!), 
-					short adapters + long PCR primers	& NA	& 6- and 4bp cutter, 10U EcoRI, only 1U MseI, digestion in T4 buffer, 
-														NaCl added to $\sim$50mM end conc.,
-														volume 9$\mu$l, 8h, heat-inact.		& 1pmole EcoRI adapter, 10pmole MseI adapter, 
-																						67 NEB units T4 ligase, 6h at 16$^{\circ}$C, 
-																						ligation in only 11.4$\mu$l 				& after PCR, 2.5\% gel, low electric field gel runs,
-																															EtBr gels, many lanes					&  individual PCR before pooling samples and before gel size selection,
-																													   											30 cycles (?!), only 0.08$\mu$M end conc. of each primer in PCR (?!),
-																																								BioRad Iproof High Fidelity DNA polymerase						& QiaQuick spin columns \NN
-\rowcolor[gray]{0.9} Kerth et al. (2030) & &	&	&	&	&	&\NN
-\LL
-}
-
-\end{landscape}
+%\begin{landscape}
+%
+%\ctable[ 
+%	caption =  {comparison among different ddRADseq protocols},
+%	label = compProt,
+%%	pos = htb!,
+%%	sideways,
+%	width = 240mm,
+%	captionskip = 1ex, % bring the caption closer to the table
+%	doinside=\footnotesize,
+%	center,
+%]
+%{l>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X>{\raggedright}X}
+%{
+%}
+%{
+%\FL
+%\textbf{protocol}   &   \textbf{adapters}   &   \textbf{DNA isolation}   &   \textbf{digestion}   &   \textbf{ligation}   &   \textbf{gel size selection}   &   \textbf{PCR}   &   \textbf{purification}
+%\ML
+%\cite{Peterson2012}		& P1 and P2 adapter at stock conc. of 40$\mu$M, short adapters and long PCR primers	& NA	& digest for 3h, no heat-inact. -- instead bead puri.	& 30min ligation at RT, 2-10 fold excess of adapters to sticky ends	& before PCR, automated DNA size selection with Pippin-Prep (Sage Science)	& 20ng size-selected library per PCR reaction, 2$\mu$M end conc. of each PCR primer, only 8-12 cycles (?!) 	& AMPure beads \NN % the ``\rowcolor'' command requires the ``colortbl'' packageted
+%\rowcolor[gray]{0.9} \cite{Andolfatto2011}		& 10$\mu$M stock conc., short adapters + long PCR primers	& Puregene (Qiagen)	& 10ng DNA per sample, with 3.3U of 4bp cutter MseI (i. e. no double-digerst), 3h at 37$^{\circ}$C followed by heat-inact.	& 5nmole adapters, only 1 U of T4 DNA ligase in a volume of 50$\mu$l, 1h at 16$^{\circ}$C 	& before PCR, ladder mixed into library, 2\% gel	& only 15 cycles, Phusion	& AMPure beads \NN
+%\cite{Parchman2012}		& 1$\mu$M stock conc. for P1 (EcoRI) adapter, 
+%					10$\mu$M stock conc. for P2 (MseI) adapter, 
+%					annealing in pure water (?!), 
+%					short adapters + long PCR primers	& NA	& 6- and 4bp cutter, 10U EcoRI, only 1U MseI, digestion in T4 buffer, 
+%														NaCl added to $\sim$50mM end conc.,
+%														volume 9$\mu$l, 8h, heat-inact.		& 1pmole EcoRI adapter, 10pmole MseI adapter, 
+%																						67 NEB units T4 ligase, 6h at 16$^{\circ}$C, 
+%																						ligation in only 11.4$\mu$l 				& after PCR, 2.5\% gel, low electric field gel runs,
+%																															EtBr gels, many lanes					&  individual PCR before pooling samples and before gel size selection,
+%																													   											30 cycles (?!), only 0.08$\mu$M end conc. of each primer in PCR (?!),
+%																																								BioRad Iproof High Fidelity DNA polymerase						& QiaQuick spin columns \NN
+%\rowcolor[gray]{0.9} Kerth et al. (2030) & &	&	&	&	&	&\NN
+%\LL
+%}
+%
+%\end{landscape}
 
 %\bibliographystyle{apalike}
 %\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}

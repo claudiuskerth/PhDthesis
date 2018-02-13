@@ -390,8 +390,8 @@ sfs2d[1,1] = 0
 library(fields)
 ticks = c(1, 10, 100, 500, 1000, 5000, 10000)
 # rows in the matrix are on the x-axis, columns are on the y-axis:
-image.plot(0:37, 0:37, log10(sfs2d+1), xlab="minor sample allele frequency in PAR", 
-           ylab="minor sample allele frequency in ERY", main="global unfolded 2D-SFS",
+image.plot(0:37, 0:37, log10(sfs2d+1), xlab="non-reference sample allele frequency in PAR", 
+           ylab="non-reference sample allele frequency in ERY", main="global unfolded 2D-SFS",
            axis.args = list(at=log10(ticks), labels=ticks), legend.lab="number of SNP's",
            legend.line = 3,
            graphics.reset=TRUE

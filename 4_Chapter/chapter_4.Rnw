@@ -1,46 +1,47 @@
-\documentclass[a4paper,12pt,times,print,index,oneside,custommargin]{PhDThesisPSnPDF}
-%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
-
-\usepackage{import}
-
-\input{../Preamble/preamble}
-
-%******************************** Glossary *********************************************
-\input{../Glossary/glossary}
-
-%%%%%% -- KNITR SETUP -- %%%%%%%%%%
-<<setup_ch3, include=FALSE, cache=FALSE>>=
-library(knitr)
-# set global chunk options for this child doc
-opts_chunk$set(
-	fig.align='center', 
-	fig.show='hold'
-	)
-options(replace.assign=TRUE,width=90)
-# set up working directory for all code chunks, obviates the need to
-# setwd() in each chunk
-opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
-# read in external R code file
-read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
-# include preamble from main doc for isolated compilation
-# doesn't currently work because relative paths are used there
-# set_parent('../thesis.Rnw')
-@
-%************************************************************************************************
-
-
-\begin{document}
-
-\tableofcontents
-
-\listoffigures
-
-\listof{cmd}{List of commands}
-
-%\todototoc
-\listoftodos
-
-\printglossaries
+%% !TEX TS-program = Knitr
+%\documentclass[a4paper,12pt,times,print,oneside,custommargin]{../Classes/PhDThesisPSnPDF}
+%%\documentclass[a4paper,12pt,times,numbered,print,index]{PhDThesisPSnPDF}
+%
+%\usepackage{import}
+%
+%\input{../Preamble/preamble}
+%
+%%******************************** Glossary *********************************************
+%\input{../Glossary/glossary}
+%
+%%%%%%% -- KNITR SETUP -- %%%%%%%%%%
+%<<setup_ch3, include=FALSE, cache=FALSE>>=
+%library(knitr)
+%# set global chunk options for this child doc
+%opts_chunk$set(
+%	fig.align='center', 
+%	fig.show='hold'
+%	)
+%options(replace.assign=TRUE,width=90)
+%# set up working directory for all code chunks, obviates the need to
+%# setwd() in each chunk
+%opts_knit$set(root.dir='~/Data_analysis/reference-mapping/data')
+%# read in external R code file
+%read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
+%# include preamble from main doc for isolated compilation
+%# doesn't currently work because relative paths are used there
+%# set_parent('../thesis.Rnw')
+%@
+%%************************************************************************************************
+%
+%
+%\begin{document}
+%
+%\tableofcontents
+%
+%%\listoffigures
+%
+%%\listof{cmd}{List of commands}
+%
+%%\todototoc
+%\listoftodos
+%
+%\printglossaries
 
 
 % **************************** Define Graphics Path **************************
@@ -50,7 +51,7 @@ read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
     {./Figs/Raster/}
     {./Figs/PDF/}
     {./Figs/}
-    {../Data_analysis/reference-mapping/figure/}
+    {/Users/Claudius/Documents/PhD/THESIS/kks32/LaTeX/Data_analysis/reference-mapping/figure/}
     }
 \else
     \graphicspath{ 
@@ -63,22 +64,40 @@ read_chunk('../Data_analysis/reference-mapping/ref-map-doc.R')
 %
 %
 %
-\chapter{General Introduction}
+\chapter{General Discussion}
 %
 %
 %
 
 
-\abstract{
-Here I shall write a more general discussion of the results in chapter 2 and 3.
-}
+%\abstract{
+%Here I shall write a more general discussion of the results in chapter 2 and 3. 
+%\begin{itemize}
+%\item recap main results from chapter 2 and 3, summarise
+%\item bring in context with results from other species, continents, methods
+%\item have aims of the study been achieved?
+%\item how could  the results be relevant to question of how hybrid sterility evolved in this species pair?
+%\item What happened $\sim$1.5 Mya in the Pyrenees? \cite{Webb1992, Hewitt2011, Hewitt2004, Sommer2009}
+%\end{itemize}
+%}
+
+
+The two subspecies \textit{erythropus} and \textit{parallelus} have a high genome-wide average genetic differentiation ($F_{ST}$: \Sexpr{signif(Fst.bhatia.global, digits=3)}, 95\% bootstrap \gls{CI}: \Sexpr{signif(bhatia.CI95[1], 3)} -- \Sexpr{signif(bhatia.CI95[2], 3)}). The net sequence divergence $D_a$ of 0.003, however, clearly marks them as a semi-isolated species pair in the "grey zone" of the speciation continuum \citep{Roux2016}.
+
+The two subspecies  have not diverged in complete allopatry. Instead there is a robust signal of ancient and asymmetric gene flow during the history of the divergence of the two subspecies (see tab. \ref{Tab:asymmetric-migration}). Allowing for gene flow doubles the divergence time estimate from about 0.5 to 1.1 \gls{mya}. Gene flow had been about 5 times higher in the direction from \textit{parallelus} to \textit{erythropus} than vice versa. This is in line with many previous studies of the Pyrenean hybrid zone that indicated an asymmetry of gene flow in the same direction (see chapter \nameref{ch:intro}). Gene flow was apparently low enough and selection on alleles causing \gls{DMI} high enough to allow the evolution of \gls{DMI} between the two subspecies \citep{Bank2012a}. The combined scaled unidirectional migration rates ($2Nm$) estimated by the \textsl{two-epoch-exp.-size-change} (fig. \ref{Fig:two_epoch_combined}) and \textsl{ancient-asymmetric-migration} models (fig. \ref{Fig:ancient_migration_edited}) are close to 1. Under the (strong) assumption from Wright's island model that every migrant allele is unique, a scaled migration rate greater 0.5 prevents divergence by genetic drift \citep[p. 134--135]{Gillespie2004}. It therefore seems likely that natural selection has played an important role in the divergence of the two subspecies.
+
+The \textit{parallelus} population had a much greater ancient population size than \textit{erythropus}: at least twice as high according to $\delta$a$\delta$i and four times as high according to \texttt{stairway-plot}. There seems to be a signal of a recent (postglacial) drastic bottleneck in \textit{parallelus} as would be expected from serial founder events during range expansion from a Balkan glacial refuge. However, it seems difficult to reconcile this with the strongly negative Tajima's $D$ for \textit{parallelus} (tab. \ref{Tab:diversity_parameters}), which would indicate a population size expansion. The signal for a population bottleneck in \textit{erythropus} is more ambiguous. While \texttt{stairway-plot} infers a strong and very recent bottleneck from the 1D \gls{SFS} (fig. \ref{Fig:overlapping_stairway_plot}), $\delta$a$\delta$i infers only a mild bottleneck from the 2D \gls{SFS} (fig. \ref{Fig:two_epoch_combined}). A less severe bottleneck would be consistent with the expected lower effect of serial founder events during the expansion of \textit{erythropus} from its glacial refuge in southern Spain to the Pyrenees.
+
+A primary contact model (i. e. with ancient gene flow) fits the data better than a secondary contact model. That means that there is no significant signal of recent gene flow in the genome-wide 2D \gls{SFS}. This could be due to insufficient power to detect recent and low gene flow with the sample size of 18 individuals from each population \citep{Robinson2014}. This also indicates that the detected asymmetry of gene flow between \textit{erythropus} and \textit{parallelus} cannot just be a consequence of different distances of the sampled populations to the hybrid zone centre (fig. \ref{Fig:sampling-sites-map}) or hybrid zone movement. Rather, this hints at intrinsic mechanisms for asymmetric isolation (see chapter \nameref{ch:intro}).
+
+
 
 %----------------------------
 % Bibliography
 %----------------------------
-
-\bibliographystyle{elsarticle-harv}
-\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
-
-\end{document}
+%
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{/Users/Claudius/Documents/MyLiterature/Literature}
+%
+%\end{document}
 
